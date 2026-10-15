@@ -1,0 +1,14 @@
+---
+
+// component imports 
+import MainLayout from "../layouts/MainLayout.astro";
+
+import Gallary from "../components/gallery/Gallery.jsx";
+
+---
+
+<MainLayout title="Gallery | TEDxLNMIIT" description="Explore the vibrant moments captured at TEDxLNMIIT through our gallery, showcasing inspiring talks, engaging activities, and memorable experiences.">
+    
+     <Gallary client:only="react" />
+	
+</MainLayout>

@@ -1,0 +1,104 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+
+export async function getStaticPaths() {
+  return [{ params: { slug: "tickets-live" } }, { params: { slug: "speakers-revealed" } }, { params: { slug: "final-speakers-revealed" } }];
+}
+
+const updates = {
+  "tickets-live": {
+    title: "TEDx LNMIIT 2026 Tickets Now Live – ₹499 Only",
+    description: "Registrations for TEDx LNMIIT 2026 are officially open. Ticket price is ₹499.",
+    date: "2026-01-06",
+    content: `
+      Registrations for TEDx LNMIIT 2026 are now officially open.
+
+      Students and professionals can book their seats for just ₹499 and experience a day of
+      powerful talks, innovative ideas and inspiring stories at LNMIIT Jaipur.
+
+      This year’s edition will feature speakers from diverse fields including entrepreneurship,
+      mental health, technology, leadership and the creative arts.
+
+      Seats are limited and will be filled on a first-come basis. We encourage all interested
+      participants to register early to secure their place at the event.
+    `
+  },
+  "speakers-revealed": {
+  title: "TEDx LNMIIT 2026 Teaser Speaker Line-up Revealed",
+  description: "Meet the speakers who will take the TEDx LNMIIT 2026 stage.",
+  date: "2026-01-06",
+  content: `
+TEDx LNMIIT 2026 proudly unveils its first wave of speakers — a dynamic mix of entrepreneurs,
+artists, innovators, storytellers and change-makers.
+
+🎤 Currently revealed Speakers:
+• Arihant Jain – Co-Founder, Conscious Mitthaiwalla  
+• Sangeet Kumar – Co-Founder & CEO, Addverb  
+• Mehek Malhotra – Founder, Giggling Monkey Studio  
+• Samta Sudiksha – Actress, All India Rank  
+• Mehtab Ali Niazi – Sitar Virtuoso & Composer  
+• Aishwarya Sridhar – Wildlife Photographer of the Year  
+• Ash Akshay Goel – WSJ & USA Today Best-selling Author  
+
+Tickets are now live at ₹499 only. Limited seats available. Last speaker to be revealed soon! Stay tuned.
+`
+},"final-speakers-revealed": {
+  title: "TEDx LNMIIT 2026 Complete Speaker Line-up Revealed",
+  description: "Meet the speakers who will take the TEDx LNMIIT 2026 stage.",
+  date: "2026-01-07",
+  content: `
+TEDx LNMIIT 2026 proudly unveils its first wave of speakers — a dynamic mix of entrepreneurs,
+artists, innovators, storytellers and change-makers.
+We are excited to announce our final speaker Lineup for TEDx LNMIIT 2026!:
+• Paritosh Anand – Founder, We Smile Media | Content Creation Coach
+• Arihant Jain – Co-Founder, Conscious Mitthaiwalla  
+• Sangeet Kumar – Co-Founder & CEO, Addverb  
+• Mehek Malhotra – Founder, Giggling Monkey Studio  
+• Samta Sudiksha – Actress, All India Rank  
+• Mehtab Ali Niazi – Sitar Virtuoso & Composer  
+• Aishwarya Sridhar – Wildlife Photographer of the Year  
+• Ash Akshay Goel – WSJ & USA Today Best-selling Author 
+Tickets are now live at ₹499 only. Limited seats available.
+`
+},
+
+};
+
+const { slug } = Astro.params;
+const post = updates[slug];
+---
+
+<MainLayout
+  title={post.title}
+  description={post.description}
+  canonical={`https://www.tedxlnmiit.in/updates/${slug}`}
+  type="article"
+  published={post.date}
+>
+
+<section class="max-w-4xl mx-auto px-6 pt-24">
+  <article>
+    <h1 class="text-4xl font-semibold mb-4">{post.title}</h1>
+    <time class="text-sm text-gray-500">{post.date}</time>
+    <p class="mt-6 whitespace-pre-line">{post.content}</p>
+  </article>
+</section>
+
+<script type="application/ld+json" set:html={JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "NewsArticle",
+  "headline": post.title,
+  "datePublished": post.date,
+  "dateModified": post.date,
+  "mainEntityOfPage": `https://www.tedxlnmiit.in/updates/${slug}`,
+  "publisher": {
+    "@type": "Organization",
+    "name": "TEDx LNMIIT",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://www.tedxlnmiit.in/favicon.webp"
+    }
+  }
+})}></script>
+
+</MainLayout>

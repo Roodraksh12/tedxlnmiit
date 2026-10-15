@@ -1,0 +1,27 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import PastSpeakers from '../components/PastSpeakers.jsx';
+import SpeakersCarousel from '../components/CurrentSpeakers.jsx';
+---
+
+<MainLayout title="Current Speakers | TEDxLNMIIT" description="Discover the inspiring lineup of current speakers for TEDxLNMIIT 2026. Explore their innovative ideas and stories that align with our theme 'Forging the Future'. Join us to experience thought-provoking talks and engage with visionary minds.">
+
+
+  <SpeakersCarousel client:load />
+
+
+  <section class="text-center my-12">
+ 
+    <h1
+  class="text-5xl md:text-6xl font-extrabold uppercase tracking-widest
+         bg-gradient-to-r from-red-700 to-gray-500 bg-clip-text text-transparent"
+>
+  Past Speakers
+</h1>
+
+    <PastSpeakers client:load />
+  </section>
+
+
+
+</MainLayout>

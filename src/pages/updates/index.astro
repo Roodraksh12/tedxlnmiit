@@ -1,0 +1,46 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+
+const updates = [
+  {
+    title: "TEDx LNMIIT Tickets Now Live – ₹499 Only",
+    slug: "tickets-live",
+    date: "2026-01-06",
+    description: "Registrations for TEDx LNMIIT 2026 are officially open. Ticket price: ₹499."
+  },
+  {
+  title: "TEDx LNMIIT 2026 Teaser Speaker Line-up Revealed",
+  slug: "speakers-revealed",
+  date: "2026-01-06",
+  description: "Meet the speakers who will take the TEDx LNMIIT 2026 stage. One more reveal coming soon."
+},
+{
+  title: "TEDx LNMIIT 2026 Complete Speaker Line-up Revealed",
+  slug: "final-speakers-revealed",
+  date: "2026-01-07",
+  description: "Meet the speakers who will take the TEDx LNMIIT 2026 stage. Final speaker revealed."
+},
+];
+---
+
+<MainLayout
+  title="Latest Updates – TEDx LNMIIT"
+  description="Official TEDx LNMIIT announcements, ticket releases and speaker updates."
+  canonical="https://www.tedxlnmiit.in/updates"
+>
+
+<section class="max-w-5xl mx-auto px-6 pt-24">
+  <h1 class="text-4xl font-semibold mb-6">Latest Updates</h1>
+
+  {updates.map(u => (
+    <article class="mb-8 border-b pb-6">
+      <h2 class="text-2xl font-medium">
+        <a href={`/updates/${u.slug}`}>{u.title}</a>
+      </h2>
+      <p class="text-gray-400 mt-1">{u.description}</p>
+      <time class="text-sm text-gray-500">{u.date}</time>
+    </article>
+  ))}
+</section>
+
+</MainLayout>

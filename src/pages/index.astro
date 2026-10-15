@@ -1,0 +1,345 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import SpeakersCarousel from '../components/CurrentSpeakers.jsx';
+import PastSpeakers from "../components/PastSpeakers.jsx";
+import FAQPage from "../components/FAQ.jsx";
+import SponsorsComponent from '../components/Sponsors.jsx';
+import LandingPage from "../components/LandingPage.jsx";
+---
+
+<MainLayout title="Home Page | TEDxLNMIIT " description="Welcome to the official TEDxLNMIIT 2026 website. Discover inspiring talks, innovative ideas revolving our current theme 'Forging the Future', and vibrant community events as we prepare for an unforgettable experience at LNMIIT. Join us in spreading ideas worth sharing!"  >
+ <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Event",
+  "name": "TEDx LNMIIT 2026",
+  "startDate": "2026-01-11T10:00",
+  "endDate": "2026-01-11T18:00",
+  "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+  "eventStatus": "https://schema.org/EventScheduled",
+  "location": {
+    "@type": "Place",
+    "name": "LNMIIT Jaipur",
+    "address": {
+      "@type": "The LNM Institute of Information Technology, Rupa ki Nangal, Post-Sumel via -302031, Jamdoli, Jaipur, Rajasthan 302031",
+      "addressLocality": "Jaipur",
+      "addressRegion": "Rajasthan",
+      "addressCountry": "IN"
+    }
+  },
+  "image": ["https://tedxlnmiit.in/images/logo-white2.webp"],
+  "description": "Official TEDx LNMIIT event featuring speakers, innovators and creators.",
+  "organizer": {
+    "@type": "Organization",
+    "name": "TEDxLNMIIT",
+    "url": "https://tedxlnmiit.in"
+  },
+  "offers": {
+    "@type": "Offer",
+    "url": "https://www.tedxlnmiit.in/tickets",
+    "price": "399",
+    "priceCurrency": "INR",
+    "availability": "https://schema.org/InStock",
+    "validFrom": "2025-12-31T00:00"
+  },
+  "performer": [
+    {
+    "@type": "Person",
+    "name": "Paritosh Anand",
+    "jobTitle": "Founder, We Smile Media | Content Creation Coach",
+    "sameAs": "https://www.instagram.com/iamparitoshanand?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+    },
+  {
+    "@type": "Person",
+    "name": "Arihant Jain",
+    "jobTitle": "Co-Founder, Conscious Mitthaiwalla",
+    "sameAs": "https://www.instagram.com/consciousmitthaiwalla"
+  },
+  {
+    "@type": "Person",
+    "name": "Sangeet Kumar",
+    "jobTitle": "Co-Founder & CEO, Addverb",
+    "sameAs": "https://www.linkedin.com/in/sangeetsingh-addverb"
+  },
+  {
+    "@type": "Person",
+    "name": "Mehek Malhotra",
+    "jobTitle": "Creative Directress, Giggling Monkey Studio",
+    "sameAs": "https://www.instagram.com/giggling_monkey"
+  },
+  {
+    "@type": "Person",
+    "name": "Samta Sudiksha",
+    "jobTitle": "Actress & OTT Breakout Sensation",
+    "sameAs": "https://www.instagram.com/samta_sudiksha"
+  },
+  {
+    "@type": "Person",
+    "name": "Mehtab Ali Niazi",
+    "jobTitle": "Sitar Virtuoso & Composer",
+    "sameAs": "https://www.instagram.com/mehtabaliniazi"
+  },
+  {
+    "@type": "Person",
+    "name": "Aishwarya Sridhar",
+    "jobTitle": "Award-Winning Wildlife Photographer",
+    "sameAs": "https://www.instagram.com/chikoo_wild"
+  },
+  {
+    "@type": "Person",
+    "name": "Ash Akshay Goel",
+    "jobTitle": "WSJ & USA Today Best-Selling Author",
+    "sameAs": "https://www.instagram.com/theashgoel"
+  }
+]
+}
+</script>
+
+
+<LandingPage client:load />
+
+
+
+<!-- COUNTDOWN SECTION -->
+<section class="relative w-full  bg-gradient-to-b from-black/30 to-transparent py-20 flex flex-col items-center text-center px-4">
+  <!-- Heading -->
+ <h1
+  class="
+    text-center
+    font-light
+    tracking-tight
+    leading-[1]
+    max-w-[92vw]
+    mx-auto
+    py-5
+    text-[clamp(2.6rem,9vw,5.5rem)]
+  "
+>
+  <span class="text-[#EB0028]">Hello</span>{" "}
+  <span class="text-white">Explorer</span>
+</h1>
+
+
+  <!-- Countdown Container -->
+  <div class=" border border-red-600 px-6 py-8 md:px-12 md:py-10 rounded-2xl  backdrop-blur-sm w-full max-w-3xl mx-auto">
+  <div class="text-gray-300 mb-6 tracking-widest uppercase text-sm md:text-base text-center">
+    Time Until the Event
+  </div>
+
+  <!-- Countdown Boxes -->
+  <div id="countdown" 
+       class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 justify-center items-center">
+    <div class="count-box">
+      <div id="days" class="count-number">0</div>
+      <div class="count-label">Days</div>
+    </div>
+    <div class="count-box">
+      <div id="hours" class="count-number">0</div>
+      <div class="count-label">Hours</div>
+    </div>
+    <div class="count-box">
+      <div id="minutes" class="count-number">0</div>
+      <div class="count-label">Minutes</div>
+    </div>
+    <div class="count-box">
+      <div id="seconds" class="count-number">0</div>
+      <div class="count-label">Seconds</div>
+    </div>
+  </div>
+</div>
+
+  <!-- Description -->
+  <p class="max-w-2xl text-lg md:text-xl mt-12 leading-relaxed font-medium text-gray-200">
+    Join us as we bring <span class="text-[#EB0028] font-semibold">bold ideas</span> and pioneers together — 
+    a celebration of <span class="text-white font-semibold">creativity</span>, 
+    <span class="text-red-500 font-semibold">innovation</span>, and the people shaping tomorrow.
+  </p>
+</section>
+
+  <!-- ================= TEASER VIDEO ================= -->
+  <section class="w-full py-20 px-6 flex justify-center">
+    <div class="max-w-5xl w-full border-2 border-red-600 rounded-2xl overflow-hidden">
+
+  <!-- DESKTOP -->
+  <iframe
+  id="promo-video"
+  class="hidden md:block w-full aspect-video"
+  src="https://www.youtube.com/embed/GPAKzQ3uwXQ?mute=1&controls=1&rel=0"
+  data-autoplay="https://www.youtube.com/embed/GPAKzQ3uwXQ?autoplay=1&mute=1&controls=1&rel=0"
+  allow="autoplay; encrypted-media; fullscreen"
+  allowfullscreen
+></iframe>
+
+  <!-- MOBILE -->
+  <a
+    href="https://www.youtube.com/watch?v=GPAKzQ3uwXQ"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="block md:hidden"
+  >
+    <img
+      src="https://img.youtube.com/vi/GPAKzQ3uwXQ/hqdefault.jpg"
+      class="w-full rounded-2xl"
+      alt="Watch on YouTube"
+    />
+  </a>
+
+</div>
+
+  </section>
+
+
+
+
+<style>
+  .count-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #0d0d0d;
+  border: 1.5px solid rgba(255, 0, 0, 0.5);
+  border-radius: 1rem;
+  padding: 1rem 0.75rem;
+  box-shadow: none;
+  transition: none;
+  min-width: 65px;
+}
+
+
+  .count-number {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+  }
+
+  .count-label {
+    margin-top: 0.3rem;
+    color: #e5e5e5;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+  }
+
+ /* 📱 Better compact mobile layout */
+@media (max-width: 640px) {
+
+  .count-box {
+    padding: 0.35rem 0.35rem;   /* 🔹 much smaller inner spacing */
+    min-width: 42px;            /* 🔹 narrower box width */
+    border-radius: 0.55rem;
+  }
+
+  .count-number {
+    font-size: 1.1rem;          /* balanced size for compact box */
+  }
+
+  .count-label {
+    margin-top: 0.1rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.4px;
+  }
+}
+
+
+</style>
+
+
+<SpeakersCarousel client:visible/>
+
+<h1
+  class="
+    relative z-10
+    text-center
+    font-light
+    tracking-tight
+    leading-tight
+    max-w-[92vw]
+    mx-auto
+    py-0
+    -mb-8
+    text-[clamp(2.4rem,8vw,4.5rem)]
+  "
+>
+  <span class="text-gray-100">Past</span>{" "}
+  <span class="text-[#EB0028]">Speakers</span>
+</h1>
+
+
+<PastSpeakers client:visible/>
+
+<SponsorsComponent client:visible/>
+
+
+<FAQPage client:visible/>
+
+
+</MainLayout>
+
+
+
+
+
+
+
+<!-- COUNTDOWN SCRIPT -->
+<script type="module">
+  const EVENT_ISO = '2026-01-11T09:00:00+05:30';
+
+  (function initCountdown() {
+    const daysEl = document.getElementById('days');
+    const hoursEl = document.getElementById('hours');
+    const minutesEl = document.getElementById('minutes');
+    const secondsEl = document.getElementById('seconds');
+
+    function update() {
+      const now = new Date();
+      const target = new Date(EVENT_ISO);
+      const diff = target - now;
+      if (diff <= 0) {
+        [daysEl, hoursEl, minutesEl, secondsEl].forEach(el => el.textContent = '0');
+        clearInterval(interval);
+        return;
+      }
+
+      const totalSeconds = Math.floor(diff / 1000);
+      const secs = totalSeconds % 60;
+      const mins = Math.floor(totalSeconds / 60) % 60;
+      const hrs = Math.floor(totalSeconds / 3600) % 24;
+      const days = Math.floor(totalSeconds / 86400);
+
+      daysEl.textContent = days;
+      hoursEl.textContent = String(hrs).padStart(2, '0');
+      minutesEl.textContent = String(mins).padStart(2, '0');
+      secondsEl.textContent = String(secs).padStart(2, '0');
+    }
+
+    update();
+    const interval = setInterval(update, 1000);
+  })();
+</script>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const video = document.getElementById("promo-video");
+    if (!video) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const url = video.dataset.autoplay;
+            if (url) video.setAttribute("src", url);
+            observer.unobserve(video);
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    observer.observe(video);
+  });
+</script>

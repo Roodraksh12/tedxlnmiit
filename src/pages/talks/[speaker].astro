@@ -1,0 +1,215 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+export const prerender = true;
+
+const talks = [
+  {
+    id: 1,
+    name: "Dr. Tanu Jain",
+    speaker: "dr-tanu-jain",
+    drive: true,
+    uploadDate: "2023-11-15",
+    image: "/images/image0.webp",
+    description:
+      "Former IAS officer and DRDO Assistant Director, Dr. Jain advocates for education and UPSC reforms. Her multifaceted career exemplifies her dedication to creating impact beyond conventional roles.",
+    url: "https://drive.google.com/file/d/1b2JeXhUiIs2a75v09skoxKswxAoPksSP/view",
+  },
+  {
+    id: 2,
+    name: "Gunjan Saini",
+    speaker: "gunjan-saini",
+    uploadDate: "2024-03-25",
+    image: "/images/image01.webp",
+    description:
+      "Poet, writer, and founder of Let’s Talk, Gunjan Saini fosters emotional well-being through shared stories.",
+    url: "https://www.youtube.com/watch?v=7Qsg9A-mjgk",
+  },
+  {
+    id: 3,
+    name: "Preksha Kaparwan",
+    speaker: "preksha-kaparwan",
+    uploadDate: "2025-05-22",
+    image: "/images/image1.webp",
+    description:
+      "Entrepreneur and storyteller, Preksha Kaparwan is Co-Founder and CMO of Alphaa AI.",
+    url: "https://youtu.be/rVfCN04AEmg",
+  },
+  {
+    id: 4,
+    name: "Deepak Pareek",
+    speaker: "deepak-pareek",
+    uploadDate: "2024-03-21",
+    image: "/images/deepak.webp",
+    description:
+      "Co-founder of Iceberg Creations and an IMPACT 30 Under 30 honoree.",
+    url: "https://youtu.be/vkIZJ0-hkQY",
+  },
+  {
+    id: 5,
+    name: "Chinmay Gaur",
+    speaker: "chinmay-gaur",
+    uploadDate: "2024-03-21",
+    image: "/images/image5.webp",
+    description:
+      "Indian classical flutist and composer blending tradition with modern expression.",
+    url: "https://youtu.be/KyLREMG86r0",
+  },
+  {
+    id: 6,
+    name: "Dr. Ajay Data",
+    speaker: "dr-ajay-data",
+    uploadDate: "2025-05-21",
+    image: "/images/image3.webp",
+    description:
+      "Visionary entrepreneur who introduced the internet to Rajasthan.",
+    url: "https://youtu.be/JfBAk9jj--0",
+  },
+  {
+    id: 7,
+    name: "Krishnan Sunderarajan",
+    speaker: "krishnan-sunderarajan",
+    uploadDate: "2024-03-21",
+    image: "/images/krishna.webp",
+    description:
+      "Founder of LOKA, India’s first Metaverse app.",
+    url: "https://youtu.be/Z9zx3kWLP6c",
+  },
+  {
+    id: 8,
+    name: "Dr. Lopa Mudraa",
+    speaker: "dr-lopa-mudraa",
+    uploadDate: "2025-05-21",
+    image: "/images/image4.webp",
+    description:
+      "Information Security Evangelist and 4× Global 100 CISO awardee.",
+    url: "https://youtu.be/To9sxO9W_Kw",
+  },
+  {
+    id: 9,
+    name: "Dr. Kamna Chhibber",
+    speaker: "dr-kamna-chhibber",
+    uploadDate: "2025-05-21",
+    image: "/images/image2.webp",
+    description:
+      "Head of Mental Health at Fortis Healthcare.",
+    url: "https://youtu.be/n0me_a9Amnk",
+  },
+  {
+    id: 10,
+    name: "Aabha Hanjura",
+    speaker: "aabha-hanjura",
+    uploadDate: "2025-05-21",
+    image: "/images/image6.webp",
+    description:
+      "Singer-songwriter and founder of the band Sufistication.",
+    url: "https://youtu.be/omzsDD9-Ur8",
+  },
+  {
+    id: 11,
+    name: "Chetna Balhara",
+    speaker: "chetna-balhara",
+    uploadDate: "2025-05-21",
+    image: "/images/chetna.webp",
+    description:
+      "Poet and digital creator known for heartfelt poetry.",
+    url: "https://youtu.be/357IYm05oQU",
+  },
+  {
+    id: 12,
+    name: "Shelly Jyoti",
+    speaker: "shelly-jyoti",
+    uploadDate: "2025-05-21",
+    image: "/images/image7.webp",
+    description:
+      "Contemporary artist exploring Gandhi’s principles through art.",
+    url: "https://youtu.be/Vu_gdUgJAzk",
+  },
+];
+
+export async function getStaticPaths() {
+  return [
+    { params: { speaker: "dr-tanu-jain" } },
+    { params: { speaker: "gunjan-saini" } },
+    { params: { speaker: "preksha-kaparwan" } },
+    { params: { speaker: "deepak-pareek" } },
+    { params: { speaker: "chinmay-gaur" } },
+    { params: { speaker: "dr-ajay-data" } },
+    { params: { speaker: "krishnan-sunderarajan" } },
+    { params: { speaker: "dr-lopa-mudraa" } },
+    { params: { speaker: "dr-kamna-chhibber" } },
+    { params: { speaker: "aabha-hanjura" } },
+    { params: { speaker: "chetna-balhara" } },
+    { params: { speaker: "shelly-jyoti" } }
+  ];
+}
+
+
+
+const { speaker } = Astro.params;
+const talk = talks.find(t => t.speaker === speaker);
+if (!talk) throw new Error("Talk not found");
+
+function getEmbedUrl(url) {
+  if (url.includes("drive.google.com")) {
+    const id = url.match(/\/d\/(.+?)\//)?.[1];
+    return `https://drive.google.com/file/d/${id}/preview`;
+  }
+  return url.replace("watch?v=", "embed/").replace("youtu.be/", "www.youtube.com/embed/");
+}
+
+const embedUrl = getEmbedUrl(talk.url);
+const canonical = `https://www.tedxlnmiit.in/talks/${talk.speaker}`;
+---
+
+<MainLayout
+  title={`${talk.name} | TEDx LNMIIT`}
+  description={talk.description}
+  canonical={canonical}
+>
+  <script
+  type="application/ld+json"
+  set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": talk.name,
+    "thumbnailUrl": `https://www.tedxlnmiit.in${talk.image}`,
+    "description": talk.description,
+    "contentUrl": talk.url,
+    "embedUrl": embedUrl,
+    "uploadDate": `${talk.uploadDate}T00:00:00+05:30`,
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": canonical
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "TEDxLNMIIT"
+    },
+    "potentialAction": {
+      "@type": "WatchAction",
+      "target": embedUrl
+    }
+  })}
+></script>
+
+
+ <main class="max-w-5xl mx-auto py-12 px-4 text-white">
+
+  <!-- VIDEO MUST BE FIRST -->
+  <div class="aspect-video rounded-xl overflow-hidden shadow-xl">
+    <iframe
+      src={embedUrl}
+      class="w-full h-full"
+      loading="eager"
+      allow="autoplay; encrypted-media"
+      allowfullscreen>
+    </iframe>
+  </div>
+
+  <h1 class="text-3xl font-bold mt-6 mb-4">{talk.name}</h1>
+
+  <p class="text-lg text-gray-300">{talk.description}</p>
+
+</main>
+
+</MainLayout>
