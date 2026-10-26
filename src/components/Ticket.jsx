@@ -12,7 +12,7 @@ const Tickets = () => {
         </h1>
 
         <p className="text-gray-300 text-lg">
-          Date: 11<sup>th</sup> January 2026 | LNMIIT, Jaipur
+          Date: 10<sup>th</sup> January 2027 | LNMIIT, Jaipur
         </p>
 
         <div className="mx-auto mt-10">
@@ -64,9 +64,9 @@ const Tickets = () => {
       {/* Price Section */}
       <div className="border-t border-gray-700 pt-8 mt-8">
         <p className="text-gray-400 text-sm">Original Price</p>
-        
 
-        
+
+
 
         <p className="text-5xl font-bold text-[#EB0028] mt-1">
           ₹499

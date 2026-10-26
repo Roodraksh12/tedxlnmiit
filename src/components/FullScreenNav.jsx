@@ -3,7 +3,7 @@ import gsap from 'gsap';
 import { useContext } from 'react';
 import { NavbarContext } from '../context/NavContext';
 
-const menuLinks = ["Home", "Theme", "About", "Gallery", "Team","Campus Ambassador"];
+const menuLinks = ["Home", "Theme", "About", "Gallery", "Past Speakers", "Team","Campus Ambassador"];
 
 export default function FullScreenNav() {
   const { navOpen, setNavOpen } = useContext(NavbarContext);
@@ -24,7 +24,7 @@ export default function FullScreenNav() {
 
   return (
    <div
-  className="fullscreennav fixed inset-0 bg-black/10 backdrop-blur-xl text-white z-50 overflow-hidden"
+  className="fullscreennav fixed inset-0 bg-[#0d0d0f]/95 backdrop-blur-xl text-white z-50 overflow-hidden"
   style={{ display: "none" }}
 >
 
@@ -36,12 +36,13 @@ export default function FullScreenNav() {
       </div>
 
       {/* Links */}
-      <div className="relative h-full w-full flex flex-col justify-center items-center space-y-10">
+      <div className="relative h-full w-full flex flex-col justify-center items-center gap-5 sm:gap-7 py-20 overflow-y-auto">
         {menuLinks.map((text, i) => (
           <a
-            href={text === "Home" ? "/" : `/${text.toLowerCase()}`}
+            href={text === "Home" ? "/" : text === "Past Speakers" ? "/past-speakers" : `/${text.toLowerCase()}`}
             key={i}
-            className="menu-link
+            onClick={() => setNavOpen(false)}
+            className="menu-link hover:text-[#fafafa] hover:bg-white/10 rounded-full px-6 py-2 transition-colors
         opacity-0
         rotate-x-90
         text-center

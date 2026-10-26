@@ -1,0 +1,67 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import { speakerEditions } from '../data/pastSpeakers.js';
+const accents = ['#ff526b','#e8a46b','#e0bd79','#e58874','#d79e91','#f17183'];
+---
+<MainLayout title="Past Speakers | TEDxLNMIIT" description="Discover the voices of previous TEDxLNMIIT editions, one speaker at a time.">
+<div class="speaker-archive">
+<header class="archive-heading"><p class="eyebrow">THE IDEAS THAT BROUGHT US HERE</p><h1>Past <span>Speakers</span></h1><p>Scroll through the voices that shaped each edition.</p><nav class="edition-links" aria-label="Browse speaker editions">{speakerEditions.map(e=><a href={`#edition-${e.id}`}>{e.year}</a>)}</nav></header>
+{speakerEditions.map(edition => edition.speakers.length ? (
+<section class="edition-story" id={`edition-${edition.id}`} data-edition data-count={edition.speakers.length} aria-labelledby={`title-${edition.id}`} style={`--accent:${accents[0]};--steps:${edition.speakers.length}`}>
+<div class="edition-stage">
+<aside class="edition-intro"><p class="eyebrow">TEDxLNMIIT · THE ARCHIVE</p><h2 id={`title-${edition.id}`}>{edition.year}</h2><p class="edition-tagline">Ideas leave<br/><em>a lasting light.</em></p><p class="edition-copy">Meet the people behind the perspectives. Keep scrolling to discover the next voice.</p><div class="speaker-counter"><span data-counter>01</span><span class="count-total"> / 06</span></div><nav class="speaker-steps" aria-label={`Speakers in ${edition.year}`}>{edition.speakers.map((s,i)=><a href={`#speaker-${edition.id}-${s.id}`} data-step={i} aria-label={`Show ${s.name}`} aria-current={i===0?'step':undefined}><span>{String(i+1).padStart(2,'0')}</span></a>)}</nav><p class="scroll-hint">SCROLL TO DISCOVER ↓</p></aside>
+<div class="speaker-deck">
+{edition.speakers.map((speaker,i)=>(
+<article class:list={['archive-speaker',{'is-active':i===0}]} id={`speaker-${edition.id}-${speaker.id}`} data-speaker data-accent={accents[i%accents.length]} style={`--card-accent:${accents[i%accents.length]}`} aria-labelledby={`speaker-name-${speaker.id}`}>
+<div class="portrait"><img src={speaker.image} alt={speaker.name} loading="lazy" width="400" height="400"/><span class="portrait-shade" aria-hidden="true"></span><span class="portrait-index" aria-hidden="true">{String(i+1).padStart(2,'0')}</span></div>
+<div class="speaker-details"><p class="eyebrow">{edition.year} · SPEAKER {String(i+1).padStart(2,'0')}</p><h3 id={`speaker-name-${speaker.id}`}>{speaker.name}</h3><p class="speaker-bio">{speaker.description}</p><div class="speaker-links">{speaker.youtube&&<a href={speaker.youtube} target="_blank" rel="noopener noreferrer">Watch talk ↗</a>}{speaker.instagram&&<a href={speaker.instagram} target="_blank" rel="noopener noreferrer">Instagram ↗</a>}{speaker.linkedin&&<a href={speaker.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>}</div></div><div class="light-sweep" aria-hidden="true"></div>
+</article>
+))}
+</div>
+</div>
+</section>
+):<section class="edition-empty" id={`edition-${edition.id}`}><p class="eyebrow">TEDxLNMIIT · THE ARCHIVE</p><h2>{edition.year}</h2><p>Lineup coming soon</p></section>)}
+</div>
+</MainLayout>
+<style>
+.speaker-archive{max-width:1280px;margin:auto;padding:64px 28px 100px;color:#f8f4ee}.archive-heading{text-align:center;max-width:760px;margin:0 auto 65px}.eyebrow{font-size:11px;letter-spacing:.17em;color:#c9b9aa;font-weight:500}.archive-heading h1{font-size:clamp(2.8rem,7vw,5.5rem);line-height:1.08;margin:16px 0 22px;letter-spacing:-.04em;font-weight:500}.archive-heading h1 span{color:#eb0028}.archive-heading>p:last-of-type{color:#c2bdc1;line-height:1.7}.edition-links{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:30px}.edition-links a{padding:10px 22px;border:1px solid #71303b;border-radius:99px;background:#160b10d9;font-size:14px}.edition-links a:hover{background:#651023}a:focus-visible{outline:2px solid #fff0d6;outline-offset:5px}
+.edition-story{scroll-margin-top:90px;margin-bottom:90px}.edition-stage{display:grid;grid-template-columns:.8fr 1.3fr;gap:48px;padding:34px;border:1px solid color-mix(in srgb,var(--accent) 35%,#151115);border-radius:22px;background:linear-gradient(130deg,#100d10f5,#0a090bee);transition:border-color .6s,background .6s}.edition-intro{align-self:start;padding:22px 0}.edition-intro h2{font-size:clamp(2.8rem,4.6vw,4.5rem);letter-spacing:-.05em;line-height:1.1;margin:18px 0 30px}.edition-tagline{font-family:Georgia,serif;font-size:clamp(2rem,3.4vw,3.1rem);line-height:1.1;letter-spacing:-.04em}.edition-tagline em{color:var(--accent);transition:color .6s}.edition-copy{color:#bcb4b8;line-height:1.7;font-size:14px;max-width:280px;margin-top:24px}.speaker-counter{margin-top:28px;color:var(--accent);font-family:Georgia,serif;font-size:52px;line-height:1}.count-total{font-family:Arial,sans-serif;font-size:16px;color:#8d8188}.speaker-steps{display:flex;gap:8px;margin-top:20px;flex-wrap:wrap}.speaker-steps a{display:grid;place-items:center;width:36px;height:36px;border-bottom:2px solid #3e3138;color:#a79ba3;font-size:12px}.speaker-steps a[aria-current]{border-color:var(--accent);color:var(--accent)}.scroll-hint{font-size:10px;letter-spacing:.16em;color:#a89a9f;margin-top:20px}
+.speaker-deck{display:grid;gap:24px;min-width:0}.archive-speaker{position:relative;overflow:hidden;border:1px solid color-mix(in srgb,var(--card-accent) 30%,#21151c);border-radius:14px;background:linear-gradient(150deg,color-mix(in srgb,var(--card-accent) 13%,#121015),#100c11);scroll-margin-top:100px}.portrait{height:290px;position:relative;background:#100e11}.portrait img{width:100%;height:100%;object-fit:contain;object-position:center;background:radial-gradient(ellipse at bottom,color-mix(in srgb,var(--card-accent) 22%,#151015),#100d12)}.portrait-shade{position:absolute;inset:0;background:linear-gradient(transparent 75%,#130e15)}.portrait-index{position:absolute;right:20px;top:12px;font-size:40px;font-family:Georgia,serif;color:#fff8eacc}.speaker-details{position:relative;padding:22px 26px 26px}.speaker-details h3{font-size:clamp(1.6rem,2.4vw,2.4rem);line-height:1.12;margin:10px 0 14px;color:#fff2dc;letter-spacing:-.025em}.speaker-bio{color:#cfc4ca;font-size:14px;line-height:1.65}.speaker-links{display:flex;flex-wrap:wrap;gap:14px 24px;margin-top:20px;font-size:13px}.speaker-links a{color:var(--card-accent)}.speaker-links a:hover{text-decoration:underline}.light-sweep{display:none;pointer-events:none;position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,var(--card-accent),#fff5df,var(--card-accent),transparent);box-shadow:0 0 18px 4px var(--card-accent)}.edition-empty{scroll-margin-top:100px;padding:45px;border:1px solid #49303a;border-radius:22px;background:#100c11e8}.edition-empty h2{font-size:40px;margin:14px 0}.edition-empty>p:last-child{color:#bfb2ba}
+@media(min-width:900px) and (min-height:740px){.edition-story.is-enhanced{height:calc(var(--steps) * 80vh + 80vh)}.is-enhanced .edition-stage{position:sticky;top:90px;height:calc(100svh - 115px);min-height:600px;align-items:center}.is-enhanced .edition-intro{align-self:center}.is-enhanced .speaker-deck{position:relative;height:100%}.is-enhanced .archive-speaker{position:absolute;inset:0;opacity:0;visibility:hidden;transform:translateY(28px) scale(.98);transition:opacity .42s,transform .55s,visibility .42s;display:flex;flex-direction:column}.is-enhanced .archive-speaker.is-active{opacity:1;visibility:visible;transform:translateY(0) scale(1);z-index:1}.is-enhanced .portrait{height:44%;flex-shrink:0}.is-enhanced .speaker-details{flex:1;display:flex;flex-direction:column;justify-content:center}.is-enhanced .light-sweep{display:block;opacity:0}.is-enhanced .is-active .light-sweep{animation:reveal-sweep .85s ease-out both}@keyframes reveal-sweep{0%{top:0;opacity:0}15%{opacity:.8}90%{opacity:.5}100%{top:100%;opacity:0}}}
+@media(max-width:899px),(max-height:739px){.edition-stage{grid-template-columns:1fr;padding:22px;gap:20px}.edition-intro{padding:0}.edition-intro h2{margin-bottom:16px}.edition-tagline{font-size:30px}.edition-copy,.speaker-counter,.scroll-hint{display:none}.speaker-steps{margin-top:18px}.portrait{height:320px}.speaker-deck{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}.archive-speaker{transition:border-color .4s}.archive-speaker.is-active{border-color:var(--card-accent)}}
+@media(max-width:600px){.speaker-archive{padding:40px 14px 60px}.edition-stage{padding:16px}.speaker-deck{grid-template-columns:1fr}.portrait{height:300px}.speaker-details{padding:20px}.edition-story{margin-bottom:40px}}
+@media(prefers-reduced-motion:reduce){.edition-stage,.archive-speaker,.edition-tagline em{transition:none!important}.light-sweep{display:none!important}.is-enhanced .archive-speaker{transform:none!important}}
+</style>
+<script>
+const sections = [...document.querySelectorAll<HTMLElement>('[data-edition]')];
+const motion = matchMedia('(prefers-reduced-motion: reduce)');
+const wide = matchMedia('(min-width: 900px) and (min-height: 740px)');
+let frame = 0;
+function update(){
+ frame=0;
+ sections.forEach(section=>{
+  const cards=[...section.querySelectorAll<HTMLElement>('[data-speaker]')];
+  const stage=section.querySelector<HTMLElement>('.edition-stage')!;
+  const enhanced=wide.matches&&!motion.matches;
+  section.classList.toggle('is-enhanced',enhanced);
+  let index=0;
+  if(enhanced){const range=Math.max(1,section.offsetHeight-stage.offsetHeight);const progress=Math.max(0,Math.min(.999999,(90-section.getBoundingClientRect().top)/range));index=Math.min(cards.length-1,Math.floor(progress*cards.length));}
+  else {let closest=Infinity;cards.forEach((card,i)=>{const distance=Math.abs(card.getBoundingClientRect().top-innerHeight*.3);if(distance<closest){closest=distance;index=i;}});}
+  section.style.setProperty('--accent',cards[index].dataset.accent!);
+  section.querySelector('[data-counter]')!.textContent=String(index+1).padStart(2,'0');
+  cards.forEach((card,i)=>{card.classList.toggle('is-active',i===index);card.inert=enhanced&&i!==index;if(enhanced&&i!==index)card.setAttribute('aria-hidden','true');else card.removeAttribute('aria-hidden');});
+  section.querySelectorAll('[data-step]').forEach((link,i)=>{if(i===index)link.setAttribute('aria-current','step');else link.removeAttribute('aria-current');});
+ });
+}
+function schedule(){if(!frame)frame=requestAnimationFrame(update)}
+sections.forEach(section=>section.querySelectorAll<HTMLElement>('[data-step]').forEach(link=>link.addEventListener('click',event=>{
+ if(!wide.matches||motion.matches)return;
+ event.preventDefault();
+ const stage=section.querySelector<HTMLElement>('.edition-stage')!;
+ const range=section.offsetHeight-stage.offsetHeight;
+ const count=Number(section.dataset.count),index=Number(link.dataset.step);
+ const destination=scrollY+section.getBoundingClientRect().top-90+range*(index+.15)/count;
+ window.scrollTo({top:destination,behavior:'smooth'});
+})));
+window.addEventListener('scroll',schedule,{passive:true});window.addEventListener('resize',schedule);motion.addEventListener('change',schedule);wide.addEventListener('change',schedule);update();
+</script>

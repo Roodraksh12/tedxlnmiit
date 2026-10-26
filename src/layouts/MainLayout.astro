@@ -3,7 +3,7 @@ import MainHead from "./MainHead.astro";
 import Footer from "../components/Footer.jsx";
 import "../styles/global.css";
 import NavWrapper from "../components/NavWrapper.jsx";
-import DotGrid from "../components/DotGrid.jsx";
+import StarConstellation from "../components/StarConstellation.jsx";
 
 const { title = "Default Title", description = "Default Description" } =
   Astro.props;
@@ -30,12 +30,12 @@ const { title = "Default Title", description = "Default Description" } =
 
 
 </head>
-  <body class="bg-black text-white overflow-x-hidden min-h-screen relative">
+  <body class="bg-black text-white overflow-x-hidden min-h-screen relative isolate">
 
-    
+
     <div
       id="site-loader"
-      class="fixed inset-0 z-[9999] flex items-center justify-center bg-white"
+      class="fixed inset-0 z-[9999] hidden flex items-center justify-center bg-white"
     >
       <div class="flex flex-col items-center gap-10">
         <span class="text-3xl font-extrabold tracking-widest text-black">
@@ -44,20 +44,9 @@ const { title = "Default Title", description = "Default Description" } =
         <div class="loader"></div>
       </div>
     </div>
-    
+
     <div class="fixed inset-0 -z-10 pointer-events-none">
-      <DotGrid
-        client:load
-        dotSize={6}
-        gap={15}
-        baseColor="#212020"
-        activeColor="#636161"
-        proximity={125}
-        shockRadius={150}
-        shockStrength={4}
-        resistance={500}
-        returnDuration={1.0}
-      />
+      <StarConstellation client:load />
     </div>
     <!-- ================= END BACKGROUND ================= -->
 
@@ -144,6 +133,7 @@ const { title = "Default Title", description = "Default Description" } =
 
               const linkUrl = new URL(href, location.href);
               if (linkUrl.origin !== location.origin) return;
+              if (link.hasAttribute("data-ticket-transition")) return;
 
               link.addEventListener("click", (e) => {
                 if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;

@@ -1,92 +1,36 @@
-import { useContext, useEffect, useState } from "react";
-import { NavbarContext } from "../context/NavContext";
-
-export default function Navbar() {
-  const { setNavOpen } = useContext(NavbarContext);
-  const [showNavbar, setShowNavbar] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY > lastScrollY) setShowNavbar(false);
-      else setShowNavbar(true);
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
-
-  const navItems = [
-    { name: "HOME", href: "/" },
-    { name: "THEME", href: "/theme" },
-    { name: "ABOUT", href: "/about" },
-    { name: "GALLERY", href: "/gallery" },
-    { name: "TEAM", href: "/team" },
-    { name: "CAMPUS AMBASSADOR", href: "/campus ambassador" },
-  ];
-
-  return (
-    <header
-  className={`fixed top-0 left-0 w-full flex items-center justify-between px-2 sm:px-6 lg:px-6 py-2 lg:py-1 bg-black/80 rounded-b-4x1  backdrop-blur-lg shadow-md z-50 transition-transform duration-300 ${
-    showNavbar ? "translate-y-0" : "-translate-y-full"
-  }`}
->
-  
-  
-      {/* LEFT SECTION */}
-     <a href="/" className="flex flex-col items-start">
-  <img
-    src="/images/logo-white2.webp"
-    alt="TEDx LNMIIT Logo"
-    className="h-15 lg:h-15 w-auto object-contain cursor-pointer"
-  />
-</a>
-
-
-      {/* DESKTOP NAVIGATION */}
-      <nav className="hidden lg:flex items-center space-x-10 text-white text-base ">
-        {navItems.map((item) => (
-          <a
-            key={item.name}
-            href={item.href}
-            className="relative group tracking-wide"
-          >
-            <span className="transition-all duration-200 group-hover:text-[#EB0028]">
-              {item.name}
-            </span>
-            {/* Underline animation */}
-            <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-[#EB0028] transition-all duration-300 group-hover:w-full"></span>
-          </a>
-        ))}
-      </nav>
-
-      {/* RIGHT BUTTONS */}
-      <div className="flex items-center gap-3 sm:gap-4 lg:gap-4">
-    <a
-   href="/tickets"
-  className="inline-block bg-[#EB0028] hover:bg-red-600 
-             transition duration-300 delay-100
-             text-white 
-             px-3 sm:px-4 md:px-5 lg:px-6 
-             py-1.5 sm:py-2 
-             rounded-md 
-             text-xs sm:text-sm md:text-base 
-             shadow-lg whitespace-nowrap"
->
-  Get Tickets
-</a>
-
-
-    {/* Hamburger menu (only on mobile) */}
-    <button
-      className="text-2xl text-white lg:hidden"
-      onClick={() => setNavOpen(true)}
-    >
-      ☰
-    </button>
-      </div>
-    </header>
-  );
+import { useContext, useEffect, useRef, useState } from 'react';
+import { Home, Compass, Info, Images, Mic2, Users, GraduationCap, Menu, ArrowUpRight } from 'lucide-react';
+import { NavbarContext } from '../context/NavContext';
+import './Nav.css';
+const items = [
+  {name:'Home',href:'/',icon:Home}, {name:'Theme',href:'/theme',icon:Compass},
+  {name:'About',href:'/about',icon:Info}, {name:'Gallery',href:'/gallery',icon:Images},
+  {name:'Past Speakers',href:'/past-speakers',icon:Mic2}, {name:'Team',href:'/team',icon:Users},
+  {name:'Campus Ambassador',href:'/campus ambassador',icon:GraduationCap},
+];
+export default function Navbar(){
+  const {navOpen,setNavOpen}=useContext(NavbarContext);
+  const [visible,setVisible]=useState(true),[active,setActive]=useState('/');
+  const navRef=useRef(null),linksRef=useRef([]),focusWithin=useRef(false);
+  const [indicator,setIndicator]=useState({x:0,width:0});
+  const moveTo=index=>{const el=linksRef.current[index];if(el)setIndicator({x:el.offsetLeft,width:el.offsetWidth})};
+  useEffect(()=>{
+    const path=decodeURIComponent(location.pathname).replace(/\/$/,'')||'/';setActive(path);
+    const index=Math.max(0,items.findIndex(item=>item.href===path));
+    const restore=()=>moveTo(index);restore();
+    const observer=new ResizeObserver(restore);if(navRef.current)observer.observe(navRef.current);
+    let last=window.scrollY,raf=0;
+    const onScroll=()=>{if(raf)return;raf=requestAnimationFrame(()=>{const y=window.scrollY;if(Math.abs(y-last)>8||y<80){setVisible(y<80||y<last);last=y}raf=0})};
+    window.addEventListener('scroll',onScroll,{passive:true});
+    return()=>{observer.disconnect();cancelAnimationFrame(raf);window.removeEventListener('scroll',onScroll)};
+  },[]);
+  const restore=()=>moveTo(Math.max(0,items.findIndex(item=>item.href===active)));
+  return <header className={`ted-nav-header ${visible||navOpen?'':'is-hidden'}`} onFocusCapture={()=>setVisible(true)}>
+    <a className="ted-brand" href="/" aria-label="TEDxLNMIIT home"><img src="/images/logo-white2.webp" alt="TEDxLNMIIT" width="180" height="60"/></a>
+    <nav className="ted-nav-pill" ref={navRef} aria-label="Main navigation" onFocusCapture={()=>{focusWithin.current=true}} onPointerLeave={()=>{if(!focusWithin.current)restore()}} onBlur={event=>{if(!event.currentTarget.contains(event.relatedTarget)){focusWithin.current=false;restore()}}}>
+      <span className="ted-nav-indicator" aria-hidden="true" style={{width:indicator.width,transform:`translateX(${indicator.x}px)`,opacity:indicator.width?1:0}}/>
+      {items.map(({name,href,icon:Icon},index)=><a key={href} ref={el=>linksRef.current[index]=el} className="ted-nav-link" href={href} aria-current={active===href?'page':undefined} onPointerEnter={()=>moveTo(index)} onFocus={()=>moveTo(index)}><Icon size={19} strokeWidth={1.65} aria-hidden="true"/><span>{name}</span></a>)}
+    </nav>
+    <div className="ted-nav-actions"><a className="ted-ticket" href="/tickets">Get Tickets <ArrowUpRight size={15} aria-hidden="true"/></a><button className="ted-menu" type="button" onClick={()=>setNavOpen(true)} aria-label="Open navigation menu" aria-expanded={navOpen}><Menu size={23}/></button></div>
+  </header>;
 }

@@ -1,0 +1,59 @@
+<section class="ticket-invite" data-ticket-invite aria-label="Book your ticket now">
+  <div class="ticket-invite-stage">
+    <a class="ticket-invite-title" href="/tickets/" data-ticket-transition>BOOK YOUR TICKET NOW<span class="invite-period">.</span></a>
+  </div>
+</section>
+
+<style>
+.ticket-invite{position:relative;width:100%;margin:0;--invite-scale:1;--invite-fill:0}
+.ticket-invite-stage{height:100svh;min-height:500px;display:flex;align-items:center;justify-content:center;position:relative;overflow:clip}
+.ticket-invite-title{display:block;white-space:nowrap;font-family:inherit;font-size:clamp(24px,8.5vw,180px);font-weight:600;letter-spacing:-.055em;line-height:1.2;text-decoration:none;color:#ffffff;position:absolute;width:max-content;max-width:none;text-rendering:optimizeLegibility}
+.invite-period{display:inline-block;width:.14em;height:.14em;border-radius:50%;background:#eb0028;color:transparent;line-height:0;vertical-align:baseline;overflow:hidden}.ticket-invite-title:focus-visible{outline:2px solid #fff1dc;outline-offset:12px}
+@media(min-width:320px) and (min-height:480px){.ticket-invite.is-scroll-invite{height:220svh}.is-scroll-invite .ticket-invite-stage{height:calc(100svh - 100px);position:sticky;top:90px;min-height:0}}
+@media(prefers-reduced-motion:reduce){.ticket-invite-title{transform:none;will-change:auto}}
+</style>
+<script>
+const invite=document.querySelector<HTMLElement>('[data-ticket-invite]');
+const link=invite?.querySelector<HTMLAnchorElement>('[data-ticket-transition]');
+const motion=matchMedia('(prefers-reduced-motion: reduce)');
+const large=matchMedia('(min-width:320px) and (min-height:480px)');
+let frame=0,opening=false,metrics:{width:number,height:number,baseSize:number,baseWidth:number,dotX:number,dotY:number}|undefined;
+function updateTicket(){
+ frame=0;if(!invite||!link||opening)return;
+ const enhanced=large.matches&&!motion.matches;
+ invite.classList.toggle('is-scroll-invite',enhanced);
+ const stage=invite.querySelector<HTMLElement>('.ticket-invite-stage')!;
+ const range=Math.max(1,invite.offsetHeight-stage.offsetHeight);
+ const progress=enhanced?Math.max(0,Math.min(1,(90-invite.getBoundingClientRect().top)/range)):0;
+ const width=stage.clientWidth,height=stage.clientHeight;
+ if(!metrics||metrics.width!==width||metrics.height!==height){
+   let baseSize=Math.min(180,Math.max(24,width*.085));
+   link.style.fontSize=`${baseSize}px`;
+   const measured=link.offsetWidth;
+   if(measured>width*.99)baseSize*=width*.99/measured;
+   link.style.fontSize=`${baseSize}px`;
+   const dot=invite.querySelector<HTMLElement>('.invite-period')!;
+   metrics={width,height,baseSize,baseWidth:link.offsetWidth,dotX:(width-link.offsetWidth)/2+dot.offsetLeft+dot.offsetWidth/2,dotY:(height-link.offsetHeight)/2+dot.offsetTop+dot.offsetHeight/2};
+ }
+ // Re-render the lettering and circle at their real sizes, anchored to the dot.
+ const dot=invite.querySelector<HTMLElement>('.invite-period')!;
+ const targetDiameter=Math.min(width,height)*.88;
+ const finalZoom=Math.max(8,targetDiameter/(metrics.baseSize*.14));
+ const zoom=Math.pow(finalZoom,progress*progress);
+ const pixelRatio=window.devicePixelRatio||1;
+ const snap=(value:number)=>Math.round(value*pixelRatio)/pixelRatio;
+ link.style.fontSize=`${snap(metrics.baseSize*zoom)}px`;
+ const pan=Math.min(1,progress/.55);
+ const easedPan=pan*pan*(3-2*pan);
+ const dotX=metrics.dotX+(width/2-metrics.dotX)*easedPan;
+ const dotY=metrics.dotY+(height/2-metrics.dotY)*easedPan;
+ link.style.left=`${snap(dotX-dot.offsetLeft-dot.offsetWidth/2)}px`;
+ link.style.top=`${snap(dotY-dot.offsetTop-dot.offsetHeight/2)}px`;
+ // Finish on the large, centred dot and navigate without a red overlay or delay.
+ if(progress>=.995){opening=true;location.assign(link.href)}
+}
+function scheduleTicket(){if(!frame)frame=requestAnimationFrame(updateTicket)}
+window.addEventListener('scroll',scheduleTicket,{passive:true});window.addEventListener('resize',scheduleTicket);motion.addEventListener('change',scheduleTicket);
+window.addEventListener('pageshow',event=>{opening=false;if(event.persisted&&invite){window.scrollTo({top:scrollY+invite.getBoundingClientRect().top-innerHeight*.7,behavior:'instant'});}scheduleTicket()});
+updateTicket();
+</script>
