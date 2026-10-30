@@ -1,10 +1,11 @@
 
- @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap'); 
 
 @import "tailwindcss";
 @import "@fortawesome/fontawesome-free/css/all.min.css";
 
 :root {
+  --site-header-height: 88px;
+  --ticket-surface: #EB0028;
   --font-primary: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
@@ -25,8 +26,13 @@ select {
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
 }
+
+.site-page { padding-top: var(--site-header-height); }
+.ticket-navigation-veil { position: fixed; inset: 0; z-index: 60; background: #080808; pointer-events: none; opacity: 0; }
+@media (max-width: 1199px) { :root { --site-header-height: 80px; } }
+@media (max-width: 480px) { :root { --site-header-height: 68px; } }
 
 body {
   max-width: 100%;
@@ -73,7 +79,7 @@ h1, h2, h3, h4, h5, h6 {
   inset: auto 42.5% 0;
   aspect-ratio: 1;
   border-radius: 50%;
-  background: #eb0028;
+  background: #EB0028;
   animation: l3-1 .75s cubic-bezier(0,900,1,900) infinite;
 }
 

@@ -69,7 +69,7 @@ const VARIANTS = {
   default: { gap: 5, speed: 35, colors: "#f8fafc,#f1f5f9,#cbd5e1" },
   blue: { gap: 10, speed: 25, colors: "#e0f2fe,#7dd3fc,#0ea5e9" },
   yellow: { gap: 3, speed: 20, colors: "#fef08a,#fde047,#eab308" },
-  pink: { gap: 6, speed: 80, colors: "#fecdd3,#fda4af,#e11d48" },
+  pink: { gap: 6, speed: 80, colors: "#fecdd3,#EB0028,#EB0028" },
 };
 
 /* ================= COMPONENT ================= */

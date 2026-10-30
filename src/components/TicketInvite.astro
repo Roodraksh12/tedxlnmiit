@@ -1,92 +1,70 @@
-<section id="book-tickets" class="ticket-invite" data-ticket-invite aria-label="Book your ticket now">
+---
+import Ticket from './Ticket.jsx';
+---
+<section id="book-tickets" class="ticket-invite" data-ticket-invite aria-label="Tickets and registration">
+  <div id="ticket-prices" class="ticket-destination" tabindex="-1" aria-label="Ticket registration"></div>
   <div class="ticket-invite-stage">
-    <a class="ticket-invite-title" href="#ticket-prices" data-ticket-transition>BOOK YOUR TICKET NOW<span class="invite-period">.</span></a>
-    <svg class="ticket-rings" viewBox="-1000 -1000 2000 2000" aria-hidden="true">
-      {Array.from({length:120},(_,i)=><circle cx="0" cy="0" r={12+i*11} fill="none" stroke={i%11===0?'#fff9ee':i%4===0?'#ffb7c3':i%3===0?'#9e1232':'#ff1744'} stroke-width={i%11===0?2:1} />)}
-    </svg>
+    <div class="ticket-backdrop" aria-hidden="true"></div>
+    <div class="ticket-landing">
+      <header class="ticket-heading"><p>TAKE YOUR SEAT</p><h2>ONE PASS.<br class="mobile-break" /> A DAY OF IDEAS.</h2></header>
+      <div class="ticket-reveal"><Ticket /></div>
+      <p class="ticket-footnote">10 JANUARY 2027 <span aria-hidden="true">/</span> LNMIIT, JAIPUR</p>
+    </div>
+    <a class="ticket-invite-title" href="#ticket-prices" data-ticket-transition aria-label="Book your ticket now">
+      <svg class="ticket-lettering" aria-hidden="true" width="100%" height="100%"><g data-ticket-lettering><text x="0" y="0">BOOK YOUR TICKET NOW</text></g></svg>
+    </a>
+    <div class="ticket-dot" aria-hidden="true"></div>
+    <div class="ticket-scroll-cue" aria-hidden="true"><span>EVERY IDEA STARTS WITH A DOT.</span><span class="ticket-scroll-line"></span><span>SCROLL TO TAKE YOUR SEAT</span></div>
   </div>
 </section>
+<section class="ticket-inclusions" aria-labelledby="ticket-inclusions-title">
+  <div><p class="ticket-eyebrow">MORE THAN A SEAT</p><h2 id="ticket-inclusions-title">Come for the talks.<br />Leave with a new perspective.</h2></div>
+  <ul><li>Access to all talks &amp; storytelling sessions</li><li>Conversations with a community of change-makers</li><li>Curated meals &amp; refreshments</li><li>Attendee goodies &amp; your official TEDx badge</li></ul>
+</section>
 <style>
-.ticket-invite{position:relative;width:100%;margin:0}
-.ticket-invite-stage{height:90svh;min-height:360px;display:flex;align-items:center;justify-content:center;position:relative;overflow:clip}
-.ticket-invite-title{display:block;white-space:nowrap;font-family:inherit;font-size:clamp(24px,8.5vw,180px);font-weight:600;letter-spacing:-.055em;line-height:1.2;text-decoration:none;color:white;position:absolute;width:max-content;text-rendering:optimizeLegibility}
-.invite-period{display:inline-block;width:.14em;height:.14em;border-radius:50%;background:#eb0028;color:transparent;line-height:0;vertical-align:baseline;overflow:hidden}
-.ticket-invite-title:focus-visible{outline:2px solid white;outline-offset:12px}
-.ticket-invite.is-scroll-invite{height:300svh}
-.is-scroll-invite .ticket-invite-stage{height:calc(100svh - 90px);min-height:0;position:sticky;top:90px}
-.ticket-rings{position:absolute;width:160vmax;height:160vmax;left:50%;top:50%;pointer-events:none;opacity:0;transform:translate(-50%,-50%) scale(.01)}
-@media(prefers-reduced-motion:reduce){.ticket-rings{display:none}}
+.ticket-invite { --nav-space:var(--site-header-height); --stage-height:calc(100svh - var(--nav-space)); position:relative; width:100%; isolation:isolate; color:#f5f2eb; }
+.ticket-invite-stage { position:relative; display:flex; align-items:center; justify-content:center; min-height:620px; padding:60px 24px; overflow:clip; }
+.ticket-destination { position:absolute; top:0; left:0; width:1px; height:1px; scroll-margin-top:var(--nav-space); }
+.ticket-backdrop { position:absolute; inset:0; background:#080808; opacity:1; z-index:-1; pointer-events:none; }
+.ticket-landing { width:min(960px,100%); position:relative; z-index:1; }
+.ticket-heading { text-align:center; margin-bottom:32px; }
+.ticket-heading p,.ticket-footnote,.ticket-eyebrow { font:10px/1.5 ui-monospace,monospace; letter-spacing:.18em; }
+.ticket-heading p { color:#EB0028; margin-bottom:12px; }
+.ticket-heading h2 { font-size:clamp(26px,4vw,52px); line-height:1.05; letter-spacing:-.055em; font-weight:700; }
+.mobile-break { display:none; }
+.ticket-footnote { text-align:center; margin-top:24px; color:#aaa3a5; font-size:9px; }
+.ticket-footnote span { padding:0 16px; color:#EB0028; }
+.ticket-invite-title { display:none; position:absolute; inset:0; z-index:3; }
+.ticket-invite-title:focus-visible { outline:2px solid #f5f2eb; outline-offset:-12px; }
+.ticket-lettering { display:block; overflow:visible; }
+.ticket-lettering text { font-family:var(--font-primary); font-size:100px; font-weight:600; letter-spacing:-5.5px; fill:#f5f2eb; text-rendering:geometricPrecision; }
+.ticket-dot { position:absolute; z-index:2; left:0; top:0; width:110px; height:110px; background:#EB0028; border-radius:50%; pointer-events:none; display:none; }
+.ticket-scroll-cue { display:none; position:absolute; bottom:28px; left:0; right:0; text-align:center; font:8px/1.5 ui-monospace,monospace; letter-spacing:.17em; color:#aba2a5; pointer-events:none; z-index:3; }
+.ticket-scroll-line { display:block; width:1px; height:28px; background:#EB0028; margin:12px auto; }
+.is-scroll-invite { height:280svh; }
+.is-scroll-invite .ticket-destination { top:calc(100% - var(--stage-height)); }
+.is-scroll-invite .ticket-invite-stage { height:var(--stage-height); min-height:0; position:sticky; top:var(--nav-space); padding:24px 40px; }
+.is-scroll-invite .ticket-invite-title,.is-scroll-invite .ticket-dot,.is-scroll-invite .ticket-scroll-cue { display:block; }
+.is-scroll-invite .ticket-reveal { clip-path:circle(0 at 50% 50%); }
+.is-scroll-invite .ticket-heading,.is-scroll-invite .ticket-footnote { opacity:0; }
+.is-scroll-invite .ticket-backdrop { opacity:0; }
+.is-scroll-invite :global(.admission-main),.is-scroll-invite :global(.admission-stub) { opacity:var(--ticket-details,0); }
+:global(.ticket-entry) .ticket-invite-title,:global(.ticket-entry) .ticket-dot,:global(.ticket-entry) .ticket-scroll-cue { visibility:hidden; }
+:global(.ticket-entry) .ticket-reveal { clip-path:none; opacity:1; --ticket-details:1; }
+:global(.ticket-entry) .ticket-heading,:global(.ticket-entry) .ticket-footnote,:global(.ticket-entry) .ticket-backdrop { opacity:1; }
+.ticket-inclusions { display:grid; grid-template-columns:1fr 1fr; gap:70px; max-width:1040px; margin:0 auto; padding:88px 40px 100px; }
+.ticket-eyebrow { color:#EB0028; margin-bottom:18px; }
+.ticket-inclusions h2 { font-size:clamp(24px,3vw,36px); line-height:1.25; letter-spacing:-.04em; font-weight:500; }
+.ticket-inclusions ul { list-style:none; padding:0; }
+.ticket-inclusions li { padding:15px 0; border-bottom:1px solid #ffffff20; color:#c7c0c3; font-size:13px; }
+.ticket-inclusions li::before { content:'↗'; color:#EB0028; margin-right:14px; }
+@media(max-width:700px) {
+  .is-scroll-invite { height:240svh; }.ticket-invite-stage { padding:40px 20px; min-height:0; }.is-scroll-invite .ticket-invite-stage { padding:16px 20px; }
+  .ticket-heading { margin-bottom:22px; }.ticket-heading h2 { font-size:clamp(25px,6.5vw,40px); }.ticket-heading p { font-size:8px; margin-bottom:10px; }
+  .ticket-footnote { margin-top:18px; font-size:8px; letter-spacing:.1em; }.ticket-scroll-cue { font-size:7px; bottom:24px; }.ticket-inclusions { grid-template-columns:1fr; gap:30px; padding:55px 24px 65px; }
+}
+@media(max-width:380px) { .mobile-break { display:block; }.ticket-footnote span { padding:0 7px; } }
 </style>
 <script>
-const invite=document.querySelector<HTMLElement>('[data-ticket-invite]');
-const link=invite?.querySelector<HTMLAnchorElement>('[data-ticket-transition]');
-const rings=invite?.querySelector<SVGElement>('.ticket-rings');
-const prices=document.querySelector<HTMLElement>('#ticket-prices');
-const motion=matchMedia('(prefers-reduced-motion: reduce)');
-let frame=0,clickStart:number|null=null;
-let metrics:{width:number,height:number,baseSize:number,baseWidth:number,dotX:number,dotY:number}|undefined;
-const clamp=(n:number)=>Math.max(0,Math.min(1,n));
-function updateTicket(now:number){
- frame=0;if(!invite||!link||!rings)return;
- const enhanced=!motion.matches;
- invite.classList.toggle('is-scroll-invite',enhanced);
- const stage=invite.querySelector<HTMLElement>('.ticket-invite-stage')!;
- const range=Math.max(1,invite.offsetHeight-stage.offsetHeight);
- const scrollProgress=enhanced?clamp((90-invite.getBoundingClientRect().top)/range):0;
- const elapsed=clickStart===null?0:now-clickStart;
- const clickProgress=elapsed<500 ? .52*clamp(elapsed/500) : .52+.48*clamp((elapsed-500)/1500);
- const progress=clickStart===null?scrollProgress:Math.max(scrollProgress,clickProgress);
- const zoomProgress=clamp(progress/.6);
- const width=stage.clientWidth,height=stage.clientHeight;
- if(!metrics||metrics.width!==width||metrics.height!==height){
-   let baseSize=Math.min(180,Math.max(24,width*.085));
-   link.style.fontSize=`${baseSize}px`;
-   const measured=link.offsetWidth;
-   if(measured>width*.99)baseSize*=width*.99/measured;
-   link.style.fontSize=`${baseSize}px`;
-   const dot=invite.querySelector<HTMLElement>('.invite-period')!;
-   metrics={width,height,baseSize,baseWidth:link.offsetWidth,dotX:(width-link.offsetWidth)/2+dot.offsetLeft+dot.offsetWidth/2,dotY:(height-link.offsetHeight)/2+dot.offsetTop+dot.offsetHeight/2};
- }
- // Re-render the lettering and circle at their real sizes, anchored to the dot.
- const dot=invite.querySelector<HTMLElement>('.invite-period')!;
- const targetDiameter=Math.min(width,height)*.88;
- const finalZoom=Math.max(8,targetDiameter/(metrics.baseSize*.14));
- const zoom=Math.pow(finalZoom,zoomProgress*zoomProgress);
- const pixelRatio=window.devicePixelRatio||1;
- const snap=(value:number)=>Math.round(value*pixelRatio)/pixelRatio;
- link.style.fontSize=`${snap(metrics.baseSize*zoom)}px`;
- const pan=Math.min(1,zoomProgress/.55);
- const easedPan=pan*pan*(3-2*pan);
- const dotX=metrics.dotX+(width/2-metrics.dotX)*easedPan;
- const dotY=metrics.dotY+(height/2-metrics.dotY)*easedPan;
- link.style.left=`${snap(dotX-dot.offsetLeft-dot.offsetWidth/2)}px`;
- link.style.top=`${snap(dotY-dot.offsetTop-dot.offsetHeight/2)}px`;
-
- const ripple=clamp((progress-.52)/.48);
- rings.style.opacity=String(Math.sin(Math.PI*ripple)*.95);
- rings.style.transform=`translate(-50%,-50%) scale(${.04+ripple*1.8})`;
- link.style.opacity=String(1-clamp((progress-.55)/.18));
- if(clickStart!==null){
-   if(clickProgress>=1){clickStart=null;prices?.scrollIntoView({behavior:'instant',block:'start'});scheduleTicket();}
-   else frame=requestAnimationFrame(updateTicket);
- }
-}
-function scheduleTicket(){if(!frame)frame=requestAnimationFrame(updateTicket)}
-link?.addEventListener('click',event=>{
- if(event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey||motion.matches)return;
- event.preventDefault();event.stopPropagation();
- invite?.scrollIntoView({behavior:'instant',block:'start'});
- clickStart=performance.now();scheduleTicket();
-});
-// User input always takes control; scrolling backwards reverses the same scene.
-function cancelClick(){clickStart=null;scheduleTicket()}
-window.addEventListener('wheel',cancelClick,{passive:true});
-window.addEventListener('touchstart',cancelClick,{passive:true});
-window.addEventListener('keydown',event=>{if(['ArrowUp','ArrowDown','PageUp','PageDown','Home','End','Escape',' '].includes(event.key))cancelClick()});
-window.addEventListener('scroll',scheduleTicket,{passive:true});
-window.addEventListener('resize',()=>{metrics=undefined;scheduleTicket()});
-motion.addEventListener('change',scheduleTicket);
-window.addEventListener('pageshow',()=>{clickStart=null;scheduleTicket()});
-window.addEventListener('pagehide',()=>{cancelAnimationFrame(frame);frame=0;clickStart=null});
-scheduleTicket();
+import '../scripts/ticket-invite';
 </script>

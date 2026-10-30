@@ -4,163 +4,39 @@ import Footer from "../components/Footer.jsx";
 import "../styles/global.css";
 import NavWrapper from "../components/NavWrapper.jsx";
 import StarConstellation from "../components/StarConstellation.jsx";
-
-const { title = "Default Title", description = "Default Description" } =
-  Astro.props;
+const { title = "Default Title", description = "Default Description" } = Astro.props;
 ---
-
+<!doctype html>
 <html lang="en">
   <head>
-  <MainHead
-    title={title}
-    description={description}
-    canonical={Astro.url.href}
-  />
-
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VMRFWPCG0X"></script>
-<script is:inline>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-VMRFWPCG0X', {
-    send_page_view: true
-  });
-</script>
-
-
-</head>
-  <body class="bg-black text-white overflow-x-hidden min-h-screen relative isolate">
-
-
-    <div
-      id="site-loader"
-      class="fixed inset-0 z-[9999] hidden flex items-center justify-center bg-white"
-    >
-      <div class="flex flex-col items-center gap-10">
-        <span class="text-3xl font-extrabold tracking-widest text-black">
-          <span class="text-red-600">TEDx</span>LNMIIT
-        </span>
-        <div class="loader"></div>
-      </div>
-    </div>
-
-    <div class="fixed inset-0 -z-10 pointer-events-none">
-      <StarConstellation client:load />
-    </div>
-    <!-- ================= END BACKGROUND ================= -->
-
-    <NavWrapper client:load />
-
-    <!-- ================= PAGE CONTENT ================= -->
-    <div
-      id="page-transition"
-      class="opacity-0 translate-y-4 transition-all duration-700 ease-out min-h-screen pt-20"
-    >
-      <main>
-        <slot />
-      </main>
-    </div>
-    <!-- ================= END PAGE CONTENT ================= -->
-
-    <Footer client:visible />
-
-    <!-- ================= SCRIPT ================= -->
-    <script type="module">
-      if (typeof window !== "undefined") {
-        const MIN_LOADER_TIME = 2500;
-        // A cached page may retain its outgoing fade when restored by Back.
-        window.addEventListener('pageshow', (event) => {
-          if (!event.persisted) return;
-          document.body.style.overflow = '';
-          document.getElementById('site-loader')?.remove();
-          const restoredPage = document.getElementById('page-transition');
-          restoredPage?.classList.remove('opacity-0', 'translate-y-4');
-          restoredPage?.classList.add('opacity-100', 'translate-y-0');
-        });
-
-        window.addEventListener("DOMContentLoaded", () => {
-          const loader = document.getElementById("site-loader");
-          const page = document.getElementById("page-transition");
-
-          /* -------- Detect navigation type -------- */
-          const navEntry = performance.getEntriesByType("navigation")[0];
-          const isReload = navEntry?.type === "reload";
-
-          const hasSeenLoader = sessionStorage.getItem("hasSeenLoader");
-
-          const shouldShowLoader = !hasSeenLoader || isReload;
-
-          if (shouldShowLoader && loader) {
-            sessionStorage.setItem("hasSeenLoader", "true");
-
-            // lock scroll
-            document.body.style.overflow = "hidden";
-
-            loader.classList.remove("hidden");
-
-            const start = performance.now();
-
-            window.addEventListener("load", () => {
-              const elapsed = performance.now() - start;
-              const remaining = Math.max(0, MIN_LOADER_TIME - elapsed);
-
-              setTimeout(() => {
-                loader.style.transition = "opacity 500ms ease";
-                loader.style.opacity = "0";
-
-                setTimeout(() => {
-                  loader.remove();
-                  document.body.style.overflow = "";
-                  revealPage();
-                }, 500);
-              }, remaining);
-            });
-          } else {
-            loader?.remove();
-            revealPage();
-          }
-
-          function revealPage() {
-            requestAnimationFrame(() => {
-              page.classList.remove("opacity-0", "translate-y-4");
-              page.classList.add("opacity-100", "translate-y-0");
-            });
-          }
-
-          /* -------- Internal navigation fade -------- */
-          document.querySelectorAll("a[href]").forEach((link) => {
-            try {
-              const href = link.getAttribute("href");
-              if (
-                !href ||
-                href.startsWith("#") ||
-                href.startsWith("mailto:") ||
-                href.startsWith("tel:")
-              )
-                return;
-
-              const linkUrl = new URL(href, location.href);
-              if (linkUrl.origin !== location.origin) return;
-              if (link.hasAttribute("data-ticket-transition")) return;
-
-              link.addEventListener("click", (e) => {
-                if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
-                if (link.target && link.target !== "_self") return;
-
-                e.preventDefault();
-                page.classList.add("opacity-0", "translate-y-4");
-
-                setTimeout(() => {
-                  location.assign(linkUrl.href);
-                }, 450);
-              });
-            } catch {}
-          });
-        });
-      }
+    <MainHead title={title} description={description} canonical={Astro.url.href} />
+    <script is:inline>
+      (() => {
+        const preference = matchMedia('(prefers-reduced-motion: reduce)');
+        const connection = navigator.connection;
+        const update = () => {
+          const light = connection?.saveData || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) || (navigator.deviceMemory && navigator.deviceMemory <= 4);
+          document.documentElement.dataset.motion = preference.matches ? 'reduced' : light ? 'light' : 'full';
+          window.dispatchEvent(new Event('motion:change'));
+        };
+        update();
+        preference.addEventListener('change', update);
+        connection?.addEventListener('change', update);
+        if (location.hash === '#ticket-prices') document.documentElement.classList.add('ticket-entry');
+      })();
     </script>
-    <!-- ================= END SCRIPT ================= -->
-
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VMRFWPCG0X"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-VMRFWPCG0X', { send_page_view: true });
+    </script>
+  </head>
+  <body class="bg-black text-white overflow-x-hidden min-h-screen relative isolate">
+    <div class="fixed inset-0 -z-10 pointer-events-none"><StarConstellation client:load /></div>
+    <NavWrapper pathname={Astro.url.pathname} client:load />
+    <div id="page-transition" class="site-page min-h-screen"><main><slot /></main></div>
+    <Footer client:visible />
   </body>
 </html>

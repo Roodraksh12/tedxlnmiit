@@ -10,7 +10,7 @@ const About = () => {
           <span className="text-[#EB0028] font-semibold">TEDxLNMIIT</span>?
         </>
       ),
-      text: `TEDxLNMIIT is a student-organised event that brings together community leaders, innovators, and changemakers to express their ideas. It is a forum for individuals to share their stories, thoughts, and hobbies in an instructive and inspirational way. By Forging The Future, we open up endless possibilities for innovation and game-changing ideas. This is not just necessary but also an exciting endeavour which requires bravery, ingenuity, and patience. It also provides enormous benefits and satisfaction. Our goal is to bring together the best minds to present ideas that will change your perspectives and lead you on a journey of self-discovery.`,
+      text: `TEDxLNMIIT is a student-organised event that brings together community leaders, innovators, and changemakers to express their ideas. It is a forum for individuals to share their stories, thoughts, and hobbies in an instructive and inspirational way. Through Inventing North, we explore how curiosity, purpose, and new perspectives can help us choose a direction of our own. Our goal is to bring together the best minds to present ideas that will change your perspectives and lead you on a journey of self-discovery.`,
     },
     {
       id: 2,

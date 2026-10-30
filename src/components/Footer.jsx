@@ -30,7 +30,7 @@ const Footer = () => {
 
 
           <p className="text-sm leading-snug">
-            <span className="text-red-500">x = independently</span><br />
+            <span className="text-[#EB0028]">x = independently</span><br />
             organized TED event
           </p>
 

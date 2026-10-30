@@ -8,17 +8,33 @@ export default function Sponsors() {
     const scroll = scrollRef.current;
     if (!scroll) return;
 
-    let ctx = gsap.context(() => {
-      const totalWidth = scroll.scrollWidth / 2;
-      gsap.to(scroll, {
-        x: `-${totalWidth}px`,
-        duration: 25,
-        ease: "none",
-        repeat: -1,
-      });
+    let visible = false, hovered = false, focused = false;
+    const tween = gsap.to(scroll, {
+      x: () => -scroll.scrollWidth / 2,
+      duration: 25, ease: 'none', repeat: -1, paused: true,
     });
-
-    return () => ctx.revert();
+    const sync = () => {
+      const full = document.documentElement.dataset.motion === 'full';
+      if (visible && full && !document.hidden && !hovered && !focused) tween.play();
+      else tween.pause();
+      if (!full) tween.progress(0);
+    };
+    const observer = new IntersectionObserver(entries => { visible = entries[0].isIntersecting; sync(); });
+    observer.observe(scroll.parentElement);
+    const enter = () => { hovered = true; sync(); };
+    const leave = () => { hovered = false; sync(); };
+    const focus = () => { focused = true; sync(); };
+    const blur = event => { focused = scroll.contains(event.relatedTarget); sync(); };
+    scroll.addEventListener('mouseenter', enter); scroll.addEventListener('mouseleave', leave);
+    scroll.addEventListener('focusin', focus); scroll.addEventListener('focusout', blur);
+    document.addEventListener('visibilitychange', sync); window.addEventListener('motion:change', sync);
+    const sizes = new ResizeObserver(() => tween.invalidate()); sizes.observe(scroll);
+    return () => {
+      observer.disconnect(); sizes.disconnect(); tween.kill();
+      scroll.removeEventListener('mouseenter', enter); scroll.removeEventListener('mouseleave', leave);
+      scroll.removeEventListener('focusin', focus); scroll.removeEventListener('focusout', blur);
+      document.removeEventListener('visibilitychange', sync); window.removeEventListener('motion:change', sync);
+    };
   }, []);
 
   const currentPartners = [
@@ -97,11 +113,13 @@ export default function Sponsors() {
           <span className="text-[#EB0028]">Partners</span>
         </h1>
 
-        <div className="relative w-full overflow-hidden">
+        <div className="relative w-full overflow-x-auto" aria-label="Previous partners">
           <div ref={scrollRef} className="flex gap-3 w-max whitespace-nowrap">
             {loopedPartners.map((partner, i) => (
               <a
                 key={i}
+                aria-hidden={i >= previousPartners.length ? true : undefined}
+                tabIndex={i >= previousPartners.length ? -1 : undefined}
                 href={partner.link}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -130,7 +148,7 @@ export default function Sponsors() {
           network within the{" "}
           <span className="text-white font-semibold">TED community</span>.
           Leverage{" "}
-          <span className="text-red-500 font-semibold">innovative ideas</span>{" "}
+          <span className="text-[#EB0028] font-semibold">innovative ideas</span>{" "}
           and technology to empower education and foster innovation.
         </p>
 
@@ -138,7 +156,7 @@ export default function Sponsors() {
           href="/Brochure/Partnership_Brochure_TEDxLNMIIT2026.pdf"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center justify-center px-6 py-3 bg-[#EB0028] text-white font-medium rounded-full transition-all duration-300 ease-out hover:bg-[#ff0932] hover:-translate-y-0.5 active:translate-y-0 mt-8"
+          className="inline-flex items-center justify-center px-6 py-3 bg-[#EB0028] text-white font-medium rounded-full transition-all duration-300 ease-out hover:bg-[#EB0028] hover:-translate-y-0.5 active:translate-y-0 mt-8"
         >
           Know more
         </a>

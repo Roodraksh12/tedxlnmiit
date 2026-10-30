@@ -1,68 +1,35 @@
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { useContext } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { NavbarContext } from '../context/NavContext';
+import './FullScreenNav.css';
 
-const menuLinks = ["Home", "Theme", "About", "Gallery", "Past Speakers", "Team","Campus Ambassador"];
-
-export default function FullScreenNav() {
+const links = [['Home', '/'], ['Theme', '/theme'], ['About', '/about'], ['Gallery', '/gallery'], ['Past Speakers', '/past-speakers'], ['Team', '/team'], ['Campus Ambassador', '/campus ambassador']];
+export default function FullScreenNav({ pathname = '/' }) {
   const { navOpen, setNavOpen } = useContext(NavbarContext);
-
-  useGSAP(() => {
-    const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
-
-    if (navOpen) {
-      tl.set(".fullscreennav", { display: "block" })
-        .to(".stair", { height: "100%", duration: 0.4, stagger: 0.05 }, 0)
-        .to(".menu-link", { opacity: 1, rotateX: 0, duration: 0.5, stagger: 0.05 }, "-=0.2");
-    } else {
-      tl.to(".menu-link", { opacity: 0, rotateX: 90, duration: 0.3, stagger: 0.05 })
-        .to(".stair", { height: 0, duration: 0.3, stagger: 0.05 }, "-=0.1")
-        .set(".fullscreennav", { display: "none" });
-    }
-  }, [navOpen]);
-
-  return (
-   <div
-  className="fullscreennav fixed inset-0 bg-[#0d0d0f]/95 backdrop-blur-xl text-white z-50 overflow-hidden"
-  style={{ display: "none" }}
->
-
-      {/* Staircase effect */}
-      <div className="absolute top-0 left-0 w-full h-full flex">
-        {[...Array(5)].map((_, i) => (
-         <div key={i} className="stair w-1/5 h-0 bg-black/1"></div>
-        ))}
-      </div>
-
-      {/* Links */}
-      <div className="relative h-full w-full flex flex-col justify-center items-center gap-5 sm:gap-7 py-20 overflow-y-auto">
-        {menuLinks.map((text, i) => (
-          <a
-            href={text === "Home" ? "/" : text === "Past Speakers" ? "/past-speakers" : `/${text.toLowerCase()}`}
-            key={i}
-            onClick={() => setNavOpen(false)}
-            className="menu-link hover:text-[#fafafa] hover:bg-white/10 rounded-full px-6 py-2 transition-colors
-        opacity-0
-        rotate-x-90
-        text-center
-        whitespace-nowrap
-        text-2xl sm:text-3xl md:text-4xl
-        font-semibold
-        uppercase"
-          >
-            {text}
-          </a>
-        ))}
-
-        {/* Close Button */}
-        <button
-          className="absolute top-10 right-10 text-3xl"
-          onClick={() => setNavOpen(false)}
-        >
-          ✕
-        </button>
-      </div>
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!navOpen) return;
+    const previous = document.activeElement;
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    ref.current?.querySelector('a')?.focus();
+    const onKey = event => {
+      if (event.key === 'Escape') setNavOpen(false);
+      if (event.key !== 'Tab') return;
+      const items = [...ref.current.querySelectorAll('a,button')];
+      if (event.shiftKey && document.activeElement === items[0]) { event.preventDefault(); items.at(-1).focus(); }
+      else if (!event.shiftKey && document.activeElement === items.at(-1)) { event.preventDefault(); items[0].focus(); }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => { document.body.style.overflow = overflow; document.removeEventListener('keydown', onKey); previous?.focus({ preventScroll: true }); };
+  }, [navOpen, setNavOpen]);
+  if (!navOpen) return null;
+  const active = decodeURIComponent(pathname).replace(/\/$/, '') || '/';
+  return <div ref={ref} id="site-navigation-dialog" className="site-menu" role="dialog" aria-modal="true" aria-label="Site navigation">
+    <div className="site-menu-content">
+      <p className="site-menu-label">EXPLORE TEDxLNMIIT</p>
+      <nav aria-label="Expanded navigation">{links.map(([text, href]) => <a key={href} href={href} aria-current={active === href ? 'page' : undefined} onClick={() => setNavOpen(false)}>{text}</a>)}</nav>
+      <a className="site-menu-ticket" href="/#ticket-prices" data-ticket-jump onClick={() => setNavOpen(false)}>Get Tickets <span aria-hidden="true">↗</span></a>
     </div>
-  );
+    <button className="site-menu-close" type="button" onClick={() => setNavOpen(false)} aria-label="Close navigation">×</button>
+  </div>;
 }

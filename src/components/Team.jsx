@@ -429,7 +429,7 @@ export default function Team() {
     text-[clamp(2.6rem,8vw,7.5rem)]
   "
       >
-        <span className="text-[#eb0028] ">Meet Our</span>{" "}
+        <span className="text-[#EB0028] ">Meet Our</span>{" "}
         <span className="text-[#EB0028]">Team</span>
       </h1>
 
@@ -468,7 +468,7 @@ export default function Team() {
                          ? "md:w-[23%]" // 3 cards per row
                          : "md:w-[22%]" // 4 cards per row
                      }
-                     transition-transform duration-300 hover:scale-95 hover:shadow-[#eb0028]/50
+                     transition-transform duration-300 hover:scale-95 hover:shadow-[#EB0028]/50
                    `}
                 >
                   <div className="relative mb-4">

@@ -1,0 +1,11 @@
+.north-theme-page { max-width:1240px; margin-inline:auto; padding:48px 48px 100px; }
+.north-theme-topline { display:flex; align-items:center; justify-content:space-between; color:#a69da5; font:10px/1.5 ui-monospace,monospace; letter-spacing:.12em; margin-bottom:48px; }
+.north-theme-topline>span:first-child { color:#EB0028; }
+.north-theme-poster { display:block; width:100%; height:auto; margin-bottom:80px; }
+.north-theme-story { display:grid; grid-template-columns:1fr 1fr; gap:80px; padding-top:40px; border-top:1px solid #ffffff25; }
+.north-theme-eyebrow { color:#EB0028; font:9px/1.5 ui-monospace,monospace; letter-spacing:.14em; margin-bottom:20px; }
+.north-theme-story h2 { color:#f5f2eb; font-size:clamp(28px,3.5vw,48px); line-height:1.15; letter-spacing:-.05em; font-weight:500; }
+.north-theme-copy p { color:#c2b9c0; font-size:15px; line-height:1.9; margin-bottom:22px; }.north-theme-copy strong { color:#f5f2eb; font-weight:500; }
+.north-theme-copy a { display:inline-flex; align-items:center; gap:28px; min-height:48px; color:white; font-size:13px; border-bottom:1px solid #EB0028; margin-top:8px; }.north-theme-copy a span { color:#EB0028; font-size:20px; }.north-theme-copy a:focus-visible { outline:2px solid #EB0028; outline-offset:5px; }
+.north-theme-signoff { margin-top:100px; text-align:center; font-size:clamp(26px,4vw,48px); line-height:1.25; font-weight:500; letter-spacing:-.05em; }.north-theme-signoff span { color:#EB0028; }
+@media(max-width:699px) { .north-theme-page { padding:32px 24px 65px; }.north-theme-topline { font-size:8px; margin-bottom:36px; }.north-theme-poster { margin-bottom:44px; }.north-theme-story { grid-template-columns:1fr; gap:28px; padding-top:30px; }.north-theme-copy p { font-size:15px; }.north-theme-signoff { margin-top:60px; } }

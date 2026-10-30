@@ -1,17 +1,94 @@
-/* Floating smoked-glass navigation, with TED red reserved for the brand. */
-.ted-nav-header{position:fixed;inset:0 0 auto;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:14px 26px;background:linear-gradient(180deg,#050505b8,transparent);transition:transform .38s cubic-bezier(.22,1,.36,1);isolation:isolate;pointer-events:none}
-.ted-nav-header>*{pointer-events:auto}.ted-nav-header.is-hidden{transform:translateY(-110%)}.ted-nav-header:focus-within{transform:translateY(0)}
-.ted-brand{flex-shrink:0}.ted-brand img{width:170px;height:48px;object-fit:contain}
-.ted-nav-pill{position:relative;display:flex;align-items:stretch;gap:2px;padding:6px;border:1px solid rgba(220,20,60,.30);border-radius:100px;background:rgba(12,8,12,.82);backdrop-filter:blur(28px) saturate(125%);-webkit-backdrop-filter:blur(28px) saturate(125%);box-shadow:inset 0 1px 0 #ffffff16,inset 0 -1px 0 #ffffff05,0 8px 28px #0005;isolation:isolate;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
-.ted-nav-indicator{position:absolute;top:6px;bottom:6px;left:0;border-radius:100px;background:rgba(190,15,50,.18);border:1px solid rgba(255,40,75,.45);box-shadow:inset 0 1px 1px #ffffff25,inset 0 -1px 1px #0002,0 3px 10px #0002;pointer-events:none;transition:transform .5s cubic-bezier(.16,1,.3,1),width .5s cubic-bezier(.16,1,.3,1),opacity .2s;z-index:-1}
-.ted-nav-link{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:9px 16px 12px;min-height:58px;color:#B8B2BA;white-space:nowrap;text-decoration:none;font-size:10px;font-weight:500;letter-spacing:0;line-height:1.2;transition:color .22s}
-.ted-nav-link svg{transition:transform .32s cubic-bezier(.2,.8,.3,1);flex-shrink:0}.ted-nav-link:hover,.ted-nav-link:focus-visible,.ted-nav-link[aria-current=page]{color:#FFFFFF}.ted-nav-link:hover svg,.ted-nav-link:focus-visible svg{transform:translateY(-1px) scale(1.07)}
-.ted-nav-link[aria-current=page]::after{content:'';position:absolute;bottom:5px;width:3px;height:3px;border-radius:50%;background:#FF1744;box-shadow:0 0 5px #ff17444d}
-.ted-nav-actions{display:flex;align-items:center;gap:12px;flex-shrink:0}.ted-ticket{display:flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap;border-radius:99px;padding:12px 18px;background:#eb0028;color:#fff;font-size:12px;font-weight:500;border:1px solid #ffffff20;box-shadow:inset 0 1px 0 #ffffff20,0 4px 15px #0003;transition:background .2s,transform .2s;text-decoration:none}.ted-ticket:hover{background:#fa1238;transform:translateY(-1px)}
-.ted-menu{display:none;background:#242426b8;backdrop-filter:blur(24px);color:#f5f5f7;border:1px solid #ffffff29;border-radius:50%;width:44px;height:44px;align-items:center;justify-content:center}.ted-nav-header a:focus-visible,.ted-menu:focus-visible{outline:2px solid #d9d9df;outline-offset:4px}
-@media(min-width:1450px){.ted-nav-link{padding-inline:20px;font-size:11px}.ted-brand img{width:190px}}
-@media(max-width:1199px){.ted-nav-pill{display:none}.ted-menu{display:flex}.ted-nav-header{padding:12px 20px}}
-@media(max-width:480px){.ted-brand img{width:135px;height:40px}.ted-nav-header{padding:10px 12px;gap:10px}.ted-ticket{padding:10px 12px;font-size:11px}.ted-nav-actions{gap:8px}}
-@media(prefers-reduced-motion:reduce){.ted-nav-header,.ted-nav-indicator,.ted-nav-link,.ted-nav-link svg,.ted-ticket{transition:none}.ted-nav-link:hover svg,.ted-ticket:hover{transform:none}}
-
-.ted-nav-link svg{color:#C7C0C8}.ted-nav-link:hover{background:rgba(255,23,68,.10);border-radius:100px}.ted-nav-link:hover svg,.ted-nav-link:focus-visible svg,.ted-nav-link[aria-current=page] svg{color:#FFFFFF}
+/* Quiet, persistent navigation. The only filled accent is the booking action. */
+.ted-nav-header {
+  position: fixed;
+  inset: 0 0 auto;
+  height: var(--site-header-height);
+  z-index: 50;
+  padding-inline: clamp(24px, 3.5vw, 72px);
+  background: #080808f5;
+  border-bottom: 1px solid #ffffff12;
+}
+.ted-nav-inner {
+  height: 100%;
+  max-width: 1720px;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(24px, 2.5vw, 48px);
+}
+.ted-brand { display: inline-flex; align-items: center; flex-shrink: 0; min-height: 44px; }
+.ted-brand img { display: block; width: 174px; height: 52px; object-fit: contain; }
+.ted-nav-links { display: flex; align-items: center; justify-content: center; gap: clamp(18px, 1.6vw, 32px); }
+.ted-nav-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  color: #aaa8ad;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: color .16s ease;
+}
+.ted-nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #EB0028;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .18s ease;
+}
+.ted-nav-link:hover,.ted-nav-link:focus-visible,.ted-nav-link[aria-current=page] { color: #fff; }
+.ted-nav-link:hover::after,.ted-nav-link:focus-visible::after,.ted-nav-link[aria-current=page]::after { transform: scaleX(1); }
+.ted-nav-actions { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.ted-ticket {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  min-height: 44px;
+  padding: 12px 18px;
+  background: #EB0028;
+  color: #fff;
+  border: 1px solid #EB0028;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.ted-ticket svg { flex-shrink: 0; transition: transform .18s ease; }
+.ted-ticket:hover svg { transform: translate(2px, -2px); }
+.ted-menu {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #ffffff30;
+  border-radius: 4px;
+  color: #f5f2eb;
+  background: transparent;
+  cursor: pointer;
+}
+.ted-menu-lines { width: 18px; display: flex; flex-direction: column; gap: 6px; }
+.ted-menu-lines span { display: block; height: 1.5px; background: currentColor; }
+.ted-menu-lines span:last-child { width: 12px; margin-left: auto; }
+.ted-nav-header a:focus-visible,.ted-menu:focus-visible { outline: 2px solid #f5f2eb; outline-offset: 5px; }
+@media(min-width:1500px) { .ted-nav-link { font-size: 14px; }.ted-brand img { width: 190px; } }
+@media(max-width:1199px) {
+  .ted-nav-header { padding-inline: 28px; }.ted-nav-links { display: none; }.ted-menu { display: inline-flex; }.ted-nav-actions { margin-left: auto; }
+}
+@media(max-width:480px) {
+  .ted-nav-header { padding-inline: 16px; }.ted-nav-inner { gap: 12px; }.ted-brand img { width: 132px; height: 42px; }.ted-nav-actions { gap: 9px; }.ted-ticket { gap: 9px; padding-inline: 12px; font-size: 11px; }
+}
+@media(max-width:360px) { .ted-nav-header { padding-inline: 12px; }.ted-nav-inner { gap: 8px; }.ted-brand img { width: 106px; }.ted-nav-actions { gap: 6px; }.ted-ticket { font-size: 10px; gap: 6px; padding-inline: 10px; } }
+@media(prefers-reduced-motion:reduce) { .ted-nav-link,.ted-nav-link::after,.ted-ticket svg { transition: none; } }

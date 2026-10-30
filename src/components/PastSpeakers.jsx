@@ -213,7 +213,7 @@ export default function PastSpeakers() {
   rel={speaker.drive ? "noopener noreferrer" : undefined}
 
 
-                    className="text-red-600 text-3xl -mt-8 hover:scale-110 transition-transform"
+                    className="text-[#EB0028] text-3xl -mt-8 hover:scale-110 transition-transform"
                   >
                     <FaYoutube />
                   </a>
@@ -223,7 +223,7 @@ export default function PastSpeakers() {
                     href={speaker.instagram}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-red-600 text-3xl -mt-8 hover:scale-110 transition-transform"
+                    className="text-[#EB0028] text-3xl -mt-8 hover:scale-110 transition-transform"
                   >
                     <FaInstagram />
                   </a>
@@ -233,7 +233,7 @@ export default function PastSpeakers() {
                     href={speaker.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-red-600 text-3xl -mt-8 hover:scale-110 transition-transform"
+                    className="text-[#EB0028] text-3xl -mt-8 hover:scale-110 transition-transform"
                   >
                     <FaLinkedin />
                   </a>
