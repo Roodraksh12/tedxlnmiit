@@ -92,3 +92,6 @@
 }
 @media(max-width:360px) { .ted-nav-header { padding-inline: 12px; }.ted-nav-inner { gap: 8px; }.ted-brand img { width: 106px; }.ted-nav-actions { gap: 6px; }.ted-ticket { font-size: 10px; gap: 6px; padding-inline: 10px; } }
 @media(prefers-reduced-motion:reduce) { .ted-nav-link,.ted-nav-link::after,.ted-ticket svg { transition: none; } }
+/* Retain the local glass finish on the upstream persistent, accessible header. */
+.ted-nav-header{background:rgba(12,8,12,.86);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
+.ted-ticket,.ted-menu{border-radius:8px}
