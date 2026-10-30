@@ -69,6 +69,15 @@ const { title = "Default Title", description = "Default Description" } =
     <script type="module">
       if (typeof window !== "undefined") {
         const MIN_LOADER_TIME = 2500;
+        // A cached page may retain its outgoing fade when restored by Back.
+        window.addEventListener('pageshow', (event) => {
+          if (!event.persisted) return;
+          document.body.style.overflow = '';
+          document.getElementById('site-loader')?.remove();
+          const restoredPage = document.getElementById('page-transition');
+          restoredPage?.classList.remove('opacity-0', 'translate-y-4');
+          restoredPage?.classList.add('opacity-100', 'translate-y-0');
+        });
 
         window.addEventListener("DOMContentLoaded", () => {
           const loader = document.getElementById("site-loader");

@@ -1,30 +1,42 @@
-<section class="ticket-invite" data-ticket-invite aria-label="Book your ticket now">
+<section id="book-tickets" class="ticket-invite" data-ticket-invite aria-label="Book your ticket now">
   <div class="ticket-invite-stage">
-    <a class="ticket-invite-title" href="/tickets/" data-ticket-transition>BOOK YOUR TICKET NOW<span class="invite-period">.</span></a>
+    <a class="ticket-invite-title" href="#ticket-prices" data-ticket-transition>BOOK YOUR TICKET NOW<span class="invite-period">.</span></a>
+    <svg class="ticket-rings" viewBox="-1000 -1000 2000 2000" aria-hidden="true">
+      {Array.from({length:120},(_,i)=><circle cx="0" cy="0" r={12+i*11} fill="none" stroke={i%11===0?'#fff9ee':i%4===0?'#ffb7c3':i%3===0?'#9e1232':'#ff1744'} stroke-width={i%11===0?2:1} />)}
+    </svg>
   </div>
 </section>
-
 <style>
-.ticket-invite{position:relative;width:100%;margin:0;--invite-scale:1;--invite-fill:0}
-.ticket-invite-stage{height:100svh;min-height:500px;display:flex;align-items:center;justify-content:center;position:relative;overflow:clip}
-.ticket-invite-title{display:block;white-space:nowrap;font-family:inherit;font-size:clamp(24px,8.5vw,180px);font-weight:600;letter-spacing:-.055em;line-height:1.2;text-decoration:none;color:#ffffff;position:absolute;width:max-content;max-width:none;text-rendering:optimizeLegibility}
-.invite-period{display:inline-block;width:.14em;height:.14em;border-radius:50%;background:#eb0028;color:transparent;line-height:0;vertical-align:baseline;overflow:hidden}.ticket-invite-title:focus-visible{outline:2px solid #fff1dc;outline-offset:12px}
-@media(min-width:320px) and (min-height:480px){.ticket-invite.is-scroll-invite{height:220svh}.is-scroll-invite .ticket-invite-stage{height:calc(100svh - 100px);position:sticky;top:90px;min-height:0}}
-@media(prefers-reduced-motion:reduce){.ticket-invite-title{transform:none;will-change:auto}}
+.ticket-invite{position:relative;width:100%;margin:0}
+.ticket-invite-stage{height:90svh;min-height:360px;display:flex;align-items:center;justify-content:center;position:relative;overflow:clip}
+.ticket-invite-title{display:block;white-space:nowrap;font-family:inherit;font-size:clamp(24px,8.5vw,180px);font-weight:600;letter-spacing:-.055em;line-height:1.2;text-decoration:none;color:white;position:absolute;width:max-content;text-rendering:optimizeLegibility}
+.invite-period{display:inline-block;width:.14em;height:.14em;border-radius:50%;background:#eb0028;color:transparent;line-height:0;vertical-align:baseline;overflow:hidden}
+.ticket-invite-title:focus-visible{outline:2px solid white;outline-offset:12px}
+.ticket-invite.is-scroll-invite{height:300svh}
+.is-scroll-invite .ticket-invite-stage{height:calc(100svh - 90px);min-height:0;position:sticky;top:90px}
+.ticket-rings{position:absolute;width:160vmax;height:160vmax;left:50%;top:50%;pointer-events:none;opacity:0;transform:translate(-50%,-50%) scale(.01)}
+@media(prefers-reduced-motion:reduce){.ticket-rings{display:none}}
 </style>
 <script>
 const invite=document.querySelector<HTMLElement>('[data-ticket-invite]');
 const link=invite?.querySelector<HTMLAnchorElement>('[data-ticket-transition]');
+const rings=invite?.querySelector<SVGElement>('.ticket-rings');
+const prices=document.querySelector<HTMLElement>('#ticket-prices');
 const motion=matchMedia('(prefers-reduced-motion: reduce)');
-const large=matchMedia('(min-width:320px) and (min-height:480px)');
-let frame=0,opening=false,metrics:{width:number,height:number,baseSize:number,baseWidth:number,dotX:number,dotY:number}|undefined;
-function updateTicket(){
- frame=0;if(!invite||!link||opening)return;
- const enhanced=large.matches&&!motion.matches;
+let frame=0,clickStart:number|null=null;
+let metrics:{width:number,height:number,baseSize:number,baseWidth:number,dotX:number,dotY:number}|undefined;
+const clamp=(n:number)=>Math.max(0,Math.min(1,n));
+function updateTicket(now:number){
+ frame=0;if(!invite||!link||!rings)return;
+ const enhanced=!motion.matches;
  invite.classList.toggle('is-scroll-invite',enhanced);
  const stage=invite.querySelector<HTMLElement>('.ticket-invite-stage')!;
  const range=Math.max(1,invite.offsetHeight-stage.offsetHeight);
- const progress=enhanced?Math.max(0,Math.min(1,(90-invite.getBoundingClientRect().top)/range)):0;
+ const scrollProgress=enhanced?clamp((90-invite.getBoundingClientRect().top)/range):0;
+ const elapsed=clickStart===null?0:now-clickStart;
+ const clickProgress=elapsed<500 ? .52*clamp(elapsed/500) : .52+.48*clamp((elapsed-500)/1500);
+ const progress=clickStart===null?scrollProgress:Math.max(scrollProgress,clickProgress);
+ const zoomProgress=clamp(progress/.6);
  const width=stage.clientWidth,height=stage.clientHeight;
  if(!metrics||metrics.width!==width||metrics.height!==height){
    let baseSize=Math.min(180,Math.max(24,width*.085));
@@ -39,21 +51,42 @@ function updateTicket(){
  const dot=invite.querySelector<HTMLElement>('.invite-period')!;
  const targetDiameter=Math.min(width,height)*.88;
  const finalZoom=Math.max(8,targetDiameter/(metrics.baseSize*.14));
- const zoom=Math.pow(finalZoom,progress*progress);
+ const zoom=Math.pow(finalZoom,zoomProgress*zoomProgress);
  const pixelRatio=window.devicePixelRatio||1;
  const snap=(value:number)=>Math.round(value*pixelRatio)/pixelRatio;
  link.style.fontSize=`${snap(metrics.baseSize*zoom)}px`;
- const pan=Math.min(1,progress/.55);
+ const pan=Math.min(1,zoomProgress/.55);
  const easedPan=pan*pan*(3-2*pan);
  const dotX=metrics.dotX+(width/2-metrics.dotX)*easedPan;
  const dotY=metrics.dotY+(height/2-metrics.dotY)*easedPan;
  link.style.left=`${snap(dotX-dot.offsetLeft-dot.offsetWidth/2)}px`;
  link.style.top=`${snap(dotY-dot.offsetTop-dot.offsetHeight/2)}px`;
- // Finish on the large, centred dot and navigate without a red overlay or delay.
- if(progress>=.995){opening=true;location.assign(link.href)}
+
+ const ripple=clamp((progress-.52)/.48);
+ rings.style.opacity=String(Math.sin(Math.PI*ripple)*.95);
+ rings.style.transform=`translate(-50%,-50%) scale(${.04+ripple*1.8})`;
+ link.style.opacity=String(1-clamp((progress-.55)/.18));
+ if(clickStart!==null){
+   if(clickProgress>=1){clickStart=null;prices?.scrollIntoView({behavior:'instant',block:'start'});scheduleTicket();}
+   else frame=requestAnimationFrame(updateTicket);
+ }
 }
 function scheduleTicket(){if(!frame)frame=requestAnimationFrame(updateTicket)}
-window.addEventListener('scroll',scheduleTicket,{passive:true});window.addEventListener('resize',scheduleTicket);motion.addEventListener('change',scheduleTicket);
-window.addEventListener('pageshow',event=>{opening=false;if(event.persisted&&invite){window.scrollTo({top:scrollY+invite.getBoundingClientRect().top-innerHeight*.7,behavior:'instant'});}scheduleTicket()});
-updateTicket();
+link?.addEventListener('click',event=>{
+ if(event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey||motion.matches)return;
+ event.preventDefault();event.stopPropagation();
+ invite?.scrollIntoView({behavior:'instant',block:'start'});
+ clickStart=performance.now();scheduleTicket();
+});
+// User input always takes control; scrolling backwards reverses the same scene.
+function cancelClick(){clickStart=null;scheduleTicket()}
+window.addEventListener('wheel',cancelClick,{passive:true});
+window.addEventListener('touchstart',cancelClick,{passive:true});
+window.addEventListener('keydown',event=>{if(['ArrowUp','ArrowDown','PageUp','PageDown','Home','End','Escape',' '].includes(event.key))cancelClick()});
+window.addEventListener('scroll',scheduleTicket,{passive:true});
+window.addEventListener('resize',()=>{metrics=undefined;scheduleTicket()});
+motion.addEventListener('change',scheduleTicket);
+window.addEventListener('pageshow',()=>{clickStart=null;scheduleTicket()});
+window.addEventListener('pagehide',()=>{cancelAnimationFrame(frame);frame=0;clickStart=null});
+scheduleTicket();
 </script>

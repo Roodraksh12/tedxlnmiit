@@ -1,11 +1,12 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
-import SpeakersCarousel from '../components/CurrentSpeakers.jsx';
+
 
 import FAQPage from "../components/FAQ.jsx";
 import SponsorsComponent from '../components/Sponsors.jsx';
 
 import LandingPage from "../components/LandingPage.jsx";
+import Ticket from "../components/Ticket.jsx";
 import TicketInvite from "../components/TicketInvite.astro";
 ---
 
@@ -159,6 +160,9 @@ import TicketInvite from "../components/TicketInvite.astro";
 </section>
 
   <TicketInvite />
+  <section id="ticket-prices" aria-label="Tickets and registration" style="scroll-margin-top:100px">
+    <Ticket />
+  </section>
 
   <!-- ================= TEASER VIDEO ================= -->
   <section class="w-full py-20 px-6 flex justify-center">
@@ -221,7 +225,7 @@ import TicketInvite from "../components/TicketInvite.astro";
 </style>
 
 
-<SpeakersCarousel client:visible/>
+
 
 
 
