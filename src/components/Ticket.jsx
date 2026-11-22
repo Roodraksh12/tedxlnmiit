@@ -16,8 +16,8 @@ export default function Ticket() {
         <div className="admission-price"><span>ONE PASS. ALL THE IDEAS.</span><p><span>₹</span>499</p><span>PER PERSON</span></div>
         <div className="admission-actions">
           <p>Choose your registration</p>
-          <a href="https://docs.google.com/forms/d/e/1FAIpQLSfVT5bCJh4Mh6QsOgL2Ma2dqaS4fIsfS_QPqmALqZuJXJBsRQ/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer">LNMIIT students &amp; staff <span aria-hidden="true">↗</span></a>
-          <a href="https://docs.google.com/forms/d/e/1FAIpQLScY12g68K73uFWW3GMK5ktGyCNj3vjCnvEmCjtgIiOoU3eXAQ/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer">General audience <span aria-hidden="true">↗</span></a>
+          <button type="button" data-registration-native="" aria-controls="ticket-registration" aria-expanded="false">LNMIIT students &amp; staff</button>
+          <button type="button" data-registration-src="https://docs.google.com/forms/d/e/1FAIpQLScY12g68K73uFWW3GMK5ktGyCNj3vjCnvEmCjtgIiOoU3eXAQ/viewform?embedded=true" aria-controls="ticket-registration" aria-expanded="false">General audience</button>
         </div>
       </div>
     </article>

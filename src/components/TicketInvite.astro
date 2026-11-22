@@ -17,11 +17,52 @@ import Ticket from './Ticket.jsx';
     <div class="ticket-scroll-cue" aria-hidden="true"><span>EVERY IDEA STARTS WITH A DOT.</span><span class="ticket-scroll-line"></span><span>SCROLL TO TAKE YOUR SEAT</span></div>
   </div>
 </section>
+<dialog id="ticket-registration" class="ticket-registration" aria-labelledby="ticket-registration-title">
+  <header>
+    <h2 id="ticket-registration-title">Ticket registration</h2>
+    <button type="button" data-close-registration aria-label="Close registration" autofocus>×</button>
+  </header>
+  <form id="lnmiit-registration" class="native-registration" method="dialog" hidden>
+    <p role="status">Preview only. Registration and payment collection are disabled.</p>
+    <fieldset>
+      <legend>Attendee details</legend>
+      <label>Full name <input name="name" autocomplete="name" required /></label>
+      <label>LNMIIT email <input type="email" name="email" autocomplete="email" required /></label>
+      <label>Phone number <input type="tel" name="phone" autocomplete="tel" required /></label>
+      <label>Attendee type
+        <select name="attendeeType" required><option value="">Select your role</option><option>Student</option><option>Staff</option></select>
+      </label>
+      <label>Roll number or staff ID <input name="instituteId" required /></label>
+    </fieldset>
+    <fieldset>
+      <legend>Payment details</legend>
+      <p>One pass · ₹499</p>
+      <label>Payment reference <input name="paymentReference" required /></label>
+      <label>Payment screenshot <input type="file" name="paymentScreenshot" accept="image/png,image/jpeg,image/webp" required /></label>
+    </fieldset>
+    <p>Questions? Email <a href="mailto:tedxlnmiit@lnmiit.ac.in">tedxlnmiit@lnmiit.ac.in</a>.</p>
+    <button class="native-submit" type="submit" disabled>Submit registration</button>
+  </form>
+  <iframe hidden title="TEDxLNMIIT ticket registration" width="760" height="1000" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+</dialog>
 <section class="ticket-inclusions" aria-labelledby="ticket-inclusions-title">
   <div><p class="ticket-eyebrow">MORE THAN A SEAT</p><h2 id="ticket-inclusions-title">Come for the talks.<br />Leave with a new perspective.</h2></div>
   <ul><li>Access to all talks &amp; storytelling sessions</li><li>Conversations with a community of change-makers</li><li>Curated meals &amp; refreshments</li><li>Attendee goodies &amp; your official TEDx badge</li></ul>
 </section>
 <style>
+.ticket-registration{position:fixed;inset:0;width:min(960px,calc(100% - 24px));max-width:none;max-height:calc(100dvh - 24px);margin:auto;padding:16px;border:1px solid #ffffff30;border-radius:14px;background:#141014;color:#f5f2eb}
+.ticket-registration::backdrop{background:#000c}
+.ticket-registration header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.ticket-registration h2{font-size:clamp(1rem,3vw,1.7rem);margin:0}
+.ticket-registration button{min-width:44px;min-height:44px;font-size:24px;cursor:pointer}
+.ticket-registration [hidden]{display:none!important}
+.native-registration{display:grid;gap:16px}
+.native-registration fieldset{display:grid;gap:12px;border:1px solid #ffffff30;padding:16px;border-radius:8px}
+.native-registration legend{padding-inline:6px;font-weight:700}
+.native-registration label{display:grid;gap:5px}
+.native-registration input,.native-registration select{width:100%;padding:10px;background:#211a20;color:#fff;border:1px solid #ffffff45;border-radius:6px}
+.native-registration .native-submit{font-size:1rem;color:#c7bfc7;border:1px solid #ffffff30;border-radius:8px;cursor:default}
+.ticket-registration iframe{display:block;width:100%;height:min(76dvh,1000px);border:0;border-radius:8px;background:#fff}
 .ticket-invite { --nav-space:var(--site-header-height); --stage-height:calc(100svh - var(--nav-space)); position:relative; width:100%; isolation:isolate; color:#f5f2eb; }
 .ticket-invite-stage { position:relative; display:flex; align-items:center; justify-content:center; min-height:620px; padding:60px 24px; overflow:clip; }
 .ticket-destination { position:absolute; top:0; left:0; width:1px; height:1px; scroll-margin-top:var(--nav-space); }
@@ -67,4 +108,32 @@ import Ticket from './Ticket.jsx';
 </style>
 <script>
 import '../scripts/ticket-invite';
+
+const registration = document.querySelector<HTMLDialogElement>('#ticket-registration');
+const form = registration?.querySelector('iframe');
+const title = registration?.querySelector('h2');
+const nativeForm = registration?.querySelector<HTMLFormElement>('#lnmiit-registration');
+const choices = document.querySelectorAll<HTMLButtonElement>('[data-registration-src], [data-registration-native]');
+
+if (registration && form && title && nativeForm) {
+  nativeForm.addEventListener('submit', event => event.preventDefault());
+  registration.querySelector('[data-close-registration]')?.addEventListener('click', () => registration.close());
+  registration.addEventListener('close', () => {
+    for (const choice of choices) choice.setAttribute('aria-expanded', 'false');
+  });
+  for (const button of choices) {
+    button.addEventListener('click', () => {
+      const source = button.dataset.registrationSrc;
+      const isNative = button.hasAttribute('data-registration-native');
+      nativeForm.hidden = !isNative;
+      form.hidden = isNative;
+      if (source && form.getAttribute('src') !== source) form.src = source;
+      const category = button.textContent?.trim();
+      title.textContent = `Ticket registration · ${category}`;
+      form.title = `TEDxLNMIIT registration for ${category}`;
+      registration.showModal();
+      for (const choice of choices) choice.setAttribute('aria-expanded', String(choice === button));
+    });
+  }
+}
 </script>

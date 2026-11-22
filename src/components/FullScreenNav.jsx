@@ -2,7 +2,8 @@ import { useContext, useEffect, useRef } from 'react';
 import { NavbarContext } from '../context/NavContext';
 import './FullScreenNav.css';
 
-const links = [['Home', '/'], ['Theme', '/theme'], ['About', '/about'], ['Gallery', '/gallery'], ['Past Speakers', '/past-speakers'], ['Team', '/team'], ['Campus Ambassador', '/campus ambassador']];
+import { activePath, navigation } from '../data/navigation';
+
 export default function FullScreenNav({ pathname = '/' }) {
   const { navOpen, setNavOpen } = useContext(NavbarContext);
   const ref = useRef(null);
@@ -23,11 +24,11 @@ export default function FullScreenNav({ pathname = '/' }) {
     return () => { document.body.style.overflow = overflow; document.removeEventListener('keydown', onKey); previous?.focus({ preventScroll: true }); };
   }, [navOpen, setNavOpen]);
   if (!navOpen) return null;
-  const active = decodeURIComponent(pathname).replace(/\/$/, '') || '/';
+  const active = activePath(pathname);
   return <div ref={ref} id="site-navigation-dialog" className="site-menu" role="dialog" aria-modal="true" aria-label="Site navigation">
     <div className="site-menu-content">
       <p className="site-menu-label">EXPLORE TEDxLNMIIT</p>
-      <nav aria-label="Expanded navigation">{links.map(([text, href]) => <a key={href} href={href} aria-current={active === href ? 'page' : undefined} onClick={() => setNavOpen(false)}>{text}</a>)}</nav>
+      <nav aria-label="Expanded navigation">{navigation.map(({name, href}) => <a key={href} href={href} aria-current={active === href ? 'page' : undefined} onClick={() => setNavOpen(false)}>{name}</a>)}</nav>
       <a className="site-menu-ticket" href="/#ticket-prices" data-ticket-jump onClick={() => setNavOpen(false)}>Get Tickets <span aria-hidden="true">↗</span></a>
     </div>
     <button className="site-menu-close" type="button" onClick={() => setNavOpen(false)} aria-label="Close navigation">×</button>

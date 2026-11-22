@@ -1,4 +1,4 @@
-const GalleryCard = ({ image1, image2 }) => {
+const GalleryCard = ({ image1, image2, eager }) => {
   return (
     <>
       {/* CARD 1 */}
@@ -19,8 +19,10 @@ const GalleryCard = ({ image1, image2 }) => {
       >
         <img
           className="h-full w-full object-cover transition-transform duration-700 hover:scale-[1.03]"
-          src={image1}
-          alt="Gallery Image"
+          src={image1.src}
+          alt={image1.alt}
+          loading={eager ? "eager" : "lazy"}
+          decoding="async"
         />
       </div>
 
@@ -40,8 +42,10 @@ const GalleryCard = ({ image1, image2 }) => {
       >
         <img
           className="h-full w-full object-cover transition-transform duration-700 hover:scale-[1.03]"
-          src={image2}
-          alt="Gallery Image"
+          src={image2.src}
+          alt={image2.alt}
+          loading={eager ? "eager" : "lazy"}
+          decoding="async"
         />
       </div>
     </>

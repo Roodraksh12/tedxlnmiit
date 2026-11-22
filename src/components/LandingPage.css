@@ -1,16 +1,16 @@
 /* An animated poster: a single central axis, outlined type and a foreground wordmark. */
-.north-hero { position:relative; height:calc(100svh - var(--site-header-height) + 100svh); }
+.north-hero { position:relative; height:calc(100svh - var(--site-header-height) + 160svh); }
 .north-stage { position:sticky; top:var(--site-header-height); height:calc(100svh - var(--site-header-height)); overflow:clip; isolation:isolate; }
 .north-topline,.north-bottomline { position:absolute; left:4.5%; right:4.5%; display:flex; align-items:center; justify-content:space-between; z-index:6; color:#a69da7; font:9px/1.5 ui-monospace,monospace; letter-spacing:.12em; }
 .north-topline { top:23px; }.north-topline>span>span { padding-inline:10px; color:#EB0028; }.north-location { color:#8b828d; }
-.north-title { margin:0; }
-.north-inventing { position:absolute; display:block; left:9%; top:8%; width:82%; z-index:4; transform-origin:top center; }
+.north-title { margin:0; --inventing-top:8%; --title-start-offset:clamp(28px, 11svh, 100px); --inventing-width:82vw; --north-width:min(66vw, calc((100svh - var(--site-header-height)) * 1.3), 920px); }
+.north-inventing { position:absolute; display:block; left:50%; top:calc(var(--inventing-top) + var(--title-start-offset)); width:var(--inventing-width); translate:-50% 0; z-index:4; transform-origin:top center; }
 .north-inventing img { display:block; width:100%; height:auto; }
-.north-word-plane { position:absolute; display:block; left:50%; top:54%; width:min(86vw,calc((100svh - var(--site-header-height)) * 1.65),1200px); transform:translate(-50%,-50%); z-index:3; pointer-events:none; }
-.north-word-motion { display:block; position:relative; aspect-ratio:2181/791; transform:rotate(-7deg); }
+.north-word-plane { position:absolute; display:block; left:50%; top:calc(var(--inventing-top) + var(--title-start-offset) + var(--inventing-width) * .11325 + clamp(12px, 2svh, 20px)); width:var(--north-width); transform:translateX(-50%); z-index:3; pointer-events:none; }
+.north-word-motion { display:block; position:relative; aspect-ratio:2181/791; }
 .north-word-outline,.north-word-solid { position:absolute; display:block; inset:0; width:100%; height:100%; object-fit:contain; }.north-word-solid { opacity:0; }
 .north-word-outline { opacity:.6; }
-.north-orbit { position:absolute; left:50%; top:58%; width:min(65vw,78svh); height:auto; aspect-ratio:1; opacity:.24; transform:translate(-50%,-50%) rotate(-24deg); z-index:0; pointer-events:none; }
+.north-word-outline,.north-word-solid { filter:drop-shadow(0 0 9px rgb(235 0 40 / 40%)); }
 .north-art-frame { position:absolute; left:50%; top:28%; height:60%; width:40%; transform:translateX(-50%); z-index:2; pointer-events:none; }
 .north-art-motion { height:100%; width:100%; display:flex; align-items:center; justify-content:center; transform-origin:center; }.north-art-motion>img { display:block; height:100%; width:auto; max-width:100%; object-fit:contain; }
 .north-manifesto { position:absolute; left:4.5%; bottom:23px; z-index:7; }
@@ -26,23 +26,21 @@
 }
 @media(min-width:1800px) { .north-topline { font-size:11px; }.north-bottomline { font-size:10px; }.north-manifesto p { font-size:15px; } }
 @media(max-width:699px) {
-  .north-hero { height:calc(100svh - var(--site-header-height) + 75svh); }
+  .north-hero { height:calc(100svh - var(--site-header-height) + 120svh); }
   .north-topline { top:24px; left:6%; right:6%; font-size:7px; letter-spacing:.08em; }.north-topline>span>span { padding-inline:6px; }.north-location { display:none; }
-  .north-inventing { left:6%; top:14%; width:88%; }
-  .north-word-plane { top:65%; width:88%; }.north-word-motion { transform:rotate(-7deg); }
+  .north-title { --inventing-top:14%; --inventing-width:88vw; --north-width:74vw; }
   .north-art-frame { top:28%; height:48%; width:78%; }
-  .north-orbit { top:51%; width:110%; }
   .north-manifesto { left:7%; bottom:11%; }.north-manifesto p { font-size:14px; line-height:1.4; }.north-manifesto p>strong { display:block; }
   .north-closing { top:auto; left:7%; right:7%; bottom:10%; align-items:center; }.north-closing p { font-size:19px; }.north-explore { gap:12px; font-size:10px; }
   .north-bottomline { left:6%; right:6%; bottom:22px; font-size:7px; }.north-progress-track { width:44px; }
   .north-bottomline>span:first-child { position:static; }
 }
-@media(max-height:599px) and (min-width:700px) { .north-topline { top:12px; }.north-inventing { left:20%; width:60%; top:12%; }.north-art-frame { top:30%; height:57%; }.north-word-plane { width:65%; }.north-manifesto { bottom:12px; }.north-manifesto p { font-size:11px; }.north-closing { top:35%; }.north-closing p { font-size:16px; }.north-bottomline { bottom:10px; } }
+@media(max-height:599px) and (min-width:700px) { .north-topline { top:12px; }.north-title { --inventing-top:12%; --inventing-width:60vw; }.north-art-frame { top:30%; height:57%; }.north-word-plane { width:65%; }.north-manifesto { bottom:12px; }.north-manifesto p { font-size:11px; }.north-closing { top:35%; }.north-closing p { font-size:16px; }.north-bottomline { bottom:10px; } }
+html[data-motion=full] .north-art-motion { opacity:0; }
 /* Keep the complete poster and its links available without scroll choreography. */
 html:not([data-motion=full]) .north-hero { height:calc(100svh - var(--site-header-height)); }
 html:not([data-motion=full]) .north-art-motion { transform:none!important; }
 html:not([data-motion=full]) .north-inventing { transform:none!important; }
-html:not([data-motion=full]) .north-word-motion { transform:rotate(-7deg)!important; }
 html:not([data-motion=full]) .north-word-outline { opacity:.6!important; }
 html:not([data-motion=full]) .north-word-solid { opacity:0!important; }
 html:not([data-motion=full]) .north-manifesto { opacity:1!important; transform:none!important; }

@@ -1,6 +1,5 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
-import PastSpeakers from '../components/PastSpeakers.jsx';
 import SpeakersCarousel from '../components/CurrentSpeakers.jsx';
 ---
 
@@ -10,18 +9,9 @@ import SpeakersCarousel from '../components/CurrentSpeakers.jsx';
   <SpeakersCarousel client:load />
 
 
-  <section class="text-center my-12">
- 
-    <h1
-  class="text-5xl md:text-6xl font-extrabold uppercase tracking-widest
-         bg-gradient-to-r from-[#EB0028] to-gray-500 bg-clip-text text-transparent"
->
-  Past Speakers
-</h1>
-
-    <PastSpeakers client:load />
-  </section>
-
-
-
+  <div class="my-12 text-center">
+    <a class="inline-block rounded-lg border border-white/30 px-6 py-3 text-white hover:border-[#eb0028]" href="/past-speakers">
+      Browse Past Speakers
+    </a>
+  </div>
 </MainLayout>
