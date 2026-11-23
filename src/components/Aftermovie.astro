@@ -1,0 +1,236 @@
+---
+import { existsSync } from 'node:fs';
+import { Play } from 'lucide-react';
+
+const videoId = 'WKzlsahvsAo';
+const title = 'TEDxLNMIIT 2026 Official Aftermovie';
+const poster = '/Gallery/event-photos/speakers-20.webp';
+const videoPath = '/videos/tedxlnmiit-2026-aftermovie.mp4';
+const localVideo = existsSync(`public${videoPath}`);
+---
+
+<section id="aftermovie" class="aftermovie" data-north-waypoint data-video-id={videoId} data-video-title={title} aria-labelledby="aftermovie-title">
+  <h2 id="aftermovie-title" class="sr-only">{title}</h2>
+  <div class="film-frame">
+    {localVideo ? (
+      <video class="film-native" src={videoPath} poster={poster} controls playsinline preload="none" aria-label={title}></video>
+    ) : (
+      <>
+        <button type="button" class="film-preview" aria-label="Play the 2026 aftermovie" data-film-play disabled>
+          <img src={poster} alt="" width="1200" height="724" loading="lazy" decoding="async" />
+          <span class="film-play-label"><Play size={26} fill="currentColor" aria-hidden="true" /></span>
+        </button>
+        <div class="film-player" data-film-player hidden></div>
+      </>
+    )}
+  </div>
+  <p class="film-status" data-film-status role="status"></p>
+  {!localVideo && <noscript><p class="film-status">Enable JavaScript for inline playback.</p></noscript>}
+</section>
+
+<style>
+  .aftermovie {
+    width: min(100% - 2 * clamp(20px, 5vw, 64px), 1024px);
+    margin-inline: auto;
+    padding-block: clamp(40px, 7vw, 88px);
+    scroll-margin-top: var(--site-header-height);
+  }
+
+  .film-status {
+    color: #aaa8ad;
+    font-size: .83rem;
+    margin-top: 10px;
+  }
+
+  .film-frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    min-height: 200px;
+    overflow: hidden;
+    background: #000;
+    border: 1px solid var(--color-tedx);
+    border-radius: clamp(9px, 1.5vw, 16px);
+  }
+
+  .film-preview, .film-player, .film-native, .film-preview img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .film-preview {
+    display: grid;
+    place-items: center;
+  }
+
+  .film-preview:enabled {
+    cursor: pointer;
+  }
+
+  .film-preview:disabled .film-play-label {
+    visibility: hidden;
+  }
+
+  .film-preview img {
+    object-fit: cover;
+    object-position: center 62%;
+    filter: brightness(.72);
+  }
+
+  .film-play-label {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 62px;
+    height: 62px;
+    border: 1px solid #ffffff60;
+    border-radius: 50%;
+    background: #000b;
+    color: #fff;
+  }
+
+  .film-preview:enabled:hover .film-play-label {
+    background: var(--color-tedx);
+    border-color: var(--color-tedx);
+  }
+
+  .film-preview:focus-visible, .film-native:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: -4px;
+  }
+
+  .film-preview[hidden], .film-player[hidden], .film-status:empty {
+    display: none;
+  }
+
+  .film-player :global(iframe) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  .aftermovie[data-video-state="loading"] .film-player {
+    visibility: hidden;
+  }
+</style>
+
+<script>
+  type VideoPlayer = {
+    cueVideoById(videoId: string): void;
+    playVideo(): void;
+    destroy(): void;
+  };
+  type PlayerEvent = { target: VideoPlayer; data: number };
+  type YouTubeApi = {
+    Player: new (frame: HTMLIFrameElement, options: {
+      events: {
+        onReady(event: { target: VideoPlayer }): void;
+        onStateChange(event: PlayerEvent): void;
+        onError(event: PlayerEvent): void;
+      };
+    }) => VideoPlayer;
+  };
+
+  const browser = window as Window & { YT?: YouTubeApi; onYouTubeIframeAPIReady?: () => void };
+  const film = document.querySelector<HTMLElement>('#aftermovie');
+
+  const button = film?.querySelector<HTMLButtonElement>('[data-film-play]');
+  if (film && button) initializeFilm(film, button);
+
+  function initializeFilm(section: HTMLElement, preview: HTMLButtonElement) {
+    const host = section.querySelector<HTMLElement>('[data-film-player]')!;
+    const status = section.querySelector('[data-film-status]')!;
+    const videoId = section.dataset.videoId!;
+    let player: VideoPlayer | undefined;
+    let timeout = 0;
+    let playRequested = false;
+
+    function showFallback(code?: number) {
+      if (section.dataset.videoState === 'error') return;
+      section.dataset.videoState = 'error';
+      clearTimeout(timeout);
+      const shouldFocus = host.contains(document.activeElement);
+      player?.destroy();
+      host.replaceChildren();
+      host.hidden = true;
+      preview.hidden = false;
+      preview.disabled = true;
+      status.textContent = code === 101 || code === 150
+        ? 'Inline playback is unavailable on this address.'
+        : 'The aftermovie player couldn’t load.';
+      if (shouldFocus) {
+        status.setAttribute('tabindex', '-1');
+        (status as HTMLElement).focus({ preventScroll: true });
+      }
+    }
+
+    function mountPlayer() {
+      if (section.dataset.videoState !== 'loading' || !browser.YT?.Player) return;
+      const iframe = document.createElement('iframe');
+      const source = new URL('https://www.youtube.com/embed/' + videoId);
+      source.search = new URLSearchParams({ enablejsapi: '1', playsinline: '1', rel: '0', origin: location.origin }).toString();
+      iframe.src = source.href;
+      iframe.title = section.dataset.videoTitle!;
+      iframe.allow = 'autoplay; encrypted-media; fullscreen; picture-in-picture';
+      iframe.allowFullscreen = true;
+      iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+      host.replaceChildren(iframe);
+      host.hidden = false;
+
+      try {
+        player = new browser.YT.Player(iframe, {
+          events: {
+            onReady({ target }) {
+              target.cueVideoById(videoId);
+            },
+            onStateChange({ data, target }) {
+              if (data !== 5 || section.dataset.videoState !== 'loading') return;
+              clearTimeout(timeout);
+              section.dataset.videoState = 'ready';
+              status.textContent = '';
+              const shouldFocus = document.activeElement === preview;
+              preview.hidden = true;
+              if (shouldFocus) iframe.focus({ preventScroll: true });
+              if (playRequested) target.playVideo();
+            },
+            onError: ({ data }) => showFallback(data),
+          },
+        });
+      } catch {
+        showFallback();
+      }
+    }
+
+    function prepare() {
+      if (section.dataset.videoState) return;
+      section.dataset.videoState = 'loading';
+      timeout = window.setTimeout(() => showFallback(), 8000);
+      if (browser.YT?.Player) {
+        mountPlayer();
+      } else {
+        browser.onYouTubeIframeAPIReady = mountPlayer;
+        const script = document.createElement('script');
+        script.src = 'https://www.youtube.com/iframe_api';
+        script.async = true;
+        script.addEventListener('error', () => showFallback(), { once: true });
+        document.head.append(script);
+      }
+    }
+
+    preview.disabled = false;
+    preview.addEventListener('click', () => {
+      playRequested = true;
+      status.textContent = 'Loading the aftermovie…';
+      prepare();
+    });
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      observer.disconnect();
+      prepare();
+    });
+    observer.observe(section);
+  }
+</script>

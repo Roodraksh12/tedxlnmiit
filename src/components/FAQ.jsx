@@ -28,9 +28,9 @@ export default function FAQPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black/20 text-white flex flex-col items-center px-6 py-24">
+    <div className="text-white flex flex-col items-center px-6 pt-12 pb-8 md:pt-16 md:pb-10">
    <h1
-  class="
+  className="
     text-center
     font-light
     tracking-tight
@@ -42,8 +42,8 @@ export default function FAQPage() {
     text-[clamp(2.4rem,7vw,4rem)]
   "
 >
-  <span class="text-white">Frequently asked</span>{" "}
-  <span class="text-[#EB0028] ">Questions</span>
+  <span className="text-white">Frequently asked</span>{" "}
+  <span className="text-tedx">Questions</span>
 </h1>
 
       {/* FAQ List */}
@@ -61,9 +61,9 @@ export default function FAQPage() {
                 </span>
               </h2>
               {openIndex === index ? (
-                <ChevronUp className="text-[#EB0028]" />
+                <ChevronUp className="text-tedx" />
               ) : (
-                <ChevronDown className="text-[#EB0028]" />
+                <ChevronDown className="text-tedx" />
               )}
             </div>
             {openIndex === index && (

@@ -7,8 +7,8 @@ export default function CA() {
   {/*HEADER*/}
   <section className="text-center pt-20 pb-12 px-4 space-y-6 w-full">
     <h1 className="text-4xl sm:text-6xl font-bold">
-      <span className="text-[#EB0028]">TEDx</span>LNMIIT{" "}
-      <span className="text-[#EB0028]">2026</span>
+      <span className="text-tedx">TEDx</span>LNMIIT{" "}
+      <span className="text-tedx">2026</span>
     </h1>
 
     <p className="text-lg sm:text-xl text-gray-300">
@@ -26,7 +26,7 @@ export default function CA() {
           text-lg sm:text-xl font-semibold
           bg-gradient-to-r
           from-black
-          via-[#EB0028]
+          via-tedx
           to-black
         "
       >
@@ -44,8 +44,8 @@ export default function CA() {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
 
       {/* Benefits */}
-      <div className="bg-[#0d0d0d] border border-[#EB0028] rounded-2xl p-8 space-y-4">
-        <h3 className="text-2xl font-bold text-[#EB0028]">Benefits</h3>
+      <div className="bg-[#0d0d0d] border border-tedx rounded-2xl p-8 space-y-4">
+        <h3 className="text-2xl font-bold text-tedx">Benefits</h3>
         <p className="text-gray-400">
           What you'll gain as an ambassador
         </p>
@@ -59,8 +59,8 @@ export default function CA() {
       </div>
 
       {/* Responsibilities */}
-      <div className="bg-[#0d0d0d] border border-[#EB0028] rounded-2xl p-8 space-y-4">
-        <h3 className="text-2xl font-bold text-[#EB0028]">Responsibilities</h3>
+      <div className="bg-[#0d0d0d] border border-tedx rounded-2xl p-8 space-y-4">
+        <h3 className="text-2xl font-bold text-tedx">Responsibilities</h3>
         <p className="text-gray-400">
           Your role as an ambassador
         </p>
@@ -87,7 +87,7 @@ export default function CA() {
   target="_blank"
   rel="noopener noreferrer"
   class="
-    bg-[#EB0028] hover:bg-[#EB0028]
+    bg-tedx hover:bg-tedx
     transition-all duration-300
     text-white
     px-4 sm:px-5 md:px-6
@@ -117,7 +117,7 @@ export default function CA() {
        <div className="grid grid-cols-3 gap-4 sm:gap-8">
 
   <div className="bg-[#0d0d0d] rounded-xl p-4 sm:p-8 transition-transform duration-300 hover:scale-105">
-    <FaBullhorn className="text-2xl sm:text-3xl text-[#EB0028] mx-auto mb-2 sm:mb-4" />
+    <FaBullhorn className="text-2xl sm:text-3xl text-tedx mx-auto mb-2 sm:mb-4" />
     <h3 className="text-sm sm:text-lg font-semibold mb-1 sm:mb-2 text-center">
       Spread Ideas
     </h3>
@@ -127,7 +127,7 @@ export default function CA() {
   </div>
 
   <div className="bg-[#0d0d0d] rounded-xl p-4 sm:p-8 transition-transform duration-300 hover:scale-105">
-    <FaUsers className="text-2xl sm:text-3xl text-[#EB0028] mx-auto mb-2 sm:mb-4" />
+    <FaUsers className="text-2xl sm:text-3xl text-tedx mx-auto mb-2 sm:mb-4" />
     <h3 className="text-sm sm:text-lg font-semibold mb-1 sm:mb-2 text-center">
       Build Connections
     </h3>
@@ -137,7 +137,7 @@ export default function CA() {
   </div>
 
   <div className="bg-[#0d0d0d] rounded-xl p-4 sm:p-8 transition-transform duration-300 hover:scale-105">
-    <FaGift className="text-2xl sm:text-3xl text-[#EB0028] mx-auto mb-2 sm:mb-4" />
+    <FaGift className="text-2xl sm:text-3xl text-tedx mx-auto mb-2 sm:mb-4" />
     <h3 className="text-sm sm:text-lg font-semibold mb-1 sm:mb-2 text-center">
       Personal Growth
     </h3>

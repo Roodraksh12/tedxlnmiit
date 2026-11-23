@@ -1,49 +1,373 @@
-/* An animated poster: a single central axis, outlined type and a foreground wordmark. */
-.north-hero { position:relative; height:calc(100svh - var(--site-header-height) + 160svh); }
-.north-stage { position:sticky; top:var(--site-header-height); height:calc(100svh - var(--site-header-height)); overflow:clip; isolation:isolate; }
-.north-topline,.north-bottomline { position:absolute; left:4.5%; right:4.5%; display:flex; align-items:center; justify-content:space-between; z-index:6; color:#a69da7; font:9px/1.5 ui-monospace,monospace; letter-spacing:.12em; }
-.north-topline { top:23px; }.north-topline>span>span { padding-inline:10px; color:#EB0028; }.north-location { color:#8b828d; }
-.north-title { margin:0; --inventing-top:8%; --title-start-offset:clamp(28px, 11svh, 100px); --inventing-width:82vw; --north-width:min(66vw, calc((100svh - var(--site-header-height)) * 1.3), 920px); }
-.north-inventing { position:absolute; display:block; left:50%; top:calc(var(--inventing-top) + var(--title-start-offset)); width:var(--inventing-width); translate:-50% 0; z-index:4; transform-origin:top center; }
-.north-inventing img { display:block; width:100%; height:auto; }
-.north-word-plane { position:absolute; display:block; left:50%; top:calc(var(--inventing-top) + var(--title-start-offset) + var(--inventing-width) * .11325 + clamp(12px, 2svh, 20px)); width:var(--north-width); transform:translateX(-50%); z-index:3; pointer-events:none; }
-.north-word-motion { display:block; position:relative; aspect-ratio:2181/791; }
-.north-word-outline,.north-word-solid { position:absolute; display:block; inset:0; width:100%; height:100%; object-fit:contain; }.north-word-solid { opacity:0; }
-.north-word-outline { opacity:.6; }
-.north-word-outline,.north-word-solid { filter:drop-shadow(0 0 9px rgb(235 0 40 / 40%)); }
-.north-art-frame { position:absolute; left:50%; top:28%; height:60%; width:40%; transform:translateX(-50%); z-index:2; pointer-events:none; }
-.north-art-motion { height:100%; width:100%; display:flex; align-items:center; justify-content:center; transform-origin:center; }.north-art-motion>img { display:block; height:100%; width:auto; max-width:100%; object-fit:contain; }
-.north-manifesto { position:absolute; left:4.5%; bottom:23px; z-index:7; }
-.north-manifesto p { margin:0; font-size:13px; line-height:1.45; letter-spacing:-.03em; color:#f5f2eb; font-weight:500; }.north-manifesto strong { color:#EB0028; font-weight:500; }
-.north-closing { position:absolute; top:29%; left:5.5%; right:5.5%; display:flex; justify-content:space-between; align-items:flex-end; z-index:5; opacity:0; }
-.north-closing p { margin:0; color:#f5f2eb; font-size:clamp(17px,2vw,28px); font-weight:500; line-height:1.15; letter-spacing:-.04em; }.north-closing strong { font-weight:500; color:#f5f2eb; }
-.north-explore { display:inline-flex; align-items:center; gap:28px; min-height:44px; color:#f5f2eb; font-size:12px; text-decoration:none; visibility:hidden; }.north-explore span { color:#EB0028; font-size:20px; }.north-explore:hover { text-decoration:underline; text-underline-offset:5px; }.north-explore:focus-visible { outline:2px solid #EB0028; outline-offset:5px; }
-.north-bottomline { bottom:20px; font-size:8px; }.north-scroll-arrow { margin-left:12px; color:#EB0028; font-size:14px; }.north-progress { display:flex; align-items:center; gap:14px; color:#EB0028; }.north-progress-track { display:block; width:90px; height:1px; background:#ffffff25; }.north-progress-fill { display:block; height:100%; background:#EB0028; transform:scaleX(0); transform-origin:left; }
-.north-bottomline>span:first-child { position:absolute; right:150px; }.north-progress { margin-left:auto; }
-/* The desktop artwork stays above the outline while settling into its own space. */
-@media(min-width:700px) {
-  .north-art-frame { z-index:4; }
+.north-hero {
+  color: #eae7e8;
+  overflow-x: clip;
 }
-@media(min-width:1800px) { .north-topline { font-size:11px; }.north-bottomline { font-size:10px; }.north-manifesto p { font-size:15px; } }
-@media(max-width:699px) {
-  .north-hero { height:calc(100svh - var(--site-header-height) + 120svh); }
-  .north-topline { top:24px; left:6%; right:6%; font-size:7px; letter-spacing:.08em; }.north-topline>span>span { padding-inline:6px; }.north-location { display:none; }
-  .north-title { --inventing-top:14%; --inventing-width:88vw; --north-width:74vw; }
-  .north-art-frame { top:28%; height:48%; width:78%; }
-  .north-manifesto { left:7%; bottom:11%; }.north-manifesto p { font-size:14px; line-height:1.4; }.north-manifesto p>strong { display:block; }
-  .north-closing { top:auto; left:7%; right:7%; bottom:10%; align-items:center; }.north-closing p { font-size:19px; }.north-explore { gap:12px; font-size:10px; }
-  .north-bottomline { left:6%; right:6%; bottom:22px; font-size:7px; }.north-progress-track { width:44px; }
-  .north-bottomline>span:first-child { position:static; }
+
+.north-layout {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  align-items: center;
+  gap: clamp(24px, 5vw, 76px);
+  width: min(100% - 2 * clamp(20px, 5vw, 76px), 1400px);
+  margin-inline: auto;
+  padding-block: clamp(40px, 4.5vw, 68px);
 }
-@media(max-height:599px) and (min-width:700px) { .north-topline { top:12px; }.north-title { --inventing-top:12%; --inventing-width:60vw; }.north-art-frame { top:30%; height:57%; }.north-word-plane { width:65%; }.north-manifesto { bottom:12px; }.north-manifesto p { font-size:11px; }.north-closing { top:35%; }.north-closing p { font-size:16px; }.north-bottomline { bottom:10px; } }
-html[data-motion=full] .north-art-motion { opacity:0; }
-/* Keep the complete poster and its links available without scroll choreography. */
-html:not([data-motion=full]) .north-hero { height:calc(100svh - var(--site-header-height)); }
-html:not([data-motion=full]) .north-art-motion { transform:none!important; }
-html:not([data-motion=full]) .north-inventing { transform:none!important; }
-html:not([data-motion=full]) .north-word-outline { opacity:.6!important; }
-html:not([data-motion=full]) .north-word-solid { opacity:0!important; }
-html:not([data-motion=full]) .north-manifesto { opacity:1!important; transform:none!important; }
-html:not([data-motion=full]) .north-closing { opacity:1!important; top:auto; bottom:8%; }
-html:not([data-motion=full]) .north-closing>p,html:not([data-motion=full]) .north-bottomline { display:none; }
-html:not([data-motion=full]) .north-explore { visibility:visible; margin-left:auto; }
+
+.north-copy h1 {
+  margin: 0;
+  width: max-content;
+  max-width: 100%;
+  font: 400 clamp(4.25rem, 8vw, 6rem)/.84 var(--font-bebas);
+  letter-spacing: -.015em;
+}
+
+.north-copy h1 > span {
+  display: block;
+  width: max-content;
+}
+
+.north-title-north {
+  color: var(--color-tedx);
+}
+
+.north-hero.is-pinned::after {
+  content: '';
+  display: block;
+  height: var(--north-travel);
+}
+
+.north-hero.is-pinned .north-layout {
+  position: sticky;
+  top: var(--site-header-height);
+}
+
+.north-copy {
+  position: relative;
+  z-index: 1;
+}
+
+.north-hero.is-assembling h1 {
+  transform: translate3d(
+    calc(var(--north-title-x) * var(--north-center)),
+    calc(var(--north-title-y) * var(--north-center) - var(--north-title-rise) * var(--north-lift)), 0
+  ) scale(var(--north-title-scale));
+}
+
+.north-hero.is-assembling .north-title-north {
+  transform: translateX(calc(var(--north-title-line) * var(--north-center)));
+}
+
+.north-hero.is-assembling .north-details {
+  opacity: var(--north-details);
+  visibility: var(--north-details-visible);
+  transform: translateY(calc((1 - var(--north-details)) * 12px));
+}
+
+.north-details:focus-within {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.north-scroll-cue {
+  display: none;
+  position: absolute;
+  inset: auto auto 12px 50%;
+  translate: -50% 0;
+  opacity: var(--north-cue, 1);
+}
+
+.north-hero.is-pinned .north-scroll-cue {
+  display: block;
+}
+
+.north-scroll-cue svg {
+  color: var(--color-tedx);
+}
+
+.north-statement {
+  max-width: 30ch;
+  margin: 24px 0 0;
+  font-size: clamp(1rem, 1.6vw, 1.25rem);
+  line-height: 1.5;
+  text-wrap: balance;
+}
+
+.north-event {
+  margin: 16px 0 0;
+  color: #aaa8ad;
+  font-size: .88rem;
+  line-height: 1.6;
+}
+
+.north-event span {
+  margin-inline: .7em;
+  color: var(--color-tedx);
+}
+
+.north-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px clamp(18px, 3vw, 32px);
+  margin-top: 26px;
+}
+
+.north-actions a {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-size: .85rem;
+  font-weight: 600;
+}
+
+.north-actions a:focus-visible {
+  outline: 2px solid #eae7e8;
+  outline-offset: 4px;
+}
+
+.north-tickets {
+  padding-inline: 16px;
+  border-radius: 8px;
+  background: var(--ticket-surface);
+  color: white;
+}
+
+.north-tickets:hover {
+  box-shadow: inset 0 0 0 1px #ffffff80;
+}
+
+.north-explore {
+  text-decoration: underline;
+  text-decoration-color: var(--color-tedx);
+  text-underline-offset: 4px;
+}
+
+.north-explore:hover, .north-explore svg {
+  color: var(--color-tedx);
+}
+
+.north-compass {
+  position: relative;
+  width: min(100%, 540px);
+  justify-self: center;
+  --hub-x: 54%;
+  --hub-y: 45%;
+  transform-origin: var(--hub-x) var(--hub-y);
+  transform: translate3d(
+    calc(var(--north-art-x, 0px) * var(--north-center, 0)),
+    calc(var(--north-art-y, 0px) * var(--north-center, 0) + var(--north-handoff, 0) * 9%), 0
+  ) scale(var(--north-art-scale, 1));
+  opacity: calc(1 - var(--north-handoff, 0) * .24);
+}
+
+.north-art {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.north-hero.is-assembling .north-art {
+  opacity: var(--north-assembled);
+}
+
+.north-pieces {
+  display: none;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.north-hero.is-assembling .north-pieces {
+  display: block;
+}
+
+.north-piece {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform-origin: var(--hub-x) var(--hub-y);
+  opacity: var(--piece-opacity, 0);
+  transform: translate3d(
+    calc(var(--piece-x) * var(--piece-distance, 1)),
+    calc(var(--piece-y) * var(--piece-distance, 1)), 0
+  ) rotate(calc(var(--piece-angle) * var(--piece-distance, 1)))
+    scale(calc(1 + var(--piece-distance, 1) * .16));
+}
+
+/* Shared seams partition the original image so the pieces align at rest. */
+.north-piece--crown {
+  --piece-x: 6%;
+  --piece-y: -78%;
+  --piece-angle: -28deg;
+  clip-path: polygon(0 0, 100% 0, 100% 34%, 72% 35%, 64% 41%, 59% 40%, 54% 45%, 46% 43%, 39% 40%, 28% 39%, 0 29%);
+}
+
+.north-piece--west {
+  --piece-x: -86%;
+  --piece-y: -9%;
+  --piece-angle: -38deg;
+  clip-path: polygon(0 29%, 28% 39%, 39% 40%, 46% 43%, 54% 45%, 58% 53%, 56% 61%, 62% 68%, 49% 70%, 39% 67%, 27% 73%, 0 70%);
+}
+
+.north-piece--east {
+  --piece-x: 91%;
+  --piece-y: 5%;
+  --piece-angle: 39deg;
+  clip-path: polygon(100% 34%, 100% 72%, 79% 73%, 69% 69%, 62% 68%, 56% 61%, 58% 53%, 54% 45%, 59% 40%, 64% 41%, 72% 35%);
+}
+
+.north-piece--base {
+  --piece-x: -11%;
+  --piece-y: 63%;
+  --piece-angle: 24deg;
+  clip-path: polygon(0 70%, 27% 73%, 39% 67%, 49% 70%, 62% 68%, 69% 69%, 79% 73%, 100% 72%, 100% 100%, 0 100%);
+}
+
+.north-orbit, .north-bearing {
+  position: absolute;
+  left: var(--hub-x);
+  top: var(--hub-y);
+  pointer-events: none;
+}
+
+.north-orbit {
+  width: 69%;
+  overflow: visible;
+  fill: none;
+  transform: translate(-50%, -50%) rotate(-90deg);
+  opacity: var(--north-orbit-opacity, 0);
+}
+
+.north-orbit-ticks {
+  stroke: #eae7e8;
+  stroke-width: .8;
+  stroke-dasharray: .19 .81;
+  opacity: .24;
+}
+
+.north-orbit-axis {
+  stroke: var(--color-tedx);
+  stroke-width: .8;
+  opacity: .72;
+}
+
+.north-orbit-arc {
+  stroke: var(--color-tedx);
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - var(--north-arc, 0));
+}
+
+.north-orbit-lock {
+  stroke: var(--color-tedx);
+  stroke-width: 1.45;
+  transform-origin: center;
+  transform: scale(var(--north-lock-scale, 1));
+  opacity: var(--north-lock, 0);
+}
+
+.north-bearing {
+  width: 45%;
+  height: 1px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--color-tedx) 12.55%, transparent), var(--color-tedx));
+  transform-origin: left center;
+  transform: rotate(-71deg) scaleX(var(--north-trace, 0));
+  opacity: calc(var(--north-trace, 0) * (1 - var(--north-handoff, 0)));
+}
+
+.north-course {
+  --course-height: clamp(100px, 19vh, 185px);
+  position: fixed;
+  z-index: 3;
+  right: clamp(7px, 1.8vw, 30px);
+  top: 56%;
+  width: 12px;
+  height: var(--course-height);
+  transform: translateY(-50%);
+  opacity: var(--north-course-opacity, 0);
+  pointer-events: none;
+}
+
+.north-course-track, .north-course-trace, .north-course-marker {
+  position: absolute;
+  left: 50%;
+}
+
+.north-course-track {
+  inset-block: 0;
+  width: 1px;
+  background: repeating-linear-gradient(to bottom, #a39b9e65 0 1px, transparent 1px 6px);
+}
+
+.north-course-trace {
+  inset: 0;
+  background: var(--color-tedx);
+  transform: scaleY(var(--north-course-position, 0));
+  transform-origin: top;
+}
+
+.north-course-marker {
+  top: 0;
+  width: 9px;
+  height: 9px;
+  background: var(--color-tedx);
+  clip-path: polygon(50% 0, 66% 34%, 100% 50%, 66% 66%, 50% 100%, 34% 66%, 0 50%, 34% 34%);
+  transform: translate(-50%, calc(var(--course-height) * var(--north-course-position, 0) - 50%));
+}
+
+@media (max-width: 700px) {
+  .north-layout {
+    grid-template-columns: 1fr;
+    padding-block: 38px 30px;
+  }
+
+  .north-compass {
+    width: min(100%, 380px, 37svh);
+  }
+
+  .north-scroll-cue {
+    bottom: 4px;
+  }
+
+  .north-course {
+    width: 8px;
+  }
+}
+
+@media (max-width: 700px) and (max-height: 720px) {
+  .north-layout {
+    gap: 18px;
+    padding-block: 24px 20px;
+  }
+
+  .north-copy h1 {
+    font-size: 3.6rem;
+  }
+
+  .north-statement, .north-actions {
+    margin-top: 16px;
+  }
+
+  .north-event {
+    margin-top: 12px;
+  }
+
+  .north-compass {
+    max-width: 33svh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .north-course, .north-orbit, .north-bearing, .north-scroll-cue {
+    display: none !important;
+  }
+
+  .north-compass {
+    transform: none;
+    opacity: 1;
+  }
+}

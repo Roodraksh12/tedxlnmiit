@@ -625,20 +625,20 @@ export default function Gallery() {
       <h1 id="gallery-heading" className="mb-8 text-center text-5xl font-extrabold text-white sm:text-7xl">Gallery</h1>
       <nav aria-label="Gallery collections" className="mb-10 flex flex-wrap justify-center gap-3">
         {collections.map(({ slug, title }) => (
-          <a key={slug} href={`#${slug}`} className="rounded-lg border border-white/25 px-4 py-2 text-white hover:border-red-500">{title}</a>
+          <a key={slug} href={`#${slug}`} className="rounded-lg border border-white/25 px-4 py-2 text-white hover:border-tedx">{title}</a>
         ))}
       </nav>
       {collections.map(({ slug, title, photos }, collectionIndex) => (
-        <section key={slug} id={slug} aria-labelledby={`${slug}-heading`} className="mb-14 scroll-mt-28">
+        <section key={slug} id={slug} aria-labelledby={`${slug}-heading`} className="gallery-collection mb-14 scroll-mt-28">
           <h2 id={`${slug}-heading`} className="mb-5 text-2xl font-semibold text-white sm:text-3xl">{title}</h2>
           <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
             {photos.map(({ src, alt }, index) => (
-              <li key={src} className="overflow-hidden rounded-lg border border-white/10 bg-black">
+              <li key={src} className={`overflow-hidden rounded-lg border border-white/10 bg-black${index === 0 ? ' gallery-photo-lead' : ''}`}>
                 <img
                   className="block aspect-[4/3] w-full object-cover"
                   src={src}
                   alt={alt}
-                  loading={collectionIndex === 0 && index < 3 ? 'eager' : 'lazy'}
+                  loading={index === 0 || (collectionIndex === 0 && index < 3) ? 'eager' : 'lazy'}
                   decoding="async"
                 />
               </li>

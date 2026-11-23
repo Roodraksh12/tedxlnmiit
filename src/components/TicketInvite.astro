@@ -66,39 +66,35 @@ import Ticket from './Ticket.jsx';
 .ticket-invite { --nav-space:var(--site-header-height); --stage-height:calc(100svh - var(--nav-space)); position:relative; width:100%; isolation:isolate; color:#f5f2eb; }
 .ticket-invite-stage { position:relative; display:flex; align-items:center; justify-content:center; min-height:620px; padding:60px 24px; overflow:clip; }
 .ticket-destination { position:absolute; top:0; left:0; width:1px; height:1px; scroll-margin-top:var(--nav-space); }
-.ticket-backdrop { position:absolute; inset:0; background:#080808; opacity:1; z-index:-1; pointer-events:none; }
+.ticket-backdrop { position:absolute; inset:0; background:color-mix(in srgb,var(--site-background) 32%,transparent); opacity:1; z-index:-1; pointer-events:none; }
 .ticket-landing { width:min(960px,100%); position:relative; z-index:1; }
 .ticket-heading { text-align:center; margin-bottom:32px; }
 .ticket-heading p,.ticket-footnote,.ticket-eyebrow { font:10px/1.5 ui-monospace,monospace; letter-spacing:.18em; }
-.ticket-heading p { color:#EB0028; margin-bottom:12px; }
+.ticket-heading p { color:var(--color-tedx); margin-bottom:12px; }
 .ticket-heading h2 { font-size:clamp(26px,4vw,52px); line-height:1.05; letter-spacing:-.055em; font-weight:700; }
 .mobile-break { display:none; }
 .ticket-footnote { text-align:center; margin-top:24px; color:#aaa3a5; font-size:9px; }
-.ticket-footnote span { padding:0 16px; color:#EB0028; }
+.ticket-footnote span { padding:0 16px; color:var(--color-tedx); }
 .ticket-invite-title { display:none; position:absolute; inset:0; z-index:3; }
 .ticket-invite-title:focus-visible { outline:2px solid #f5f2eb; outline-offset:-12px; }
 .ticket-lettering { display:block; overflow:visible; }
 .ticket-lettering text { font-family:var(--font-primary); font-size:100px; font-weight:600; letter-spacing:-5.5px; fill:#f5f2eb; text-rendering:geometricPrecision; }
-.ticket-dot { position:absolute; z-index:2; left:0; top:0; width:110px; height:110px; background:#EB0028; border-radius:50%; pointer-events:none; display:none; }
+.ticket-dot { position:absolute; z-index:2; left:0; top:0; width:110px; height:110px; background:var(--color-tedx); border-radius:50%; pointer-events:none; display:none; }
 .ticket-scroll-cue { display:none; position:absolute; bottom:28px; left:0; right:0; text-align:center; font:8px/1.5 ui-monospace,monospace; letter-spacing:.17em; color:#aba2a5; pointer-events:none; z-index:3; }
-.ticket-scroll-line { display:block; width:1px; height:28px; background:#EB0028; margin:12px auto; }
+.ticket-scroll-line { display:block; width:1px; height:28px; background:var(--color-tedx); margin:12px auto; }
 .is-scroll-invite { height:280svh; }
 .is-scroll-invite .ticket-destination { top:calc(100% - var(--stage-height)); }
 .is-scroll-invite .ticket-invite-stage { height:var(--stage-height); min-height:0; position:sticky; top:var(--nav-space); padding:24px 40px; }
-.is-scroll-invite .ticket-invite-title,.is-scroll-invite .ticket-dot,.is-scroll-invite .ticket-scroll-cue { display:block; }
-.is-scroll-invite .ticket-reveal { clip-path:circle(0 at 50% 50%); }
-.is-scroll-invite .ticket-heading,.is-scroll-invite .ticket-footnote { opacity:0; }
-.is-scroll-invite .ticket-backdrop { opacity:0; }
-.is-scroll-invite :global(.admission-main),.is-scroll-invite :global(.admission-stub) { opacity:var(--ticket-details,0); }
-:global(.ticket-entry) .ticket-invite-title,:global(.ticket-entry) .ticket-dot,:global(.ticket-entry) .ticket-scroll-cue { visibility:hidden; }
-:global(.ticket-entry) .ticket-reveal { clip-path:none; opacity:1; --ticket-details:1; }
-:global(.ticket-entry) .ticket-heading,:global(.ticket-entry) .ticket-footnote,:global(.ticket-entry) .ticket-backdrop { opacity:1; }
+:is(.is-scroll-invite,.is-ticket-playing) :is(.ticket-invite-title,.ticket-dot,.ticket-scroll-cue) { display:block; }
+:is(.is-scroll-invite,.is-ticket-playing) .ticket-reveal { clip-path:circle(0 at 50% 50%); }
+:is(.is-scroll-invite,.is-ticket-playing) :is(.ticket-heading,.ticket-footnote,.ticket-backdrop) { opacity:0; }
+:is(.is-scroll-invite,.is-ticket-playing) :is(:global(.admission-main),:global(.admission-stub)) { opacity:var(--ticket-details,0); }
 .ticket-inclusions { display:grid; grid-template-columns:1fr 1fr; gap:70px; max-width:1040px; margin:0 auto; padding:88px 40px 100px; }
-.ticket-eyebrow { color:#EB0028; margin-bottom:18px; }
+.ticket-eyebrow { color:var(--color-tedx); margin-bottom:18px; }
 .ticket-inclusions h2 { font-size:clamp(24px,3vw,36px); line-height:1.25; letter-spacing:-.04em; font-weight:500; }
 .ticket-inclusions ul { list-style:none; padding:0; }
 .ticket-inclusions li { padding:15px 0; border-bottom:1px solid #ffffff20; color:#c7c0c3; font-size:13px; }
-.ticket-inclusions li::before { content:'↗'; color:#EB0028; margin-right:14px; }
+.ticket-inclusions li::before { content:'↗'; color:var(--color-tedx); margin-right:14px; }
 @media(max-width:700px) {
   .is-scroll-invite { height:240svh; }.ticket-invite-stage { padding:40px 20px; min-height:0; }.is-scroll-invite .ticket-invite-stage { padding:16px 20px; }
   .ticket-heading { margin-bottom:22px; }.ticket-heading h2 { font-size:clamp(25px,6.5vw,40px); }.ticket-heading p { font-size:8px; margin-bottom:10px; }

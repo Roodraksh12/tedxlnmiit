@@ -6,6 +6,7 @@ export default function StarConstellation() {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d', { alpha: false });
     if (!ctx) return;
+    const accent = getComputedStyle(canvas).getPropertyValue('--color-tedx').trim();
     const cache = document.createElement('canvas');
     const base = cache.getContext('2d', { alpha: false });
     let width = 0, height = 0, ratio = 1, stars = [], seed = 317;
@@ -33,7 +34,7 @@ export default function StarConstellation() {
       seed = 317; stars = []; highlighted.clear(); edges = []; pointer = pulse = null;
       base.globalAlpha = 1; base.fillStyle = '#070609'; base.fillRect(0, 0, width, height);
       const wash = base.createRadialGradient(width * .8, height * .8, 0, width * .8, height * .8, width * .7);
-      wash.addColorStop(0, '#EB00280c'); wash.addColorStop(1, '#07060900'); base.fillStyle = wash; base.fillRect(0, 0, width, height);
+      wash.addColorStop(0, accent + '0c'); wash.addColorStop(1, '#07060900'); base.fillStyle = wash; base.fillRect(0, 0, width, height);
       const count = Math.min(interactive ? 850 : 450, Math.round(width * height / 2600));
       for (let i = 0; i < count; i++) {
         base.globalAlpha = .08 + rand() * .18; base.fillStyle = '#fff0d6';
@@ -74,19 +75,19 @@ export default function StarConstellation() {
         if (item.target === 0 && item.alpha < .005) { highlighted.delete(i); continue; }
         star(ctx, stars[i], stars[i].r * (1 + item.alpha * .8), '#fff5e7', item.alpha * .85);
       }
-      ctx.strokeStyle = '#EB0028'; ctx.lineWidth = .8;
+      ctx.strokeStyle = accent; ctx.lineWidth = .8;
       for (const [a, b] of edges) {
         ctx.globalAlpha = Math.min(highlighted.get(a)?.alpha || 0, highlighted.get(b)?.alpha || 0) * .5;
         ctx.beginPath(); ctx.moveTo(stars[a].x, stars[a].y); ctx.lineTo(stars[b].x, stars[b].y); ctx.stroke();
       }
       if (pointer && highlighted.size) {
         const [i, item] = highlighted.entries().next().value;
-        star(ctx, stars[i], stars[i].r + 4, '#EB0028', item.alpha);
+        star(ctx, stars[i], stars[i].r + 4, accent, item.alpha);
       }
       if (pulse) {
         const t = (now - pulse.start) / 650;
         if (t < 1) {
-          moving = true; ctx.globalAlpha = (1 - t) * .4; ctx.strokeStyle = '#EB0028';
+          moving = true; ctx.globalAlpha = (1 - t) * .4; ctx.strokeStyle = accent;
           ctx.beginPath(); ctx.arc(pulse.x, pulse.y, 6 + t * 45, 0, Math.PI * 2); ctx.stroke();
         } else pulse = null;
       }

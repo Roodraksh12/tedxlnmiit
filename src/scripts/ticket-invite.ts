@@ -15,12 +15,13 @@ function initTicketInvite() {
   const destination = invite.querySelector<HTMLElement>('#ticket-prices')!;
   const compact = matchMedia('(max-height: 649px)');
   const events = new AbortController();
-  let frame = 0, active = true, lastProgress = -1, enhanced = false;
+  let frame = 0, active = true, lastProgress = -1;
+  let enhanced: boolean | undefined;
   let metrics: ReturnType<typeof measure> | undefined;
-  let playback: { start: number; from: number; to: number; duration: number; navigation?: boolean } | undefined;
+  let playback: { start: number; from: number; duration: number; navigation?: boolean; local?: boolean } | undefined;
   let navigationSequence = 0;
   let navigationVeil: HTMLElement | undefined;
-  let pendingAnchor = location.hash === '#ticket-prices';
+  let pendingAnchor = false;
   const clamp = (n: number) => Math.max(0, Math.min(1, n));
   const segment = (p: number, a: number, b: number) => clamp((p - a) / (b - a));
   const smooth = (p: number) => p * p * (3 - 2 * p);
@@ -28,17 +29,24 @@ function initTicketInvite() {
 
   function configure() {
     const next = document.documentElement.dataset.motion === 'full' && !compact.matches;
-    if (next === enhanced && metrics) return;
+    if (next === enhanced) return;
     enhanced = next;
     invite!.classList.toggle('is-scroll-invite', enhanced);
     metrics = undefined;
     lastProgress = -1;
-    if (!enhanced) {
-      playback = undefined;
-      reveal.inert = false;
-      for (const el of [reveal, heading, footnote, backdrop]) el.removeAttribute('style');
-      link.tabIndex = -1;
+    if (playback && !!playback.local === enhanced) {
+      pendingAnchor = !!playback.navigation;
+      jumpToTicket();
+      return;
     }
+    if (!enhanced && !playback?.local) resetLocalReveal();
+  }
+
+  function resetLocalReveal() {
+    invite!.classList.remove('is-ticket-playing');
+    reveal.inert = false;
+    for (const el of [reveal, heading, footnote, backdrop]) el.removeAttribute('style');
+    link.tabIndex = -1;
   }
 
   // One layout read per resize/font change. Scroll frames only read scrollY.
@@ -94,17 +102,23 @@ function initTicketInvite() {
   function update(now: number) {
     frame = 0;
     configure();
-    if (!enhanced) return;
+    if (!enhanced && !playback?.local) return;
     const m = metrics ??= measure();
-    let finished = false;
     if (playback) {
       const elapsed = clamp((now - playback.start) / playback.duration);
-      window.scrollTo({ top: mix(playback.from, playback.to, smooth(elapsed)), behavior: 'instant' });
-      if (elapsed === 1) { pendingAnchor = !!playback.navigation; playback = undefined; finished = true; }
+      const progress = mix(playback.from, 1, smooth(elapsed));
+      if (!playback.local) window.scrollTo({ top: m.start + m.range * progress, behavior: 'instant' });
+      paint(progress, m);
+      if (elapsed < 1) schedule();
+      else {
+        pendingAnchor = !!playback.navigation;
+        if (playback.local) resetLocalReveal();
+        playback = undefined;
+        destination.focus({ preventScroll: true });
+      }
+      return;
     }
     paint(clamp((scrollY - m.start) / m.range), m);
-    if (finished) destination.focus({ preventScroll: true });
-    if (playback) schedule();
   }
   function schedule() { if (!frame) frame = requestAnimationFrame(update); }
   function invalidate() { metrics = undefined; lastProgress = -1; schedule(); }
@@ -114,10 +128,17 @@ function initTicketInvite() {
     navigationVeil?.remove();
     navigationVeil = undefined;
   }
-  function stopPlayback() { playback = undefined; pendingAnchor = false; cancelNavigation(); }
+  function stopPlayback() {
+    if (playback?.local) resetLocalReveal();
+    playback = undefined;
+    pendingAnchor = false;
+    cancelNavigation();
+    document.documentElement.classList.remove('ticket-entry');
+  }
 
   function jumpToTicket() {
     cancelNavigation();
+    if (playback?.local) resetLocalReveal();
     playback = undefined;
     configure();
     if (enhanced) {
@@ -131,8 +152,9 @@ function initTicketInvite() {
   }
 
   async function navigateToTicket() {
+    const covered = document.documentElement.classList.contains('ticket-entry');
     stopPlayback();
-    if (document.documentElement.dataset.motion !== 'full') {
+    if (document.documentElement.dataset.motion === 'reduced') {
       pendingAnchor = true;
       jumpToTicket();
       return;
@@ -141,28 +163,26 @@ function initTicketInvite() {
     const veil = document.createElement('div');
     veil.className = 'ticket-navigation-veil';
     veil.setAttribute('aria-hidden', 'true');
+    veil.style.opacity = '1';
     document.body.append(veil);
     navigationVeil = veil;
-    await veil.animate([{ opacity: 0 }, { opacity: 1 }], {
-      duration: 120, easing: 'ease-out', fill: 'forwards',
-    }).finished.catch(() => {});
+    if (!covered) {
+      await veil.animate([{ opacity: 0 }, { opacity: 1 }], {
+        duration: 120, easing: 'ease-out', fill: 'forwards',
+      }).finished.catch(() => {});
+    }
     if (sequence !== navigationSequence) return;
 
     configure();
-    if (enhanced) {
-      const m = metrics ??= measure();
-      const from = m.start + m.range * .52;
-      // Move behind the brief fade, then play only the dot-to-ticket reveal.
-      paint(.52, m);
-      window.scrollTo({ top: from, behavior: 'instant' });
-      playback = { start: performance.now(), from, to: m.start + m.range, duration: 850, navigation: true };
-      schedule();
-    } else {
-      destination.scrollIntoView({ behavior: 'instant', block: 'start' });
-      destination.focus({ preventScroll: true });
-      pendingAnchor = true;
-    }
-    document.documentElement.classList.remove('ticket-entry');
+    const local = !enhanced;
+    if (local) invite!.classList.add('is-ticket-playing');
+    lastProgress = -1;
+    const m = metrics = measure();
+    const from = .60;
+    paint(from, m);
+    window.scrollTo({ top: m.start + (local ? 0 : m.range * from), behavior: 'instant' });
+    playback = { start: performance.now() + 110, from, duration: 760, navigation: true, local };
+    schedule();
     await veil.animate([{ opacity: 1 }, { opacity: 0 }], {
       duration: 180, easing: 'ease-in', fill: 'forwards',
     }).finished.catch(() => {});
@@ -170,16 +190,17 @@ function initTicketInvite() {
   }
 
   link.addEventListener('click', event => {
-    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || !enhanced) return;
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || (!enhanced && !playback?.local)) return;
     event.preventDefault();
+    if (playback?.local) return;
     pendingAnchor = false;
     const m = metrics ??= measure();
     cancelNavigation();
-    playback = { start: performance.now(), from: Math.max(m.start, Math.min(scrollY, m.start + m.range)), to: m.start + m.range, duration: 1600 };
+    playback = { start: performance.now(), from: clamp((scrollY - m.start) / m.range), duration: 1600 };
     schedule();
   }, { signal: events.signal });
 
-  // Navigation hands off to the short reveal without scrolling through the page.
+  // Start the same reveal for every link into the ticket section.
   document.addEventListener('click', event => {
     const anchor = (event.target as Element).closest?.('a[href]') as HTMLAnchorElement | null;
     if (!anchor || anchor === link || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || (anchor.target && anchor.target !== '_self') || anchor.hasAttribute('download')) return;
@@ -197,8 +218,17 @@ function initTicketInvite() {
   window.addEventListener('keydown', event => {
     if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', 'Escape', ' '].includes(event.key)) stopPlayback();
   }, { signal: events.signal });
-  window.addEventListener('hashchange', () => { pendingAnchor = location.hash === '#ticket-prices'; if (pendingAnchor) jumpToTicket(); }, { signal: events.signal });
-  window.addEventListener('motion:change', invalidate, { signal: events.signal });
+  window.addEventListener('hashchange', () => {
+    if (location.hash === '#ticket-prices') void navigateToTicket();
+    else stopPlayback();
+  }, { signal: events.signal });
+  window.addEventListener('motion:change', () => {
+    invalidate();
+    if (document.documentElement.dataset.motion === 'reduced' && (playback?.navigation || navigationVeil)) {
+      pendingAnchor = true;
+      jumpToTicket();
+    }
+  }, { signal: events.signal });
   window.addEventListener('pageshow', () => { invalidate(); if (pendingAnchor) requestAnimationFrame(jumpToTicket); }, { signal: events.signal });
   compact.addEventListener('change', invalidate, { signal: events.signal });
   const sizes = new ResizeObserver(invalidate); sizes.observe(reveal);
@@ -210,7 +240,7 @@ function initTicketInvite() {
     if (pendingAnchor) jumpToTicket();
   });
   configure();
-  if (pendingAnchor) jumpToTicket(); else schedule();
+  if (location.hash === '#ticket-prices') void navigateToTicket(); else schedule();
   const cleanup = () => { cancelNavigation(); cancelAnimationFrame(frame); sizes.disconnect(); visibility.disconnect(); events.abort(); };
   document.addEventListener('astro:before-swap', cleanup, { once: true });
   if (import.meta.hot) import.meta.hot.dispose(cleanup);

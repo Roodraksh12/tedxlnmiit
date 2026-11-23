@@ -7,7 +7,7 @@ const About = () => {
       title: (
         <>
           What is{" "}
-          <span className="text-[#EB0028] font-semibold">TEDxLNMIIT</span>?
+          <span className="text-tedx font-semibold">TEDxLNMIIT</span>?
         </>
       ),
       text: `TEDxLNMIIT is a student-organised event that brings together community leaders, innovators, and changemakers to express their ideas. It is a forum for individuals to share their stories, thoughts, and hobbies in an instructive and inspirational way. Through Inventing North, we explore how curiosity, purpose, and new perspectives can help us choose a direction of our own. Our goal is to bring together the best minds to present ideas that will change your perspectives and lead you on a journey of self-discovery.`,
@@ -16,7 +16,7 @@ const About = () => {
       id: 2,
       title: (
         <>
-          About <span className="text-[#EB0028] font-bold">TED</span>
+          About <span className="text-tedx font-bold">TED</span>
         </>
       ),
       text: `TED began in 1984 as a conference where Technology, Entertainment and Design converged, but today it spans a multitude of worldwide communities and initiatives exploring everything from science and business to education, arts and global issues. It is on a mission to discover and spread ideas that spark imagination, embrace possibility and catalyze impact.`,
@@ -25,7 +25,7 @@ const About = () => {
       id: 3,
       title: (
         <>
-          About <span className="text-[#EB0028] font-semibold">TEDx</span>
+          About <span className="text-tedx font-semibold">TEDx</span>
         </>
       ),
       text: `In the spirit of ideas worth spreading, TEDx is a program of local, self-organized events that bring people together to share a TED-like experience. At a TEDx event, TED Talks videos and live speakers combine to spark deep discussion and connection. These local, self-organized events are branded TEDx, where x = independently organized TED event.`,

@@ -7,6 +7,7 @@ import SponsorsComponent from '../components/Sponsors.jsx';
 
 import LandingPage from "../components/LandingPage.jsx";
 import TicketInvite from "../components/TicketInvite.astro";
+import Aftermovie from "../components/Aftermovie.astro";
 ---
 
 <MainLayout title="Inventing North | TEDxLNMIIT" description="Inventing North at TEDxLNMIIT. Explore ideas, stories, and conversations that challenge familiar directions and open new possibilities."  >
@@ -98,124 +99,108 @@ import TicketInvite from "../components/TicketInvite.astro";
 </script>
 
 
-<LandingPage client:load />
+<LandingPage />
+
+<script>
+  import '../scripts/north-hero';
+</script>
 
 
 
-<!-- COUNTDOWN SECTION -->
-<section class="relative w-full   py-20 flex flex-col items-center text-center px-4">
-  <!-- Heading -->
- <h1
-  class="
-    text-center
-    font-light
-    tracking-tight
-    leading-[1]
-    max-w-[92vw]
-    mx-auto
-    py-5
-    text-[clamp(2.6rem,9vw,5.5rem)]
-  "
->
-  <span class="text-[#EB0028]">Hello</span>{" "}
-  <span class="text-white">Explorer</span>
-</h1>
 
-
-  <!-- Countdown Container -->
-  <div class=" border border-[#EB0028] px-6 py-8 md:px-12 md:py-10 rounded-2xl bg-black/60 w-full max-w-3xl mx-auto">
-  <div id="countdown-status" aria-live="polite" class="text-gray-300 mb-6 tracking-widest uppercase text-sm md:text-base text-center">
-    Time Until the Event
+<section class="home-countdown" data-north-waypoint aria-labelledby="countdown-status">
+  <div class="countdown-layout">
+    <h2 id="countdown-status" aria-live="polite">Time until the event</h2>
+    <dl id="countdown">
+      {['days', 'hours', 'minutes', 'seconds'].map(unit => (
+        <div class="count-box">
+          <dt>{unit}</dt>
+          <dd id={unit}>0</dd>
+        </div>
+      ))}
+    </dl>
   </div>
-
-  <!-- Countdown Boxes -->
-  <div id="countdown"
-       class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 justify-center items-center">
-    <div class="count-box">
-      <div id="days" class="count-number">0</div>
-      <div class="count-label">Days</div>
-    </div>
-    <div class="count-box">
-      <div id="hours" class="count-number">0</div>
-      <div class="count-label">Hours</div>
-    </div>
-    <div class="count-box">
-      <div id="minutes" class="count-number">0</div>
-      <div class="count-label">Minutes</div>
-    </div>
-    <div class="count-box">
-      <div id="seconds" class="count-number">0</div>
-      <div class="count-label">Seconds</div>
-    </div>
-  </div>
-</div>
-
-  <!-- Description -->
-  <p class="max-w-2xl text-lg md:text-xl mt-12 leading-relaxed font-medium text-gray-200">
-    Join us as we bring <span class="text-[#EB0028] font-semibold">bold ideas</span> and pioneers together —
-    a celebration of <span class="text-white font-semibold">creativity</span>,
-    <span class="text-[#EB0028] font-semibold">innovation</span>, and the people shaping tomorrow.
-  </p>
 </section>
 
   <TicketInvite />
 
-  <!-- ================= TEASER VIDEO ================= -->
-  <section class="w-full py-20 px-6 flex justify-center">
-    <div class="max-w-5xl w-full border-2 border-[#EB0028] rounded-2xl overflow-hidden">
-
-  <iframe title="TEDxLNMIIT 2026 Official Aftermovie" loading="lazy" class="w-full aspect-video" src="https://www.youtube.com/embed/WKzlsahvsAo?controls=1&amp;rel=0&amp;playsinline=1" allow="encrypted-media; fullscreen; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
-</div>
-
-  </section>
+  <Aftermovie />
 
 
 
 
 <style>
+  .home-countdown {
+    color: #eae7e8;
+    scroll-margin-top: calc(var(--site-header-height) + 12px);
+  }
+
+  .countdown-layout {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(180px, 1fr) minmax(0, 1.15fr);
+    align-items: center;
+    gap: clamp(20px, 5vw, 76px);
+    width: min(100% - 2 * clamp(20px, 5vw, 76px), 1400px);
+    margin-inline: auto;
+    padding-block: clamp(24px, 4vw, 52px);
+    border-block: 1px solid #2c272a;
+  }
+
+  .countdown-layout::before {
+    content: '';
+    position: absolute;
+    inset: -1px 0 auto;
+    height: 1px;
+    background: var(--ticket-surface);
+    transform: scaleX(var(--countdown-trace, 0));
+    transform-origin: right center;
+    pointer-events: none;
+  }
+
+  .countdown-layout h2 {
+    margin: 0;
+    font: 400 clamp(2rem, 4vw, 3.75rem)/1 var(--font-bebas);
+  }
+
+  #countdown {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 0;
+  }
+
   .count-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: #0d0d0d;
-  border: 1.5px solid rgba(235, 0, 40, 0.5);
-  border-radius: 1rem;
-  padding: 1rem 0.75rem;
-  box-shadow: none;
-  transition: none;
-  min-width: 65px;
-}
-
-
-  .count-number {
-    font-size: 1.8rem;
-    font-weight: 800;
-    color: #fff;
-    text-shadow: 0 0 10px rgba(235, 0, 40, 0.5);
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: center;
+    align-items: center;
+    min-width: 0;
+    text-align: center;
+    border-left: 1px solid #2c272a;
+    gap: 6px;
   }
 
-  .count-label {
-    margin-top: 0.3rem;
-    color: #e5e5e5;
-    font-weight: 500;
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 1px;
+  .count-box:first-child {
+    border-left: 0;
   }
 
-  /* Responsive adjustments */
-  @media (max-width: 640px) {
-    .count-number {
-      font-size: 1.5rem;
-    }
-    .count-label {
-      font-size: 0.7rem;
-    }
-    .count-box {
-      padding: 0.8rem 0.6rem;
-      border-radius: 0.75rem;
+  .count-box dt {
+    color: #aaa8ad;
+    font-size: clamp(.65rem, 1.15vw, .85rem);
+    text-transform: capitalize;
+  }
+
+  .count-box dd {
+    margin: 0;
+    font-size: clamp(1.55rem, 4vw, 3rem);
+    font-weight: 600;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 700px) {
+    .countdown-layout {
+      grid-template-columns: 1fr;
     }
   }
 </style>
@@ -225,10 +210,10 @@ import TicketInvite from "../components/TicketInvite.astro";
 
 
 
-<SponsorsComponent client:visible/>
+<div data-north-waypoint><SponsorsComponent client:visible /></div>
 
 
-<FAQPage client:visible/>
+<div data-north-waypoint><FAQPage client:visible /></div>
 
 
 </MainLayout>

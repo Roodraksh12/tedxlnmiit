@@ -2,27 +2,14 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { FaLinkedin } from "react-icons/fa";
+import { faculty } from "../data/faculty.js";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const teamData = [
   {
     title: "Faculty Mentor",
-    members: [
-      {
-        name: "Dr. Narendra Kumar",
-        role: ["Faculty Mentor", "Licensee"],
-        image: "/team/narendra.webp",
-        linkedin:
-          "https://www.linkedin.com/in/narendra-kumar-38692065?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
-      },
-      {
-        name: "Dr. Payel Pal",
-        role: ["Faculty Mentor"],
-        image: "/team/mentor2.webp",
-        linkedin: "https://www.linkedin.com/in/dr-payel-pal-89593413/",
-      },
-    ],
+    members: faculty,
   },
 
   {
@@ -414,7 +401,7 @@ export default function Team() {
   return (
     <section
       ref={sectionRef}
-      className="min-h-screen bg-black/30 text-white flex flex-col items-center py-20 px-4"
+      className="min-h-screen text-white flex flex-col items-center py-20 px-4"
     >
       <h1
         className="
@@ -429,8 +416,8 @@ export default function Team() {
     text-[clamp(2.6rem,8vw,7.5rem)]
   "
       >
-        <span className="text-[#EB0028] ">Meet Our</span>{" "}
-        <span className="text-[#EB0028]">Team</span>
+        <span className="text-tedx ">Meet Our</span>{" "}
+        <span className="text-tedx">Team</span>
       </h1>
 
       <div className="flex flex-col gap-20 w-full max-w-6xl">
@@ -468,7 +455,7 @@ export default function Team() {
                          ? "md:w-[23%]" // 3 cards per row
                          : "md:w-[22%]" // 4 cards per row
                      }
-                     transition-transform duration-300 hover:scale-95 hover:shadow-[#EB0028]/50
+                     transition-transform duration-300 hover:scale-95 hover:shadow-tedx/50
                    `}
                 >
                   <div className="relative mb-4">

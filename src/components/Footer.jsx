@@ -1,14 +1,8 @@
 import React from "react";
-import ShootingStars from "./ShootingStars";
 
 const Footer = () => {
   return (
-    <footer className="bg-black text-white py-10 relative overflow-hidden">
-
-      {/* ⭐ Shooting Stars Background */}
-      <div className="absolute inset-0 z-0">
-        <ShootingStars />
-      </div>
+    <footer className="text-white py-10 relative overflow-hidden border-t border-white/10">
 
       {/* MAIN LAYOUT */}
       <div
@@ -30,7 +24,7 @@ const Footer = () => {
 
 
           <p className="text-sm leading-snug">
-            <span className="text-[#EB0028]">x = independently</span><br />
+            <span className="text-tedx">x = independently</span><br />
             organized TED event
           </p>
 

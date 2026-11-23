@@ -188,7 +188,7 @@ export default function PastSpeakers() {
             />
 
             <div className="relative z-10 flex flex-col items-center gap-4 text-center px-2 sm:px-4 pointer-events-none">
-              <div className="w-[220px] aspect-square rounded-[20px] overflow-hidden border-4 border-[#EB0028] shadow-lg sm:w-[180px]">
+              <div className="w-[220px] aspect-square rounded-[20px] overflow-hidden border-4 border-tedx shadow-lg sm:w-[180px]">
                 <img
                   src={speaker.image}
                   alt={speaker.name}
@@ -196,7 +196,7 @@ export default function PastSpeakers() {
                 />
               </div>
 
-              <h1 className="text-3xl font-extrabold text-[#EB0028] sm:text-2xl">
+              <h1 className="text-3xl font-extrabold text-tedx sm:text-2xl">
                 {speaker.name}
               </h1>
 
@@ -213,7 +213,7 @@ export default function PastSpeakers() {
   rel={speaker.drive ? "noopener noreferrer" : undefined}
 
 
-                    className="text-[#EB0028] text-3xl -mt-8 hover:scale-110 transition-transform"
+                    className="text-tedx text-3xl -mt-8 hover:scale-110 transition-transform"
                   >
                     <FaYoutube />
                   </a>
@@ -223,7 +223,7 @@ export default function PastSpeakers() {
                     href={speaker.instagram}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[#EB0028] text-3xl -mt-8 hover:scale-110 transition-transform"
+                    className="text-tedx text-3xl -mt-8 hover:scale-110 transition-transform"
                   >
                     <FaInstagram />
                   </a>
@@ -233,7 +233,7 @@ export default function PastSpeakers() {
                     href={speaker.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[#EB0028] text-3xl -mt-8 hover:scale-110 transition-transform"
+                    className="text-tedx text-3xl -mt-8 hover:scale-110 transition-transform"
                   >
                     <FaLinkedin />
                   </a>

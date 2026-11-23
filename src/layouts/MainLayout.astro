@@ -4,7 +4,7 @@ import Footer from "../components/Footer.jsx";
 import "../styles/global.css";
 import NavWrapper from "../components/NavWrapper.jsx";
 import StarConstellation from "../components/StarConstellation.jsx";
-const { title = "Default Title", description = "Default Description" } = Astro.props;
+const { title = "Default Title", description = "Default Description", showFooter = true } = Astro.props;
 ---
 <!doctype html>
 <html lang="en">
@@ -22,7 +22,7 @@ const { title = "Default Title", description = "Default Description" } = Astro.p
         update();
         preference.addEventListener('change', update);
         connection?.addEventListener('change', update);
-        if (location.hash === '#ticket-prices') document.documentElement.classList.add('ticket-entry');
+        if (location.hash === '#ticket-prices' && !preference.matches) document.documentElement.classList.add('ticket-entry');
       })();
     </script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-VMRFWPCG0X"></script>
@@ -33,10 +33,10 @@ const { title = "Default Title", description = "Default Description" } = Astro.p
       gtag('config', 'G-VMRFWPCG0X', { send_page_view: true });
     </script>
   </head>
-  <body class="bg-black text-white overflow-x-hidden min-h-screen relative isolate">
+  <body class="text-white overflow-x-hidden min-h-screen relative isolate">
     <div class="fixed inset-0 -z-10 pointer-events-none"><StarConstellation client:load /></div>
     <NavWrapper pathname={Astro.url.pathname} client:load />
     <div id="page-transition" class="site-page min-h-screen"><main><slot /></main></div>
-    <Footer client:visible />
+    {showFooter && <Footer />}
   </body>
 </html>

@@ -1,40 +1,20 @@
 import { useEffect, useRef } from "react";
-import { gsap } from "gsap";
+import { ArrowUpRight } from "lucide-react";
+import "./Sponsors.css";
 
 export default function Sponsors() {
-  const scrollRef = useRef(null);
+  const partnersRef = useRef(null);
 
   useEffect(() => {
-    const scroll = scrollRef.current;
-    if (!scroll) return;
+    const section = partnersRef.current;
+    if (!section) return;
 
-    let visible = false, hovered = false, focused = false;
-    const tween = gsap.to(scroll, {
-      x: () => -scroll.scrollWidth / 2,
-      duration: 25, ease: 'none', repeat: -1, paused: true,
+    const observer = new IntersectionObserver(([entry]) => {
+      section.classList.toggle("is-visible", entry.isIntersecting);
     });
-    const sync = () => {
-      const full = document.documentElement.dataset.motion === 'full';
-      if (visible && full && !document.hidden && !hovered && !focused) tween.play();
-      else tween.pause();
-      if (!full) tween.progress(0);
-    };
-    const observer = new IntersectionObserver(entries => { visible = entries[0].isIntersecting; sync(); });
-    observer.observe(scroll.parentElement);
-    const enter = () => { hovered = true; sync(); };
-    const leave = () => { hovered = false; sync(); };
-    const focus = () => { focused = true; sync(); };
-    const blur = event => { focused = scroll.contains(event.relatedTarget); sync(); };
-    scroll.addEventListener('mouseenter', enter); scroll.addEventListener('mouseleave', leave);
-    scroll.addEventListener('focusin', focus); scroll.addEventListener('focusout', blur);
-    document.addEventListener('visibilitychange', sync); window.addEventListener('motion:change', sync);
-    const sizes = new ResizeObserver(() => tween.invalidate()); sizes.observe(scroll);
-    return () => {
-      observer.disconnect(); sizes.disconnect(); tween.kill();
-      scroll.removeEventListener('mouseenter', enter); scroll.removeEventListener('mouseleave', leave);
-      scroll.removeEventListener('focusin', focus); scroll.removeEventListener('focusout', blur);
-      document.removeEventListener('visibilitychange', sync); window.removeEventListener('motion:change', sync);
-    };
+    section.classList.add("is-ready");
+    observer.observe(section);
+    return () => observer.disconnect();
   }, []);
 
   const currentPartners = [
@@ -70,15 +50,12 @@ export default function Sponsors() {
     { name: "Canara Bank", logo: "/PrevPartners/canaraa.webp", link: "https://www.instagram.com/canarabankinsta?igsh=eTRxdHJpMzNvbzho" },
   ];
 
-  const loopedPartners = [...previousPartners, ...previousPartners];
+  const partnerRows = [previousPartners.slice(0, 5), previousPartners.slice(5)];
 
   return (
     <section className="text-white py-5 flex flex-col items-center gap-20 overflow-hidden">
       <div className="text-center">
-        <h1 className="text-center font-light tracking-tight leading-tight max-w-[92vw] mx-auto py-5 text-[clamp(2.4rem,8vw,4.5rem)]">
-          <span className="text-white">Current</span>{" "}
-          <span className="text-[#EB0028]">Partners</span>
-        </h1>
+        <h2 className="partners-title">Current <span>Partners</span></h2>
 
         <div className="flex flex-wrap justify-center gap-10">
           {currentPartners.map((partner, i) => (
@@ -107,48 +84,45 @@ export default function Sponsors() {
         </div>
       </div>
 
-      <div className="w-full overflow-hidden">
-        <h1 className="text-center font-light tracking-tight leading-tight max-w-[92vw] mx-auto py-5 text-[clamp(2.4rem,8vw,4.5rem)]">
-          <span className="text-white">Previous</span>{" "}
-          <span className="text-[#EB0028]">Partners</span>
-        </h1>
+      <section ref={partnersRef} id="previous-partners" className="previous-partners" aria-labelledby="previous-partners-title">
+        <h2 id="previous-partners-title" className="partners-title">Previous <span>Partners</span></h2>
 
-        <div className="relative w-full overflow-x-auto" aria-label="Previous partners">
-          <div ref={scrollRef} className="flex gap-3 w-max whitespace-nowrap">
-            {loopedPartners.map((partner, i) => (
-              <a
-                key={i}
-                aria-hidden={i >= previousPartners.length ? true : undefined}
-                tabIndex={i >= previousPartners.length ? -1 : undefined}
-                href={partner.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-white rounded-2xl shadow-xl w-48 h-20 flex items-center justify-center"
-              >
-                <img
-                  src={partner.logo}
-                  alt={partner.name}
-                  className="object-contain w-32 h-18"
-                />
-              </a>
-            ))}
-          </div>
+        <div className="partners-marquee" aria-hidden="true">
+          {partnerRows.map((row, index) => (
+            <div className="partners-window" key={row[0].name}>
+              <div className="partners-track" data-direction={index === 0 ? "left" : "right"}>
+                {[0, 1, 2].map(copy => (
+                  <div className="partners-group" key={copy}>
+                    {row.map(partner => <PartnerTile key={partner.name} partner={partner} rolling />)}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
-      </div>
 
-      <div className="text-center mt-16 max-w-3xl">
+        <ul className="partners-grid">
+          {previousPartners.map(partner => (
+            <li key={partner.name}>
+              <PartnerTile partner={partner} />
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <div className="text-center max-w-3xl px-5">
         <h1 className="text-center font-light tracking-tight leading-tight max-w-[92vw] mx-auto py-5 text-[clamp(2rem,6vw,3.2rem)]">
           <span className="text-white">Interested in partnership?</span>
         </h1>
 
         <p className="max-w-2xl text-lg md:text-xl mt-4 leading-relaxed font-medium text-gray-200">
           Collaborating with{" "}
-          <span className="text-[#EB0028] font-semibold">TEDxLNMIIT</span>{" "}
+          <span className="text-tedx font-semibold">TEDxLNMIIT</span>{" "}
           provides a unique opportunity to enhance your organization's global
           network within the{" "}
           <span className="text-white font-semibold">TED community</span>.
           Leverage{" "}
-          <span className="text-[#EB0028] font-semibold">innovative ideas</span>{" "}
+          <span className="text-tedx font-semibold">innovative ideas</span>{" "}
           and technology to empower education and foster innovation.
         </p>
 
@@ -156,11 +130,27 @@ export default function Sponsors() {
           href="/Brochure/Partnership_Brochure_TEDxLNMIIT2026.pdf"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center justify-center px-6 py-3 bg-[#EB0028] text-white font-medium rounded-full transition-all duration-300 ease-out hover:bg-[#EB0028] hover:-translate-y-0.5 active:translate-y-0 mt-8"
+          className="inline-flex items-center justify-center px-6 py-3 bg-tedx text-white font-medium rounded-full transition-all duration-300 ease-out hover:bg-tedx hover:-translate-y-0.5 active:translate-y-0 mt-8"
         >
           Know more
         </a>
       </div>
     </section>
   );
+}
+
+function PartnerTile({ partner, rolling = false }) {
+  const content = (
+    <>
+      <span className="partner-logo"><img src={partner.logo} alt="" width="130" height="56" loading="lazy" decoding="async" /></span>
+      <span className="partner-name">{partner.name}</span>
+    </>
+  );
+
+  return partner.link ? (
+    <a className="partner-tile" href={partner.link} target="_blank" rel="noopener noreferrer" tabIndex={rolling ? -1 : undefined}>
+      {content}
+      {!rolling && <ArrowUpRight className="partner-link-icon" size={14} aria-hidden="true" />}
+    </a>
+  ) : <div className="partner-tile">{content}</div>;
 }
