@@ -139,7 +139,7 @@ function initNorthJourney(hero: HTMLElement, stage: HTMLElement, course: HTMLEle
     viewport = document.documentElement.clientHeight;
     layoutWidth = document.documentElement.clientWidth;
     mobile = matchMedia('(max-width: 700px)').matches;
-    const available = mobile ? parseFloat(getComputedStyle(stage).minHeight) || viewport - header : viewport - header;
+    const available = parseFloat(getComputedStyle(stage).minHeight) || viewport - header;
     const pinned = motion.matches && stage.offsetHeight <= available + 2;
     initialTitleScale = mobile ? Math.min(1.07, stage.clientWidth * .94 / title.offsetWidth) : 1.36;
 
@@ -154,7 +154,7 @@ function initNorthJourney(hero: HTMLElement, stage: HTMLElement, course: HTMLEle
     hero.style.setProperty('--north-title-rise', `${pinned ? stage.clientHeight * (mobile ? .04 : .10) : 0}px`);
     hero.style.setProperty('--north-title-line', `${(title.offsetWidth - north.offsetWidth) / 2}px`);
     const artX = pinned ? stage.clientWidth / 2 - compass.offsetLeft - compass.offsetWidth * .54 : 0;
-    const artY = pinned ? stage.clientHeight * (mobile ? .59 : .55) - compass.offsetTop - compass.offsetHeight * .45 : 0;
+    const artY = pinned ? stage.clientHeight * (mobile ? .59 : .50) - compass.offsetTop - compass.offsetHeight * .45 : 0;
     hero.style.setProperty('--north-art-x', `${artX}px`);
     hero.style.setProperty('--north-art-y', `${artY}px`);
     hero.classList.toggle('is-assembling', motion.matches);

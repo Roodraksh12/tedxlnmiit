@@ -24,7 +24,7 @@ const { title = "Default Title", description = "Default Description", showFooter
             if (entry && Date.now() - entry.at < 5000 && normalize(entry.to) === normalize(location.pathname)) return entry;
           } catch {}
         };
-        const incomingTab = mobileDock.matches && readArrival();
+        const incomingTab = readArrival()?.native;
         if (incomingTab) {
           root.dataset.dockNavigation = '';
           // The browser can take the incoming snapshot as soon as the server-rendered dock is parsed.
@@ -34,19 +34,13 @@ const { title = "Default Title", description = "Default Description", showFooter
           expectDock.setAttribute('blocking', 'render');
           document.head.append(expectDock);
         }
-        const capturePill = (transition, pill, dragOffset) => {
+        const capturePill = (transition, pill) => {
           if (!pill) { transition.skipTransition(); return; }
           activeTransition = transition;
           root.dataset.mobileTabTransition = '';
           pill.dataset.dockSnapshot = '';
-          if (Number.isFinite(dragOffset)) {
-            pill.dataset.dockSnapshotDrag = '';
-            pill.style.setProperty('--dock-route-offset', dragOffset);
-          }
           transition.finished.then(() => {
             delete pill.dataset.dockSnapshot;
-            delete pill.dataset.dockSnapshotDrag;
-            pill.style.removeProperty('--dock-route-offset');
             if (activeTransition === transition) {
               delete root.dataset.mobileTabTransition;
               activeTransition = undefined;
@@ -58,17 +52,17 @@ const { title = "Default Title", description = "Default Description", showFooter
           const tab = outgoingTab;
           outgoingTab = undefined;
           if (!viewTransition) return;
-          if (!mobileDock.matches || !tab || !activation?.entry ||
+          if (preference.matches || !tab || !activation?.entry ||
               normalize(new URL(activation.entry.url).pathname) !== normalize(tab.to)) {
             viewTransition.skipTransition();
             return;
           }
-          capturePill(viewTransition, tab.pill, tab.dragOffset);
+          capturePill(viewTransition, tab.pill);
         });
         window.addEventListener('pagereveal', event => {
           const { viewTransition } = event;
           if (!viewTransition) return;
-          if (!mobileDock.matches || !incomingTab || !root.hasAttribute('data-dock-navigation')) {
+          if (preference.matches || !incomingTab || !root.hasAttribute('data-dock-navigation')) {
             viewTransition.skipTransition();
             return;
           }
@@ -99,19 +93,22 @@ const { title = "Default Title", description = "Default Description", showFooter
               event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey ||
               preference.matches) return;
           const mobile = mobileDock.matches;
-          const drag = nav.dataset.glassDragSelect;
-          if (drag !== undefined && !mobile) return;
-          if (mobile) {
+          if (nav.hasAttribute('data-glass-drag-select')) {
+            outgoingTab = undefined;
+            activeTransition?.skipTransition();
+            return;
+          }
+          const native = mobile;
+          if (native) {
             activeTransition?.skipTransition();
             outgoingTab = {
               to: link.pathname,
-              pill: drag === undefined ? nav.querySelector('[data-glass-highlight]') : link.querySelector('.ted-nav-highlight'),
-              dragOffset: drag === undefined ? undefined : Number(drag),
+              pill: nav.querySelector('[data-glass-highlight]'),
             };
           }
           try {
             sessionStorage.setItem('tedx-glass-arrival', JSON.stringify({
-              from, to: link.pathname, at: Date.now(),
+              from, to: link.pathname, at: Date.now(), native,
             }));
           } catch {}
         });
@@ -168,7 +165,7 @@ const { title = "Default Title", description = "Default Description", showFooter
         if (entry && Date.now() - entry.at < 5000 && normalize(entry.to) === normalize(location.pathname) &&
             !matchMedia('(prefers-reduced-motion: reduce)').matches) {
           const origin = [...document.querySelectorAll('.ted-nav-link')].find(link => link.getAttribute('href') === entry.from);
-          if (origin && !matchMedia('(max-width: 1199px)').matches) {
+          if (origin && !entry.native && !matchMedia('(max-width: 1199px)').matches) {
             const root = document.documentElement;
             root.dataset.navArrival = 'pending';
             origin.dataset.glassRouteOrigin = '';

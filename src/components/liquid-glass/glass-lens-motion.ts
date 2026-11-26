@@ -37,6 +37,7 @@ const OPTICS = (OPTION_UNITS * 1.35) / 120
 /** The lens swells while it travels: width +12 %, height +35 %. */
 const TRAVEL_W = 0.12
 const TRAVEL_H = 0.35
+const NAV_DRAG_SPRING = { omega: 66, zeta: 1 }
 const OPTION_SELECTOR = '[role="radio"], [role="tab"], a[data-glass-option]'
 
 /** An option's centre and size; `r` = its corner radius in px, null for a pill. */
@@ -153,6 +154,7 @@ export function mountGlassLens(
   let target: Box | null = null
   let active = false
   let pressed = false
+  let leaving = false
   let dragX: number | null = null
   let dragY: number | null = null
   let color: Rgb = [0, 0, 0]
@@ -229,7 +231,7 @@ export function mountGlassLens(
     dirty: false,
     visible: false,
     step: (dt, still) => {
-      if (!active || !target) return false
+      if (!active || !target || leaving) return false
       if (still) {
         stop()
         return false
@@ -248,7 +250,9 @@ export function mountGlassLens(
           }
         }
       }
-      const spring = dragX !== null ? SPRINGS.drag : SPRINGS.slide
+      const spring = dragX !== null
+        ? (clearMotion ? NAV_DRAG_SPRING : SPRINGS.drag)
+        : SPRINGS.slide
       const a = stepSpring(mx, goal.x, spring, dt)
       const b = stepSpring(my, goal.y, spring, dt)
       const c = stepSpring(mw, goal.w, spring, dt)
@@ -297,7 +301,7 @@ export function mountGlassLens(
         width: root.offsetWidth + 2 * padX,
         height: root.offsetHeight + padTop + padBottom,
         maxDpr: compact ? 1.25 : undefined,
-        narrowRender: compact,
+        narrowRender: clearMotion,
         unit,
         cx: padX + mx.x,
         cy: padTop + my.x,
@@ -448,10 +452,11 @@ export function mountGlassLens(
       const insideDock = !dock?.matches || (y >= -12 && y <= root.offsetHeight + 12)
       const near = insideDock ? nearest(localX(e), observeSelection ? y : my.x, dragOptions ?? undefined) : null
       if (near && !near.el.querySelector('[data-glass-highlight]')) {
+        leaving = clearMotion && near.el instanceof HTMLAnchorElement
         if (!(near.el instanceof HTMLAnchorElement)) {
           near.el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, button: 0 }))
         }
-        root.dataset.glassDragSelect = dock?.matches ? String((mx.x - near.x) / near.w) : ''
+        root.dataset.glassDragSelect = ''
         try {
           near.el.click()
         } finally {
@@ -462,11 +467,15 @@ export function mountGlassLens(
     dragX = null
     dragY = null
     dragOptions = dragRect = null
-    engine.wake()
+    if (!leaving) engine.wake()
   }
   const onDown = (e: PointerEvent) => {
     if (!e.isPrimary || pointerId !== null || e.button !== 0 || reduced.matches || !target || !view.visible) return
     if (!(e.target instanceof Element) || !e.target.closest(OPTION_SELECTOR)) return
+    if (leaving) {
+      leaving = false
+      stop()
+    }
     pressed = true
     if (clearMotion) {
       dragRect = root.getBoundingClientRect()
@@ -492,6 +501,13 @@ export function mountGlassLens(
     }
   }
   root.addEventListener('pointerdown', onDown)
+  const restore = (event: PageTransitionEvent) => {
+    if (!event.persisted || !leaving) return
+    leaving = false
+    stop()
+    engine.wake()
+  }
+  if (clearMotion) window.addEventListener('pageshow', restore)
   root.addEventListener('click', suppressDragClick, true)
   const touchAction = root.style.touchAction
   if (!observeSelection && !clearMotion) root.style.touchAction = 'pan-y'
@@ -523,6 +539,7 @@ export function mountGlassLens(
     ro.disconnect()
     selectionObserver?.disconnect()
     root.removeEventListener('pointerdown', onDown)
+    if (clearMotion) window.removeEventListener('pageshow', restore)
     root.removeEventListener('click', suppressDragClick, true)
     removeEventListener('pointermove', onMove)
     removeEventListener('pointerup', onUp)

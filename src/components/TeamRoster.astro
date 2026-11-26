@@ -1,18 +1,9 @@
 ---
 import { faculty } from "../data/faculty.js";
+import { teamGroups } from "../data/team-roster.js";
 import TeamTabsGlass from "./TeamTabsGlass.jsx";
 
-const tabs = [
-  "Faculty",
-  "Organizers",
-  "Heads",
-  "Creative",
-  "Outreach",
-  "Content",
-  "Sponsor",
-  "Management",
-  "Social Media",
-];
+const tabs = Object.keys(teamGroups);
 const { name, image, linkedin } = faculty[0];
 ---
 
@@ -38,20 +29,20 @@ const { name, image, linkedin } = faculty[0];
 
   <div class="team-roster-panel" id="team-roster-panel" role="tabpanel" aria-labelledby="team-roster-tab-1">
     <div class="team-roster-lists">
-      {[faculty, [null, null, null]].map((members, listIndex) => (
-        <ul class="team-roster-list" aria-label={listIndex === 0 ? "Faculty mentors" : "Member placeholders"} hidden={listIndex !== 0}>
+      {Object.values(teamGroups).map((members, listIndex) => (
+        <ul class="team-roster-list" data-dense={members.length >= 5 ? "" : undefined} style={{ "--member-count": members.length }} aria-label={tabs[listIndex]} hidden={listIndex !== 0}>
           {members.map((member, index) => (
             <li>
               <button
                 type="button"
-                class:list={["team-roster-row", { "team-roster-member": member }]}
-                aria-label={member ? `${member.name}, ${member.role.join(", ")}` : `Member placeholder ${index + 1}`}
+                class="team-roster-row team-roster-member"
+                aria-label={`${member.name}, ${member.role.join(", ")}`}
                 aria-current={index === 0 ? "true" : undefined}
               >
                 <svg class="team-roster-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
                   <path d="M4 12h15m-6-6 6 6-6 6" />
                 </svg>
-                {member ? (
+                {(
                   <>
                     <span class="team-roster-member-name" aria-hidden="true">
                       {member.name.split(" ").map((word) => (
@@ -65,13 +56,6 @@ const { name, image, linkedin } = faculty[0];
                     <span class="team-roster-member-role" aria-hidden="true">
                       {member.role.map((role) => <span>{role}</span>)}
                     </span>
-                  </>
-                ) : (
-                  <>
-                    <span class="team-roster-name" aria-hidden="true">
-                      {Array.from({ length: 8 }, () => <span class="team-roster-segment"><i></i></span>)}
-                    </span>
-                    <span class="team-roster-role" aria-hidden="true"></span>
                   </>
                 )}
               </button>
@@ -119,8 +103,8 @@ const { name, image, linkedin } = faculty[0];
     const tabs = Array.from(roster.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
     const panel = roster.querySelector<HTMLElement>(".team-roster-panel")!;
     const list = roster.querySelector<HTMLElement>(".team-roster-lists")!;
-    const [facultyList, placeholderList] = list.querySelectorAll<HTMLUListElement>(".team-roster-list");
-    const rowSets = [facultyList, placeholderList].map((group) =>
+    const lists = Array.from(list.querySelectorAll<HTMLUListElement>(".team-roster-list"));
+    const rowSets = lists.map((group) =>
       Array.from(group.querySelectorAll<HTMLButtonElement>(".team-roster-row")),
     );
     const portrait = roster.querySelector<HTMLElement>(".team-roster-portrait")!;
@@ -163,7 +147,7 @@ const { name, image, linkedin } = faculty[0];
     function selectRow(index: number, force = false) {
       if (selectedRow === index && !force) return;
       selectedRow = index;
-      const rows = rowSets[displayedTab === 0 ? 0 : 1];
+      const rows = rowSets[displayedTab];
       rows.forEach((row, position) => {
         if (position === index) row.setAttribute("aria-current", "true");
         else row.removeAttribute("aria-current");
@@ -192,7 +176,7 @@ const { name, image, linkedin } = faculty[0];
         const tone = (displayedTab + index) % 4;
         portraitTone = tone === portraitTone ? (tone + 1) % 4 : tone;
         next.dataset.tone = String(portraitTone);
-        portrait.setAttribute("aria-label", "Portrait placeholder");
+        portrait.setAttribute("aria-label", "Portrait unavailable for " + rows[index].getAttribute("aria-label"));
         profile.hidden = true;
         showPortrait(next);
       }
@@ -222,9 +206,10 @@ const { name, image, linkedin } = faculty[0];
       const swap = () => {
         const changed = displayedTab !== index;
         displayedTab = index;
-        facultyList.hidden = index !== 0;
-        placeholderList.hidden = index === 0;
-        placeholderList.dataset.group = String(index);
+        lists.forEach((group, position) => { group.hidden = position !== index; });
+        list.scrollTop = 0;
+        const dense = lists[index].hasAttribute("data-dense");
+        panel.toggleAttribute("data-dense", dense);
         if (changed) selectRow(0, true);
       };
       if (reducedMotion.matches) {
@@ -268,8 +253,9 @@ const { name, image, linkedin } = faculty[0];
     }));
     roster.querySelectorAll<HTMLButtonElement>("[data-step]").forEach((button) => {
       button.addEventListener("click", () => {
-        const count = rowSets[displayedTab === 0 ? 0 : 1].length;
+        const count = rowSets[displayedTab].length;
         selectRow((selectedRow + Number(button.dataset.step) + count) % count);
+        rowSets[displayedTab][selectedRow].scrollIntoView({ block: "nearest" });
       });
     });
   }
@@ -346,7 +332,18 @@ const { name, image, linkedin } = faculty[0];
     align-items: start;
     gap: clamp(24px, 4.6vw, 64px);
   }
+  .team-roster-lists { max-height: 100%; overflow-y: auto; }
   .team-roster-list { border-top: 1px solid var(--roster-rule); }
+  .team-roster-panel[data-dense] { container-type: size; }
+  .team-roster-panel[data-dense] .team-roster-lists { max-height: none; overflow: visible; }
+  .team-roster-list[data-dense] .team-roster-row {
+    min-height: min(56px, calc((100cqh - 1px) / var(--member-count)));
+    gap: clamp(6px, 1vw, 16px);
+  }
+  .team-roster-list[data-dense] .team-roster-member-name {
+    font-size: clamp(.84rem, min(2vw, 4.3cqh), 1.65rem);
+  }
+  .team-roster-list[data-dense] .team-roster-member-role { font-size: clamp(.66rem, 1.05vw, .84rem); }
   .team-roster-row {
     width: 100%;
     min-height: clamp(44px, 8dvh, 72px);
@@ -361,19 +358,6 @@ const { name, image, linkedin } = faculty[0];
   .team-roster-row[aria-current="true"] { border-bottom-color: var(--roster-motion); }
   .team-roster-arrow { width: 20px; opacity: 0; color: var(--roster-motion); }
   .team-roster-row[aria-current="true"] .team-roster-arrow { opacity: 1; }
-  .team-roster-name {
-    display: flex;
-    width: 62%;
-    height: 14px;
-    overflow: hidden;
-    border-radius: 2px;
-    --placeholder-fill: #373438;
-  }
-  .team-roster-row[aria-current="true"] .team-roster-name { --placeholder-fill: #686368; }
-  li:nth-child(2) .team-roster-name { width: 48%; }
-  li:nth-child(3) .team-roster-name { width: 70%; }
-  .team-roster-list:is([data-group="1"], [data-group="4"], [data-group="7"]) li:first-child .team-roster-name { width: 73%; }
-  .team-roster-list:is([data-group="2"], [data-group="5"], [data-group="8"]) li:first-child .team-roster-name { width: 54%; }
   .team-roster-segment { flex: 1; overflow: hidden; }
   .team-roster-segment i, .team-roster-segment i::after {
     display: block;
@@ -382,7 +366,6 @@ const { name, image, linkedin } = faculty[0];
     background: var(--placeholder-fill);
   }
   .team-roster-segment i::after { content: ""; transform: translateY(100%); }
-  .team-roster-role { width: clamp(24px, 6vw, 72px); height: 7px; border-radius: 2px; background: #373438; }
   .team-roster-member { color: #c5c0c3; }
   .team-roster-member[aria-current="true"] { color: white; }
   .team-roster-member-name {
@@ -499,6 +482,7 @@ const { name, image, linkedin } = faculty[0];
   }
 
   @media (max-width: 720px) and (min-height: 680px) {
+    .team-roster-lists { max-height: 26dvh; }
     .team-roster-panel {
       grid-template-columns: minmax(0, 1fr);
       grid-template-rows: auto minmax(0, 1fr);
@@ -508,5 +492,30 @@ const { name, image, linkedin } = faculty[0];
       margin-inline: auto;
     }
     .team-roster-portrait { aspect-ratio: 4 / 3; }
+  }
+
+  @media (max-width: 720px) and (max-height: 640px) {
+    .team-roster:has(.team-roster-panel[data-dense]) { gap: 10px; }
+  }
+  @media (max-width: 720px) {
+    .team-roster-panel[data-dense] {
+      grid-template-columns: minmax(0, 1.85fr) minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr);
+    }
+    .team-roster-panel[data-dense] .team-roster-portrait { aspect-ratio: 4 / 5; }
+    .team-roster-list[data-dense] .team-roster-row {
+      grid-template-columns: 12px minmax(0, 1fr);
+      gap: 0 4px;
+      padding-block: 1px;
+    }
+    .team-roster-list[data-dense] .team-roster-arrow { width: 12px; }
+    .team-roster-list[data-dense] .team-roster-member-name {
+      font-size: clamp(.69rem, 3.2vw, .94rem);
+    }
+    .team-roster-list[data-dense] .team-roster-member-role { font-size: .61rem; }
+  }
+  @media (max-width: 360px) and (max-height: 640px) {
+    .team-roster-list[data-dense] .team-roster-member .team-roster-arrow { grid-row: auto; }
+    .team-roster-list[data-dense] .team-roster-member-role { display: none; }
   }
 </style>

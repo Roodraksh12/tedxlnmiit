@@ -37,13 +37,13 @@ export default function StarConstellation() {
       wash.addColorStop(0, accent + '0c'); wash.addColorStop(1, '#07060900'); base.fillStyle = wash; base.fillRect(0, 0, width, height);
       const count = Math.min(interactive ? 850 : 450, Math.round(width * height / 2600));
       for (let i = 0; i < count; i++) {
-        base.globalAlpha = .08 + rand() * .18; base.fillStyle = '#fff0d6';
+        base.globalAlpha = .11 + rand() * .21; base.fillStyle = '#fff0d6';
         base.fillRect(rand() * width, rand() * height, .5 + rand() * .5, .5 + rand() * .5);
       }
       const cols = Math.max(4, Math.round(width / 125)), rows = Math.max(3, Math.round(height / 115));
       for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
-        const s = { x: (x + .15 + rand() * .7) * width / cols, y: (y + .15 + rand() * .7) * height / rows, r: 1.8 + rand() * 2.4 };
-        stars.push(s); star(base, s, s.r, '#fff0d6', .2 + rand() * .24);
+        const s = { x: (x + .15 + rand() * .7) * width / cols, y: (y + .15 + rand() * .7) * height / rows, r: 2.1 + rand() * 2.6 };
+        stars.push(s); star(base, s, s.r, '#fff0d6', .26 + rand() * .26);
       }
       base.globalAlpha = 1; last = 0; wake();
     }
@@ -51,20 +51,20 @@ export default function StarConstellation() {
       dirty = false;
       highlighted.forEach(item => { item.target = 0; }); edges = [];
       if (!pointer) return;
-      const radius = Math.min(165, width * .45), distance = radius * radius;
+      const radius = Math.min(205, width * .45), distance = radius * radius;
       const near = [];
       stars.forEach((s, i) => { const d = (s.x - pointer.x) ** 2 + (s.y - pointer.y) ** 2; if (d < distance) near.push({ i, d }); });
       near.sort((a, b) => a.d - b.d); near.length = Math.min(5, near.length);
       near.forEach(({ i, d }) => {
         if (!highlighted.has(i)) highlighted.set(i, { alpha: 0, target: 0 });
-        highlighted.get(i).target = Math.max(.1, 1 - Math.sqrt(d) / radius);
+        highlighted.get(i).target = Math.max(.1, (1 - Math.sqrt(d) / radius) ** .68);
       });
       for (let i = 1; i < near.length; i++) edges.push([near[i - 1].i, near[i].i]);
     }
     function draw(now) {
       frame = 0;
       const dt = Math.min(40, last ? now - last : 16); last = now;
-      const ease = 1 - Math.exp(-dt / 115);
+      const ease = 1 - Math.exp(-dt / 92);
       if (dirty) select();
       // Dust, the wash and every idle star are a single cached image copy.
       ctx.globalAlpha = 1; ctx.shadowBlur = 0; ctx.drawImage(cache, 0, 0, width, height);
@@ -75,9 +75,9 @@ export default function StarConstellation() {
         if (item.target === 0 && item.alpha < .005) { highlighted.delete(i); continue; }
         star(ctx, stars[i], stars[i].r * (1 + item.alpha * .8), '#fff5e7', item.alpha * .85);
       }
-      ctx.strokeStyle = accent; ctx.lineWidth = .8;
+      ctx.strokeStyle = accent; ctx.lineWidth = 1.1;
       for (const [a, b] of edges) {
-        ctx.globalAlpha = Math.min(highlighted.get(a)?.alpha || 0, highlighted.get(b)?.alpha || 0) * .5;
+        ctx.globalAlpha = Math.min(highlighted.get(a)?.alpha || 0, highlighted.get(b)?.alpha || 0) * .74;
         ctx.beginPath(); ctx.moveTo(stars[a].x, stars[a].y); ctx.lineTo(stars[b].x, stars[b].y); ctx.stroke();
       }
       if (pointer && highlighted.size) {
@@ -87,8 +87,8 @@ export default function StarConstellation() {
       if (pulse) {
         const t = (now - pulse.start) / 650;
         if (t < 1) {
-          moving = true; ctx.globalAlpha = (1 - t) * .4; ctx.strokeStyle = accent;
-          ctx.beginPath(); ctx.arc(pulse.x, pulse.y, 6 + t * 45, 0, Math.PI * 2); ctx.stroke();
+          moving = true; ctx.globalAlpha = (1 - t) * .56; ctx.strokeStyle = accent;
+          ctx.beginPath(); ctx.arc(pulse.x, pulse.y, 6 + t * 58, 0, Math.PI * 2); ctx.stroke();
         } else pulse = null;
       }
       ctx.globalAlpha = 1;

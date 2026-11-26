@@ -34,25 +34,14 @@ html {
 
 .site-page { padding-top: var(--site-header-height); }
 @media (prefers-reduced-motion: no-preference) {
-  html:not(.ticket-entry, [data-nav-arrival], [data-page-reload]) .site-page {
-    animation: site-page-enter 260ms ease-out;
-  }
-  :where(html:not(.ticket-entry, [data-nav-arrival], [data-dock-navigation], [data-page-reload]) .site-page main h1) {
-    animation: site-heading-enter 380ms cubic-bezier(.2, .76, .28, 1);
+  html:not(.ticket-entry, [data-page-reload="holding"]) .site-page > main:not(:has([data-about-entrance], [data-north-hero])),
+  html:not(.ticket-entry, [data-page-reload="holding"]) .north-layout {
+    animation: site-content-enter 800ms ease-in-out;
   }
 }
-@keyframes site-page-enter {
-  from { opacity: .84; }
-  to { opacity: 1; }
-}
-@keyframes site-heading-enter {
-  from { translate: 0 9px; }
-  to { translate: 0 0; }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  html[data-nav-arrival="pending"] .site-page { opacity: .84; }
-  html[data-nav-arrival="ready"] .site-page { animation: site-page-enter 260ms ease-out; }
+@keyframes site-content-enter {
+  from { opacity: 0; translate: 0 50px; }
+  to { opacity: 1; translate: 0 0; }
 }
 .ticket-navigation-veil { position: fixed; inset: 0; z-index: 60; background: #080808; pointer-events: none; opacity: 0; }
 .ticket-entry::before { content: ''; position: fixed; inset: 0; z-index: 60; background: #080808; pointer-events: none; animation: ticket-entry-clear .2s 2s both; }

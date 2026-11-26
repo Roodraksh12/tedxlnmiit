@@ -33,7 +33,7 @@ const About = () => {
   ];
 
   return (
-    <div className="w-full">
+    <div className="w-full" data-about-entrance>
       {sections.map((sec) => (
         <section
           key={sec.id}
@@ -44,7 +44,7 @@ const About = () => {
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.8, ease: 'easeInOut' }}
             viewport={{ once: true }}
             className="relative z-10 px-6 text-center max-w-6xl"
           >
