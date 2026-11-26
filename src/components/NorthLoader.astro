@@ -1,0 +1,119 @@
+---
+const stars = [
+  [7, -24, 5], [16, 17, 4], [27, -15, 6], [39, 25, 4],
+  [50, -21, 7], [62, 13, 4], [73, -25, 5], [85, 19, 6], [94, -12, 4],
+];
+---
+
+<div class="north-loader" aria-hidden="true">
+  <span class="north-loader-panel north-loader-panel--top"></span>
+  <span class="north-loader-panel north-loader-panel--bottom"></span>
+  <span class="north-loader-rule"></span>
+  <div class="north-loader-stars">
+    {stars.map(([x, y, size]) => (
+      <span class="north-loader-star" style={{ "--star-x": `${x}%`, "--star-y": `${y}px`, "--star-size": `${size}px` }}></span>
+    ))}
+  </div>
+  <span class="north-loader-meteor"></span>
+</div>
+
+<style is:inline>
+  .north-loader { display: none; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html[data-page-reload] .north-loader {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+      --loader-reveal-duration: 1350ms;
+      --loader-width: min(86vw, 32rem);
+      --loader-red: var(--color-tedx, #ea0028);
+    }
+
+    .north-loader-panel {
+      position: absolute;
+      inset-inline: 0;
+      background: #070609;
+    }
+
+    .north-loader-panel--top { inset-block: 0 50%; --loader-exit: -100%; }
+    .north-loader-panel--bottom { inset-block: 50% 0; --loader-exit: 100%; }
+
+    .north-loader-rule {
+      position: absolute;
+      width: var(--loader-width);
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--loader-red) 28% 72%, transparent);
+    }
+
+    .north-loader-stars {
+      position: absolute;
+      width: var(--loader-width);
+      height: 1px;
+    }
+    .north-loader-star {
+      position: absolute;
+      left: var(--star-x);
+      top: 50%;
+      width: var(--star-size);
+      aspect-ratio: 1;
+      translate: -50% -50%;
+      transform: translateY(var(--star-y));
+      background: #eae7e8;
+      opacity: .65;
+      clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+    }
+    .north-loader-star:nth-child(3n + 2) { background: var(--loader-red); }
+
+    .north-loader-meteor {
+      --meteor-travel: min(98vw, 124svh);
+      position: absolute;
+      width: clamp(112px, 25vw, 290px);
+      height: 5px;
+      transform-origin: right center;
+      background: linear-gradient(90deg, transparent, #ea002844 28%, var(--loader-red) 76%, #ffe0e6);
+      clip-path: polygon(0 48%, 88% 21%, 100% 0, 100% 100%, 88% 79%, 0 52%);
+      opacity: 0;
+    }
+
+    html[data-page-reload="ready"] .north-loader {
+      animation: north-loader-hide var(--loader-reveal-duration) step-end both;
+    }
+    html[data-page-reload="ready"] .north-loader-panel {
+      animation: north-loader-open var(--loader-reveal-duration) cubic-bezier(.45,.05,.24,1) both;
+    }
+    html[data-page-reload="ready"] .north-loader-rule {
+      animation: north-loader-rule-out 580ms ease-out both;
+    }
+    html[data-page-reload="ready"] .north-loader-stars {
+      animation: north-loader-rule-out 650ms ease-out both;
+    }
+    html[data-page-reload="ready"] .north-loader-meteor {
+      animation: north-loader-meteor-pass 1080ms linear both;
+      filter: drop-shadow(0 0 6px #ea0028);
+    }
+  }
+
+  @keyframes north-loader-open { to { transform: translateY(var(--loader-exit)); } }
+  @keyframes north-loader-meteor-pass {
+    0% {
+      transform: translate(calc(var(--meteor-travel) * -.58), calc(var(--meteor-travel) * -.335)) rotate(30deg) scaleX(.24);
+      opacity: 0;
+    }
+    20% { opacity: .95; }
+    55% { opacity: 1; }
+    80% { opacity: .55; }
+    100% {
+      transform: translate(calc(var(--meteor-travel) * .46), calc(var(--meteor-travel) * .266)) rotate(30deg) scaleX(1);
+      opacity: 0;
+    }
+  }
+  @keyframes north-loader-rule-out {
+    0%, 55% { opacity: 1; }
+    to { opacity: 0; }
+  }
+  @keyframes north-loader-hide { to { visibility: hidden; } }
+</style>
