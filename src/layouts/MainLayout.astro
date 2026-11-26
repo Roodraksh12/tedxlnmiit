@@ -13,18 +13,141 @@ const { title = "Default Title", description = "Default Description", showFooter
     <script is:inline>
       (() => {
         const preference = matchMedia('(prefers-reduced-motion: reduce)');
+        const mobileDock = matchMedia('(max-width: 1199px) and (prefers-reduced-motion: no-preference)');
+        const root = document.documentElement;
+        const normalize = path => path.replace(/\/$/, '');
+        let outgoingTab;
+        let activeTransition;
+        const readArrival = () => {
+          try {
+            const entry = JSON.parse(sessionStorage.getItem('tedx-glass-arrival'));
+            if (entry && Date.now() - entry.at < 5000 && normalize(entry.to) === normalize(location.pathname)) return entry;
+          } catch {}
+        };
+        const incomingTab = mobileDock.matches && readArrival();
+        if (incomingTab) {
+          root.dataset.dockNavigation = '';
+          // The browser can take the incoming snapshot as soon as the server-rendered dock is parsed.
+          const expectDock = document.createElement('link');
+          expectDock.rel = 'expect';
+          expectDock.href = '#ted-dock-ready';
+          expectDock.setAttribute('blocking', 'render');
+          document.head.append(expectDock);
+        }
+        const capturePill = (transition, pill, dragOffset) => {
+          if (!pill) { transition.skipTransition(); return; }
+          activeTransition = transition;
+          root.dataset.mobileTabTransition = '';
+          pill.dataset.dockSnapshot = '';
+          if (Number.isFinite(dragOffset)) {
+            pill.dataset.dockSnapshotDrag = '';
+            pill.style.setProperty('--dock-route-offset', dragOffset);
+          }
+          transition.finished.then(() => {
+            delete pill.dataset.dockSnapshot;
+            delete pill.dataset.dockSnapshotDrag;
+            pill.style.removeProperty('--dock-route-offset');
+            if (activeTransition === transition) {
+              delete root.dataset.mobileTabTransition;
+              activeTransition = undefined;
+            }
+          });
+        };
+        window.addEventListener('pageswap', event => {
+          const { viewTransition, activation } = event;
+          const tab = outgoingTab;
+          outgoingTab = undefined;
+          if (!viewTransition) return;
+          if (!mobileDock.matches || !tab || !activation?.entry ||
+              normalize(new URL(activation.entry.url).pathname) !== normalize(tab.to)) {
+            viewTransition.skipTransition();
+            return;
+          }
+          capturePill(viewTransition, tab.pill, tab.dragOffset);
+        });
+        window.addEventListener('pagereveal', event => {
+          const { viewTransition } = event;
+          if (!viewTransition) return;
+          if (!mobileDock.matches || !incomingTab || !root.hasAttribute('data-dock-navigation')) {
+            viewTransition.skipTransition();
+            return;
+          }
+          capturePill(viewTransition, document.querySelector('.ted-nav-links [data-glass-highlight]'));
+        }, { once: true });
+        mobileDock.addEventListener('change', () => activeTransition?.skipTransition());
+        if (performance.getEntriesByType('navigation')[0]?.type === 'reload' && !preference.matches) {
+          root.dataset.pageReload = 'holding';
+          const began = performance.now();
+          let releasing = false;
+          const release = () => {
+            if (releasing) return;
+            releasing = true;
+            setTimeout(() => requestAnimationFrame(() => requestAnimationFrame(() => {
+              root.dataset.pageReload = 'ready';
+            })), Math.max(0, 150 - (performance.now() - began)));
+          };
+          if (location.pathname === '/' && !location.hash) window.addEventListener('tedx:hero-ready', release, { once: true });
+          else document.addEventListener('DOMContentLoaded', release, { once: true });
+          setTimeout(release, 850);
+        }
+
+        document.addEventListener('click', event => {
+          const link = event.target.closest?.('.ted-nav-link');
+          const nav = link?.closest('nav');
+          const from = nav?.querySelector('[aria-current="page"]')?.getAttribute('href');
+          if (!from || !link || link.hasAttribute('aria-current') || event.defaultPrevented ||
+              event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey ||
+              preference.matches) return;
+          const mobile = mobileDock.matches;
+          const drag = nav.dataset.glassDragSelect;
+          if (drag !== undefined && !mobile) return;
+          if (mobile) {
+            activeTransition?.skipTransition();
+            outgoingTab = {
+              to: link.pathname,
+              pill: drag === undefined ? nav.querySelector('[data-glass-highlight]') : link.querySelector('.ted-nav-highlight'),
+              dragOffset: drag === undefined ? undefined : Number(drag),
+            };
+          }
+          try {
+            sessionStorage.setItem('tedx-glass-arrival', JSON.stringify({
+              from, to: link.pathname, at: Date.now(),
+            }));
+          } catch {}
+        });
         const connection = navigator.connection;
+        const compactTouch = matchMedia('(max-width: 700px) and (pointer: coarse)');
         const update = () => {
-          const light = connection?.saveData || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) || (navigator.deviceMemory && navigator.deviceMemory <= 4);
+          const light = compactTouch.matches || connection?.saveData || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) || (navigator.deviceMemory && navigator.deviceMemory <= 4);
           document.documentElement.dataset.motion = preference.matches ? 'reduced' : light ? 'light' : 'full';
           window.dispatchEvent(new Event('motion:change'));
         };
         update();
         preference.addEventListener('change', update);
+        compactTouch.addEventListener('change', update);
         connection?.addEventListener('change', update);
         if (location.hash === '#ticket-prices' && !preference.matches) document.documentElement.classList.add('ticket-entry');
       })();
     </script>
+    <style is:inline>
+@media (prefers-reduced-motion: no-preference) {
+  html[data-page-reload]::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent, var(--color-tedx, #ea0028), transparent) center / 54px 2px no-repeat, #0a080b;
+  }
+  html[data-page-reload="holding"]::after { animation: reload-hold 480ms ease-out both; }
+  html[data-page-reload="ready"]::after { animation: reload-reveal 320ms cubic-bezier(.25,.7,.25,1) both; }
+}
+@keyframes reload-hold { from { background-size: 12px 2px, auto; } }
+@keyframes reload-reveal {
+  from { opacity: 1; background-size: 54px 2px, auto; }
+  to { opacity: 0; visibility: hidden; background-size: 88px 2px, auto; }
+}
+    </style>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-VMRFWPCG0X"></script>
     <script is:inline>
       window.dataLayer = window.dataLayer || [];
@@ -36,6 +159,42 @@ const { title = "Default Title", description = "Default Description", showFooter
   <body class="text-white overflow-x-hidden min-h-screen relative isolate">
     <div class="fixed inset-0 -z-10 pointer-events-none"><StarConstellation client:load /></div>
     <NavWrapper pathname={Astro.url.pathname} client:load />
+    <script is:inline>
+      try {
+        const saved = sessionStorage.getItem('tedx-glass-arrival');
+        sessionStorage.removeItem('tedx-glass-arrival');
+        const entry = saved && JSON.parse(saved);
+        const normalize = path => path.replace(/\/$/, '');
+        if (entry && Date.now() - entry.at < 5000 && normalize(entry.to) === normalize(location.pathname) &&
+            !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          const origin = [...document.querySelectorAll('.ted-nav-link')].find(link => link.getAttribute('href') === entry.from);
+          if (origin && !matchMedia('(max-width: 1199px)').matches) {
+            const root = document.documentElement;
+            root.dataset.navArrival = 'pending';
+            origin.dataset.glassRouteOrigin = '';
+            const reveal = () => {
+              if (root.dataset.navArrival !== 'pending') return;
+              origin.removeAttribute('data-glass-route-origin');
+              root.dataset.navArrival = 'ready';
+            };
+            window.addEventListener('tedx:glass-arrival', reveal, { once: true });
+            setTimeout(reveal, 650);
+          }
+        }
+      } catch {}
+    </script>
+    <span id="ted-dock-ready" hidden></span>
+    <script>
+      import { mountGlassLens } from "../components/liquid-glass/glass-lens-motion";
+      import { mountMobileDock } from "../scripts/mobile-dock";
+      const canvas = document.querySelector<HTMLCanvasElement>(".ted-nav-lens");
+      const dispose = mountGlassLens(canvas, { clearMotion: true });
+      const nav = canvas?.closest<HTMLElement>(".ted-nav-links");
+      const disposeDock = nav && mountMobileDock(nav);
+      if (!dispose) window.dispatchEvent(new Event("tedx:glass-arrival"));
+      if (dispose && import.meta.hot) import.meta.hot.dispose(dispose);
+      if (disposeDock && import.meta.hot) import.meta.hot.dispose(disposeDock);
+    </script>
     <div id="page-transition" class="site-page min-h-screen"><main><slot /></main></div>
     {showFooter && <Footer />}
   </body>

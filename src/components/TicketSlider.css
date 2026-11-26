@@ -1,0 +1,100 @@
+.ticket-slide {
+  --ticket-slide-height: 54px;
+  --ticket-slide-width: clamp(156px, 11vw, 168px);
+  position: relative;
+  flex: none;
+}
+.ticket-slide-fallback,
+.ticket-slide-control {
+  box-sizing: border-box;
+  width: var(--ticket-slide-width);
+  height: var(--ticket-slide-height);
+  border: 1px solid color-mix(in srgb, var(--color-tedx) 52%, #353035);
+  border-radius: 999px;
+  color: white;
+  background: var(--color-tedx);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.ticket-slide-fallback { display: flex; align-items: center; justify-content: center; gap: 10px; }
+.ticket-slide-control {
+  --slide-x: calc(var(--ticket-slide-height) / 2 - 1px);
+  --slide-open: 0;
+  display: none;
+  position: relative;
+  isolation: isolate;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.ticket-slide[data-ticket-slide-ready] .ticket-slide-control { display: block; }
+.ticket-slide[data-ticket-slide-ready] .ticket-slide-fallback { display: none; }
+.ticket-slide-control[data-phase="pressing"] { cursor: grabbing; }
+.ticket-slide-control:is([data-phase="pressing"], [data-phase="settling"]) {
+  border-color: #f4e8eaad;
+  box-shadow: 0 0 0 1px var(--color-tedx);
+}
+.ticket-slide-control:focus-visible { outline: 2px solid var(--color-tedx); outline-offset: 2px; }
+.ticket-slide-label,
+.ticket-slide-confirmed {
+  position: absolute;
+  inset-block: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  transition: opacity 160ms ease, translate 210ms ease-out;
+}
+.ticket-slide-label { inset-inline: var(--ticket-slide-height) 8px; opacity: calc(1 - .42 * var(--slide-open)); }
+.ticket-slide-confirmed { inset-inline: 8px var(--ticket-slide-height); opacity: 0; visibility: hidden; translate: 5px 0; }
+.ticket-slide-control:is([data-phase="settling"], [data-phase="confirmed"]) .ticket-slide-label { opacity: 0; translate: -7px 0; }
+.ticket-slide-control:is([data-phase="settling"], [data-phase="confirmed"]) .ticket-slide-confirmed { opacity: 1; visibility: visible; translate: 0; }
+.ticket-slide-thumb,
+.ticket-slide-icon {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: calc(var(--ticket-slide-height) - 8px);
+  height: calc(var(--ticket-slide-height) - 8px);
+  translate: calc(var(--slide-x) - 50%) -50%;
+  pointer-events: none;
+}
+.ticket-slide-thumb {
+  border-radius: 50%;
+  scale: calc(1 + .19 * var(--slide-open));
+  border: 1px solid #fff9;
+  background: radial-gradient(circle at 37% 31%, #fff 11%, #f4f2f3 58%, #dcd9dd 100%);
+  opacity: calc(1 - .67 * var(--slide-open));
+  box-shadow: 0 2px 4px #0004, inset 0 0 3px #fff;
+}
+.ticket-slide-control[data-glass-drawn] .ticket-slide-thumb { visibility: hidden; }
+.ticket-slide-control[data-phase="pressing"]:not([data-glass-drawn]) .ticket-slide-thumb {
+  background: #26212c;
+}
+.ticket-slide-glass { pointer-events: none; position: absolute; width: 0; height: 0; max-width: none; }
+.ticket-slide-icon {
+  display: grid;
+  place-items: center;
+  color: #141116;
+  z-index: 1;
+}
+.ticket-slide-icon svg { grid-area: 1 / 1; }
+.ticket-slide-arrow { color: var(--color-tedx); }
+.ticket-slide-fallback svg { color: var(--color-tedx); }
+.ticket-slide-control[data-phase="pressing"] .ticket-slide-icon { color: white; filter: drop-shadow(0 0 5px #ffffff72); }
+.ticket-slide-control[data-phase="pressing"] .ticket-slide-arrow { color: inherit; }
+.ticket-slide-check { visibility: hidden; }
+.ticket-slide-control[data-phase="confirmed"] .ticket-slide-arrow { visibility: hidden; }
+.ticket-slide-control[data-phase="confirmed"] .ticket-slide-check { visibility: visible; animation: ticket-slide-check 260ms cubic-bezier(.2,1.6,.4,1); }
+@keyframes ticket-slide-check {
+  from { opacity: 0; scale: .58; }
+  to { opacity: 1; scale: 1; }
+}
+@media (max-width: 480px) {
+  .ticket-slide { --ticket-slide-height: 48px; --ticket-slide-width: 150px; }
+  .ticket-slide-control, .ticket-slide-fallback { font-size: 11px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ticket-slide-label, .ticket-slide-confirmed { transition: none; }
+  .ticket-slide-control[data-phase="confirmed"] .ticket-slide-check { animation: none; }
+}

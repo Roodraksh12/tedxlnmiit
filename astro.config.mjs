@@ -10,6 +10,7 @@ import react from '@astrojs/react';
 // https://astro.build/config
 export default defineConfig({
   output: "static",
+  prefetch: true,
   site: "https://tedxlnmiit.in",
   vite: {
     plugins: [tailwindcss()]

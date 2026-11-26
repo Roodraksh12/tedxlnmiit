@@ -48,7 +48,15 @@ export default function LandingPage() {
             </svg>
             <span className="north-bearing" aria-hidden="true" />
           </div>
+          <div className="north-intro">
+            <p className="north-intro-event">
+              <time dateTime="2027-01-10">10 January 2027</time>
+              <span>LNMIIT, Jaipur</span>
+            </p>
+            <p className="north-intro-theme">Some follow a direction. Others invent one.</p>
+          </div>
           <span className="north-scroll-cue" aria-hidden="true"><ArrowDown size={19} /></span>
+          <canvas className="north-petals" data-north-petals aria-hidden="true" />
         </div>
       </section>
       <div className="north-course" data-north-course aria-hidden="true">

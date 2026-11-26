@@ -44,8 +44,9 @@ const localVideo = existsSync(`public${videoPath}`);
 
   .film-frame {
     position: relative;
+    width: 100%;
     aspect-ratio: 16 / 9;
-    min-height: 200px;
+    min-height: min(200px, 50vw);
     overflow: hidden;
     background: #000;
     border: 1px solid var(--color-tedx);

@@ -69,6 +69,49 @@
   visibility: visible !important;
 }
 
+.north-intro {
+  display: none;
+  position: absolute;
+  inset: auto 0 clamp(70px, 12vh, 126px);
+  align-items: start;
+  justify-content: space-between;
+  gap: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #ffffff29;
+  opacity: var(--north-intro, 1);
+  visibility: var(--north-intro-visibility, visible);
+}
+
+.north-hero.is-pinned .north-intro { display: flex; }
+.north-intro p { margin: 0; }
+.north-intro-event { position: relative; }
+.north-intro-event::before {
+  content: '';
+  position: absolute;
+  inset: -17px auto auto 0;
+  width: 40px;
+  height: 1px;
+  background: var(--color-tedx);
+}
+.north-intro-event time {
+  display: block;
+  font: 400 clamp(1.45rem, 2.1vw, 2rem)/1.05 var(--font-bebas);
+}
+.north-intro-event span {
+  display: block;
+  margin-top: 5px;
+  color: #b7b0b5;
+  font-size: .8rem;
+}
+.north-intro-theme {
+  max-width: 24ch;
+  text-align: right;
+  text-wrap: balance;
+  color: #d5cfd3;
+  font-size: clamp(.86rem, 1.2vw, 1.05rem);
+  line-height: 1.45;
+}
+
 .north-scroll-cue {
   display: none;
   position: absolute;
@@ -84,6 +127,10 @@
 .north-scroll-cue svg {
   color: var(--color-tedx);
 }
+
+.north-petals { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
+.north-hero.is-assembling #north-title { opacity: var(--north-title-opacity, 1); }
+@media (prefers-reduced-motion: reduce) { .north-petals { display: none; } }
 
 .north-statement {
   max-width: 30ch;
@@ -156,8 +203,8 @@
   --hub-y: 45%;
   transform-origin: var(--hub-x) var(--hub-y);
   transform: translate3d(
-    calc(var(--north-art-x, 0px) * var(--north-center, 0)),
-    calc(var(--north-art-y, 0px) * var(--north-center, 0) + var(--north-handoff, 0) * 9%), 0
+    calc(var(--north-art-x, 0px) * var(--north-art-center, 0)),
+    calc(var(--north-art-y, 0px) * var(--north-art-center, 0) + var(--north-handoff, 0) * 4%), 0
   ) scale(var(--north-art-scale, 1));
   opacity: calc(1 - var(--north-handoff, 0) * .24);
 }
@@ -194,35 +241,35 @@
     calc(var(--piece-x) * var(--piece-distance, 1)),
     calc(var(--piece-y) * var(--piece-distance, 1)), 0
   ) rotate(calc(var(--piece-angle) * var(--piece-distance, 1)))
-    scale(calc(1 + var(--piece-distance, 1) * .16));
+    scale(calc(1 + var(--piece-distance, 1) * .07));
 }
 
 /* Shared seams partition the original image so the pieces align at rest. */
 .north-piece--crown {
-  --piece-x: 6%;
-  --piece-y: -78%;
-  --piece-angle: -28deg;
+  --piece-x: 10%;
+  --piece-y: -46%;
+  --piece-angle: -13deg;
   clip-path: polygon(0 0, 100% 0, 100% 34%, 72% 35%, 64% 41%, 59% 40%, 54% 45%, 46% 43%, 39% 40%, 28% 39%, 0 29%);
 }
 
 .north-piece--west {
-  --piece-x: -86%;
-  --piece-y: -9%;
-  --piece-angle: -38deg;
+  --piece-x: -57%;
+  --piece-y: 4%;
+  --piece-angle: -21deg;
   clip-path: polygon(0 29%, 28% 39%, 39% 40%, 46% 43%, 54% 45%, 58% 53%, 56% 61%, 62% 68%, 49% 70%, 39% 67%, 27% 73%, 0 70%);
 }
 
 .north-piece--east {
-  --piece-x: 91%;
-  --piece-y: 5%;
-  --piece-angle: 39deg;
+  --piece-x: 57%;
+  --piece-y: -3%;
+  --piece-angle: 21deg;
   clip-path: polygon(100% 34%, 100% 72%, 79% 73%, 69% 69%, 62% 68%, 56% 61%, 58% 53%, 54% 45%, 59% 40%, 64% 41%, 72% 35%);
 }
 
 .north-piece--base {
-  --piece-x: -11%;
-  --piece-y: 63%;
-  --piece-angle: 24deg;
+  --piece-x: -8%;
+  --piece-y: 44%;
+  --piece-angle: 14deg;
   clip-path: polygon(0 70%, 27% 73%, 39% 67%, 49% 70%, 62% 68%, 69% 69%, 79% 73%, 100% 72%, 100% 100%, 0 100%);
 }
 
@@ -320,18 +367,47 @@
 }
 
 @media (max-width: 700px) {
+  .north-hero { overflow-anchor: none; }
   .north-layout {
     grid-template-columns: 1fr;
-    padding-block: 38px 30px;
+    min-height: max(0px, calc(100svh - var(--site-header-height) - var(--site-bottom-nav-space, 0px)));
+    align-content: center;
+    gap: clamp(12px, 2.5svh, 22px);
+    padding-block: clamp(24px, 4.5svh, 40px) 22px;
   }
+  .north-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .north-copy h1 > span { margin-inline: auto; }
+  .north-hero.is-assembling .north-title-north { transform: none; }
+  .north-statement { margin-inline: auto; }
+  .north-actions { justify-content: center; }
 
   .north-compass {
-    width: min(100%, 380px, 37svh);
+    width: min(100%, 250px, 30svh);
   }
+  .north-copy h1 { font-size: clamp(3.1rem, 13.5vw, 4.6rem); }
+  .north-piece--crown { --piece-y: -31%; --piece-angle: -10deg; }
+  .north-piece--west { --piece-x: -34%; --piece-angle: -13deg; }
+  .north-piece--east { --piece-x: 34%; --piece-angle: 13deg; }
+  .north-piece--base { --piece-y: 30%; --piece-angle: 10deg; }
 
   .north-scroll-cue {
     bottom: 4px;
   }
+
+  .north-intro {
+    bottom: 42px;
+    gap: 12px;
+    padding-top: 12px;
+  }
+  .north-intro-event::before { top: -13px; width: 26px; }
+  .north-intro-event time { font-size: 1.3rem; }
+  .north-intro-event span { font-size: .72rem; }
+  .north-intro-theme { max-width: 19ch; font-size: .75rem; }
 
   .north-course {
     width: 8px;
@@ -340,24 +416,31 @@
 
 @media (max-width: 700px) and (max-height: 720px) {
   .north-layout {
-    gap: 18px;
-    padding-block: 24px 20px;
+    gap: 10px;
+    padding-block: 18px 12px;
   }
 
   .north-copy h1 {
-    font-size: 3.6rem;
+    font-size: clamp(3rem, 13.5vw, 3.6rem);
   }
 
   .north-statement, .north-actions {
-    margin-top: 16px;
+    margin-top: 10px;
   }
+  .north-statement { font-size: .9rem; }
 
   .north-event {
-    margin-top: 12px;
+    margin-top: 8px;
+    font-size: .75rem;
   }
 
+  .north-actions { gap: 5px 13px; }
+  .north-actions a { font-size: .72rem; gap: 5px; }
+  .north-actions svg { width: 14px; }
+  .north-tickets { padding-inline: 10px; }
+
   .north-compass {
-    max-width: 33svh;
+    max-width: 25svh;
   }
 }
 

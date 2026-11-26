@@ -96,7 +96,11 @@ import Ticket from './Ticket.jsx';
 .ticket-inclusions li { padding:15px 0; border-bottom:1px solid #ffffff20; color:#c7c0c3; font-size:13px; }
 .ticket-inclusions li::before { content:'↗'; color:var(--color-tedx); margin-right:14px; }
 @media(max-width:700px) {
-  .is-scroll-invite { height:240svh; }.ticket-invite-stage { padding:40px 20px; min-height:0; }.is-scroll-invite .ticket-invite-stage { padding:16px 20px; }
+  .ticket-invite { --stage-height:calc(100svh - var(--nav-space) - var(--site-bottom-nav-space, 0px)); }
+  .is-scroll-invite { height:auto; }
+  .is-scroll-invite::after { content:""; display:block; height:125svh; pointer-events:none; }
+  .ticket-invite-stage { padding:40px 20px; min-height:0; }
+  .is-scroll-invite .ticket-invite-stage { height:auto; min-height:var(--stage-height); padding:16px 20px 26px; }
   .ticket-heading { margin-bottom:22px; }.ticket-heading h2 { font-size:clamp(25px,6.5vw,40px); }.ticket-heading p { font-size:8px; margin-bottom:10px; }
   .ticket-footnote { margin-top:18px; font-size:8px; letter-spacing:.1em; }.ticket-scroll-cue { font-size:7px; bottom:24px; }.ticket-inclusions { grid-template-columns:1fr; gap:30px; padding:55px 24px 65px; }
 }

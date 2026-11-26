@@ -1,17 +1,13 @@
----
-import MainLayout from "../layouts/MainLayout.astro";
-import SpeakersCarousel from '../components/CurrentSpeakers.jsx';
----
-
-<MainLayout title="Current Speakers | TEDxLNMIIT" description="Discover the inspiring lineup of current speakers for TEDxLNMIIT 2026. Explore their innovative ideas and stories that align with our theme 'Inventing North'. Join us to experience thought-provoking talks and engage with visionary minds.">
-
-
-  <SpeakersCarousel client:load />
-
-
-  <div class="my-12 text-center">
-    <a class="inline-block rounded-lg border border-white/30 px-6 py-3 text-white hover:border-tedx" href="/past-speakers">
-      Browse Past Speakers
-    </a>
-  </div>
-</MainLayout>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Speakers | TEDxLNMIIT</title>
+    <script is:inline>
+      const current = !location.hash || /^(#2027|#lineup-2027)$/.test(location.hash);
+      location.replace(current ? "/#speakers-2027" : "/past-speakers" + location.search + location.hash);
+    </script>
+    <noscript><meta http-equiv="refresh" content="0;url=/#speakers-2027" /></noscript>
+  </head>
+  <body><a href="/#speakers-2027">See the 2027 speakers</a> · <a href="/past-speakers">Browse past speakers</a></body>
+</html>

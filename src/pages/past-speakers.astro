@@ -1,60 +1,75 @@
 ---
-import MainLayout from '../layouts/MainLayout.astro';
-import { speakerEditions } from '../data/pastSpeakers.js';
-import { ArrowDown, ArrowUpRight, Play, Plus } from 'lucide-react';
----
-<MainLayout title="Past Speakers | TEDxLNMIIT" description="Explore past TEDxLNMIIT editions, meet the speakers, and watch their talks.">
-  <div class="archive">
-    <div class="archive-program" id="speaker-editions">
-      <div class="archive-wrap">
-        <h1 class="sr-only">Past Speakers</h1>
-        <nav class="edition-nav" aria-label="Speaker editions">
-          <span class="edition-label" aria-hidden="true">Browse by year</span>
-          <ul>
-            {speakerEditions.map(edition => (
-              <li><a href={`#${edition.id}`} data-edition-link={edition.id}>{edition.year}</a></li>
-            ))}
-          </ul>
-        </nav>
+import MainLayout from "../layouts/MainLayout.astro";
+import { speakerEditions } from "../data/pastSpeakers.js";
+import { ArrowDown, ArrowUpRight, ChevronDown, Play } from "lucide-react";
 
-        {speakerEditions.map((edition, index) => {
-          const featured = edition.speakers[0];
-          return (
-            <section id={edition.id} class="edition" data-edition aria-labelledby={`theme-${edition.id}`}>
-              <header class="intro-layout">
-                <div class="intro-copy">
-                  <h2 id={`theme-${edition.id}`}>{edition.theme || `${edition.year} archive`}<span aria-hidden="true">.</span></h2>
-                  {featured ? (
-                    <a class="intro-link" href={`#lineup-${edition.id}`}>
-                      Explore the lineup <ArrowDown size={16} aria-hidden="true" />
-                    </a>
-                  ) : (
-                    <p>The speaker lineup for this edition is unavailable.</p>
-                  )}
-                </div>
-                {featured?.image && (
-                  <figure class="featured-speaker">
-                    <img src={featured.image} alt="" loading={index === 0 ? 'eager' : 'lazy'} fetchpriority={index === 0 ? 'high' : undefined} />
-                    <figcaption>{featured.name}</figcaption>
-                  </figure>
-                )}
+const editions: Array<{
+  id: string; year: string; theme?: string; archival?: boolean;
+  speakers: Array<{ name: string; talk?: string; image?: string; youtube?: string; linkedin?: string; instagram?: string; description?: string }>;
+}> = [
+  ...speakerEditions.filter(({id}) => ["2026", "2025", "2024"].includes(id)),
+  { id: "2019", year: "2019", archival: true, speakers: [
+    { name: "Harinath Kasiganesan", talk: "Doing farming the organic way", youtube: "https://www.ted.com/talks/doing_farming_the_organic_way_back_to_the_roots" },
+    { name: "Abhishek Gupta", talk: "Questioning the relevance of conventional schooling", youtube: "https://www.ted.com/talks/questioning_the_relevance_of_conventional_schooling" },
+  ] },
+  { id: "2018", year: "2018", archival: true, speakers: [
+    { name: "Sudhanshu Kaushik", talk: "What if our politicians are younger?", youtube: "https://www.ted.com/talks/sudhanshu_kaushik_what_if_our_politicians_are_younger" },
+    { name: "Siddharth Agarwal", talk: "A case for slowing down", youtube: "https://www.ted.com/talks/siddharth_agarwal_a_case_for_slowing_down_walking_1000s_of_kms_along_indian_rivers" },
+  ] },
+];
+---
+
+<MainLayout title="Past Speakers | TEDxLNMIIT" description="Meet the TEDxLNMIIT speakers, explore previous editions, and watch their talks.">
+  <section class="speaker-program" id="speaker-editions" aria-labelledby="speakers-title">
+    <header class="program-masthead">
+      <h1 id="speakers-title">Past Speakers<span>.</span></h1>
+      <nav class="program-years" aria-label="Speaker editions">
+        {editions.map(({ id, year }) => (
+          <a href={`#${id}`} data-edition-link={id}>{year}</a>
+        ))}
+      </nav>
+    </header>
+
+    {editions.map((edition, index) => {
+      const featured = edition.speakers[0];
+      return (
+        <section id={edition.id} class="program-edition" data-edition aria-labelledby={`theme-${edition.id}`}>
+          <header class="edition-feature">
+            <div class="feature-copy">
+              <h2 id={`theme-${edition.id}`}>{edition.theme || `${edition.year} talks`}</h2>
+              {featured ? (
+                <a href={`#lineup-${edition.id}`} class="lineup-link">
+                  View the lineup <ArrowDown size={17} aria-hidden="true" />
+                </a>
+              ) : <p>The speaker lineup for this edition is unavailable.</p>}
+            </div>
+            <div class="edition-portraits" aria-hidden="true">
+              {featured?.image ? edition.speakers.filter(speaker => speaker.image).slice(0, 3).map((speaker, portraitIndex) => (
+                <img src={speaker.image} alt="" loading={index === 0 ? "eager" : "lazy"} style={`--portrait-order: ${portraitIndex}`} />
+              )) : <span>{edition.year}</span>}
+            </div>
+          </header>
+
+          {edition.speakers.length > 0 && (
+            <section class="edition-lineup" aria-labelledby={`lineup-${edition.id}`}>
+              <header class="lineup-heading">
+                <h3 id={`lineup-${edition.id}`} tabindex="-1">{edition.year} lineup</h3>
+                <p>{edition.archival ? "Selected published talks" : `${edition.speakers.length} speakers`}</p>
               </header>
-              {edition.speakers.length > 0 && <>
-                <header class="edition-heading">
-                  <h3 id={`lineup-${edition.id}`}>{edition.year} speakers</h3>
-                  <p>{edition.speakers.length} speakers</p>
-                </header>
-                <ul class="speaker-list">
-                  {edition.speakers.map(speaker => (
-                    <li class="speaker">
-                      <div class="speaker-image">
-                        {speaker.image && <img src={speaker.image} alt="" width="600" height="680" loading="lazy" decoding="async" />}
-                      </div>
+
+              <ul class:list={["speaker-grid", { "talk-index": edition.archival }]}>
+                {edition.speakers.map(speaker => (
+                  <li class="speaker-profile">
+                    {speaker.image && (
+                      <div class="speaker-portrait"><img src={speaker.image} alt="" loading="lazy" decoding="async" /></div>
+                    )}
+                    <div class="speaker-copy">
                       <h4>{speaker.name}</h4>
+                      {speaker.talk && <p class="speaker-role">{speaker.talk}</p>}
                       <div class="speaker-links">
                         {speaker.youtube && (
-                          <a class="watch-link" href={speaker.youtube} target="_blank" rel="noopener noreferrer" aria-label={`Watch ${speaker.name}’s talk`}>
-                            <Play size={14} aria-hidden="true" /> Watch talk
+                          <a href={speaker.youtube} target="_blank" rel="noopener noreferrer" aria-label={`Watch ${speaker.name}’s talk`}>
+                            <Play size={15} aria-hidden="true" /> Watch talk
                           </a>
                         )}
                         {speaker.instagram && (
@@ -68,353 +83,275 @@ import { ArrowDown, ArrowUpRight, Play, Plus } from 'lucide-react';
                           </a>
                         )}
                       </div>
-                      <details>
-                        <summary aria-label={`Biography of ${speaker.name}`}>Biography <Plus size={17} aria-hidden="true" /></summary>
-                        <p>{speaker.description}</p>
-                      </details>
-                    </li>
-                  ))}
-                </ul>
-              </>}
+                      {speaker.description && (
+                        <details class="speaker-biography">
+                          <summary aria-label={`Biography of ${speaker.name}`}>Biography <ChevronDown size={16} aria-hidden="true" /></summary>
+                          <div class="biography-window">
+                            <p>{speaker.description}</p>
+                          </div>
+                        </details>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
             </section>
-          );
-        })}
-      </div>
-    </div>
-  </div>
+          )}
+        </section>
+      );
+    })}
+  </section>
 </MainLayout>
 
 <script>
-  const editionLinks = [...document.querySelectorAll<HTMLAnchorElement>('[data-edition-link]')];
-  const editions = [...document.querySelectorAll<HTMLElement>('[data-edition]')];
-  const defaultEdition = editions[0]?.id;
+  const links = [...document.querySelectorAll<HTMLAnchorElement>("[data-edition-link]")];
+  const sections = [...document.querySelectorAll<HTMLElement>("[data-edition]")];
 
-  function selectEdition(id: string | undefined) {
-    for (const edition of editions) {
-      edition.hidden = edition.id !== id;
+  function syncEdition(animate = false) {
+    const hash = location.hash.slice(1);
+    const year = hash.replace(/^lineup-/, "");
+    const selected = sections.find(section => section.id === year) ?? sections[0];
+
+    const changed = selected?.hidden;
+    for (const section of sections) section.hidden = section !== selected;
+    if (animate && changed && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      selected?.querySelectorAll(".edition-portraits > *").forEach((portrait, index) => {
+        portrait.getAnimations().forEach(animation => animation.cancel());
+        portrait.animate(
+          [{ clipPath: "inset(100% 0 0)", opacity: .45 }, { clipPath: "inset(0 0 0)", opacity: 1 }],
+          { delay: index * 55, duration: 460, easing: "cubic-bezier(.2,.72,.24,1)", fill: "backwards" },
+        );
+      });
     }
-
-    for (const link of editionLinks) {
-      if (link.dataset.editionLink === id) {
-        link.setAttribute('aria-current', 'true');
-      } else {
-        link.removeAttribute('aria-current');
-      }
+    for (const link of links) {
+      if (link.dataset.editionLink === selected?.id) link.setAttribute("aria-current", "true");
+      else link.removeAttribute("aria-current");
     }
   }
 
-  function syncEdition() {
-    const id = location.hash.slice(1).replace(/^lineup-/, '');
-    selectEdition(editions.some(edition => edition.id === id) ? id : defaultEdition);
-  }
-
-  for (const link of editionLinks) {
-    link.addEventListener('click', (event) => {
+  for (const link of links) {
+    link.addEventListener("click", event => {
       if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-
       event.preventDefault();
-      if (location.hash !== link.hash) history.pushState(null, '', link.hash);
-      selectEdition(link.dataset.editionLink);
+      if (location.hash !== link.hash) history.pushState(null, "", link.hash);
+      syncEdition(true);
     });
   }
 
   syncEdition();
-  window.addEventListener('hashchange', syncEdition);
+  if (location.hash) document.getElementById(location.hash.slice(1))?.scrollIntoView();
+  window.addEventListener("hashchange", () => syncEdition(true));
+
+  const reduceBiographyMotion = matchMedia("(prefers-reduced-motion: reduce)");
+  for (const details of document.querySelectorAll<HTMLDetailsElement>(".speaker-biography")) {
+    const summary = details.querySelector("summary")!;
+    const content = details.querySelector<HTMLElement>(".biography-window")!;
+    const copy = content.querySelector("p")!;
+    let opening = false;
+    let resize: Animation | undefined;
+    let reveal: Animation | undefined;
+
+    summary.addEventListener("click", event => {
+      if (reduceBiographyMotion.matches && !resize) return;
+      event.preventDefault();
+      const expand = resize ? !opening : !details.open;
+      const start = details.open ? content.getBoundingClientRect().height : 0;
+      const opacity = details.open ? getComputedStyle(copy).opacity : "0";
+      resize?.cancel();
+      reveal?.cancel();
+      if (reduceBiographyMotion.matches) {
+        resize = reveal = undefined;
+        details.open = expand;
+        delete details.dataset.biographyTarget;
+        return;
+      }
+
+      opening = expand;
+      details.open = true;
+      details.dataset.biographyTarget = expand ? "open" : "closed";
+      const duration = expand ? 360 : 300;
+      const motion = content.animate(
+        [{ height: `${start}px` }, { height: `${expand ? content.scrollHeight : 0}px` }],
+        { duration, easing: "cubic-bezier(.2,.74,.26,1)", fill: "both" },
+      );
+      resize = motion;
+      reveal = copy.animate(
+        [{ opacity, filter: expand ? "blur(2px)" : "blur(0)" },
+         { opacity: expand ? 1 : 0, filter: expand ? "blur(0)" : "blur(2px)" }],
+        { duration: expand ? 240 : 130, delay: expand ? 85 : 0, easing: "ease-out", fill: "both" },
+      );
+      motion.onfinish = () => {
+        if (resize !== motion) return;
+        details.open = expand;
+        delete details.dataset.biographyTarget;
+        resize = undefined;
+        motion.cancel();
+        reveal?.cancel();
+        reveal = undefined;
+      };
+    });
+  }
 </script>
 
 <style>
-  .archive {
-    --archive-raised: #111012;
-    --archive-text: #eae7e8;
-    --archive-muted: #aaa8ad;
-    --archive-line: #2c272a;
-    --archive-red: var(--ticket-surface);
-    --archive-link: var(--color-tedx);
-    color: var(--archive-text);
-  }
-
-  .archive ::selection {
-    background: var(--color-tedx);
-    color: #fff;
-  }
-
-  .archive :is(a, summary):focus-visible {
-    outline: 2px solid currentColor;
-    outline-offset: 4px;
-  }
-
-  .archive-wrap {
-    width: min(100% - 2 * clamp(20px, 5vw, 76px), 1400px);
+  .speaker-program {
+    --program-line: #373137;
+    --program-muted: #c1bac0;
+    width: min(100% - clamp(36px, 10vw, 144px), 1360px);
     margin-inline: auto;
+    padding-block: clamp(30px, 5vw, 72px) clamp(56px, 8vw, 120px);
   }
-
-  .intro-layout {
-    display: grid;
-    grid-template-columns: minmax(0, .88fr) minmax(0, 1.32fr);
-    align-items: center;
-    gap: clamp(24px, 5vw, 76px);
-    padding-block: clamp(30px, 4.2vw, 64px);
-    border-bottom: 1px solid var(--archive-line);
-  }
-
-  .intro-copy h2 {
-    margin: 0;
-    font: 400 clamp(3.25rem, 7vw, 6rem)/.89 var(--font-bebas);
-    letter-spacing: -.015em;
-    text-wrap: balance;
-  }
-
-  .intro-copy h2 span {
-    color: var(--archive-link);
-  }
-
-  .intro-copy p {
-    max-width: 31ch;
-    margin: 22px 0 16px;
-    color: var(--archive-muted);
-    font-size: clamp(.9rem, 1.35vw, 1.04rem);
-    line-height: 1.65;
-  }
-
-  .intro-link, .speaker-links a {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    min-height: 44px;
-    font-weight: 600;
-    text-underline-offset: 4px;
-  }
-
-  .intro-link {
-    gap: 11px;
-    margin-top: 16px;
-    font-size: .86rem;
-    text-decoration: underline;
-    text-decoration-color: var(--archive-link);
-  }
-
-  .intro-link:hover, .intro-link svg {
-    color: var(--archive-link);
-  }
-
-  .featured-speaker {
-    margin: 0;
-  }
-
-  .featured-speaker img, .speaker-image img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .featured-speaker img {
-    height: auto;
-    aspect-ratio: 16 / 10;
-    object-position: center 25%;
-    background: var(--archive-raised);
-  }
-
-  .featured-speaker figcaption {
-    padding-top: 10px;
-    color: var(--archive-muted);
-    font-size: .8rem;
-  }
-
-  .archive-program {
-    padding-bottom: clamp(64px, 8vw, 120px);
-  }
-
-  .archive-program, .edition-heading h3 {
-    scroll-margin-top: var(--site-header-height);
-  }
-
-  .edition {
-    scroll-margin-top: calc(var(--site-header-height) + 70px);
-  }
-
-  .edition-nav {
+  .speaker-program :is(a, summary):focus-visible { outline: 2px solid white; outline-offset: 4px; }
+  .program-masthead {
     display: flex;
-    align-items: stretch;
-    gap: clamp(24px, 5vw, 72px);
-    border-bottom: 1px solid var(--archive-line);
+    justify-content: space-between;
+    align-items: end;
+    flex-wrap: wrap;
+    gap: 18px 32px;
+    padding-bottom: clamp(18px, 3vw, 32px);
+    border-bottom: 1px solid var(--program-line);
   }
-
-  .edition-label {
-    align-self: center;
-    color: var(--archive-muted);
-    font-size: .78rem;
-    font-weight: 600;
-    white-space: nowrap;
+  .program-masthead h1 {
+    font: 400 clamp(4.5rem, 10vw, 8.5rem)/.79 var(--font-bebas);
+    letter-spacing: -.025em;
   }
-
-  .edition-nav ul {
+  .program-masthead h1 span { color: var(--color-tedx); }
+  .program-years {
     display: flex;
     flex-wrap: wrap;
-    gap: clamp(8px, 2.5vw, 36px);
+    gap: 4px;
+    padding: 4px;
+    background: #131013;
+    border: 1px solid var(--program-line);
+    border-radius: 100px;
   }
-
-  .edition-nav a {
+  .program-years a {
+    min-height: 44px;
     display: grid;
     place-items: center;
-    min-height: 66px;
-    padding-inline: 12px;
-    border-bottom: 3px solid transparent;
-    color: var(--archive-muted);
-    font-size: clamp(.85rem, 1.5vw, 1.05rem);
-    font-weight: 600;
+    padding-inline: clamp(10px, 1.5vw, 22px);
+    border-radius: 100px;
+    color: var(--program-muted);
+    font-size: .83rem;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }
+  .program-years a:hover { color: white; background: #292329; }
+  .program-years a[aria-current] { color: white; background: var(--color-tedx); }
 
-  .edition-nav a:hover, .edition-nav a[aria-current] {
-    color: var(--archive-link);
+  .speaker-program, .program-edition, .lineup-heading h3 {
+    scroll-margin-top: calc(var(--site-header-height) + 16px);
   }
-
-  .edition-nav a[aria-current] {
-    border-color: var(--archive-red);
-  }
-
-  .edition + .edition:not([hidden]) {
-    margin-top: clamp(24px, 4vw, 56px);
-  }
-
-  .edition-heading {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 12px 24px;
-    padding-block: clamp(27px, 3.8vw, 56px) clamp(18px, 2.4vw, 34px);
-  }
-
-  .edition-heading h3 {
-    margin: 0;
-    font: 400 clamp(2.5rem, 5.5vw, 4.5rem)/.95 var(--font-bebas);
-    text-wrap: balance;
-  }
-
-  .edition-heading p {
-    margin: 0;
-    color: var(--archive-muted);
-    font-size: .85rem;
-    white-space: nowrap;
-  }
-
-  .speaker-list {
+  .program-edition + .program-edition:not([hidden]) { margin-top: 50px; }
+  .edition-feature {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    align-items: start;
-    gap: clamp(27px, 4vw, 56px) clamp(16px, 2.5vw, 36px);
+    gap: clamp(28px, 5vw, 82px);
+    align-items: center;
+    padding-block: clamp(24px, 5vw, 62px);
+    border-bottom: 1px solid var(--program-line);
   }
-
-  .speaker-image {
-    aspect-ratio: 5 / 4;
-    overflow: hidden;
-    background: var(--archive-raised);
+  .edition-feature { grid-template-columns: minmax(0, .9fr) minmax(0, 1.15fr); }
+  .edition-portraits { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; align-items: center; min-width: 0; }
+  .edition-portraits img { width: 100%; aspect-ratio: 2 / 3; object-fit: cover; object-position: center 25%; border-bottom: 2px solid var(--color-tedx); margin-top: calc(var(--portrait-order) * 18px); }
+  .edition-portraits span { grid-column: 1 / -1; font: 400 clamp(6rem, 18vw, 14rem)/.85 var(--font-bebas); color: #d0c4cc; border-bottom: 2px solid var(--color-tedx); }
+  .speaker-grid.talk-index { grid-template-columns: 1fr; gap: 0; }
+  .talk-index .speaker-profile { border-top: 1px solid var(--program-line); }
+  .feature-copy h2 {
+    max-width: 12ch;
+    font: 400 clamp(3.25rem, 5.75vw, 6.25rem)/.87 var(--font-bebas);
+    text-wrap: balance;
+    letter-spacing: -.015em;
   }
-
-  .speaker-image img {
-    object-position: center 25%;
-  }
-
-  .speaker h4 {
-    margin: 12px 0 0;
-    font-size: clamp(1.05rem, 2vw, 1.55rem);
+  .feature-copy p { margin-top: 20px; color: var(--program-muted); }
+  .lineup-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    margin-top: clamp(14px, 2.3vw, 26px);
+    font-size: .87rem;
     font-weight: 600;
-    line-height: 1.2;
+    border-bottom: 1px solid var(--color-tedx);
+  }
+  .lineup-link svg { color: var(--color-tedx); }
+  .speaker-portrait img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 28%;
+  }
+  .lineup-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding-block: clamp(22px, 4vw, 44px) clamp(16px, 2.7vw, 28px);
+  }
+  .lineup-heading h3 { font: 400 clamp(2.15rem, 5vw, 4.2rem)/1 var(--font-bebas); }
+  .lineup-heading p { color: var(--program-muted); font-size: .82rem; white-space: nowrap; }
+  .speaker-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(24px, 3.8vw, 52px) clamp(16px, 2.1vw, 30px);
+  }
+  .speaker-profile { align-self: start; min-width: 0; }
+  .speaker-portrait { aspect-ratio: 4 / 5; overflow: hidden; background: #191619; }
+  .speaker-copy { padding-top: 14px; }
+  .speaker-copy h4 {
+    font-size: clamp(1rem, 1.7vw, 1.42rem);
+    font-weight: 600;
+    line-height: 1.22;
     overflow-wrap: anywhere;
   }
-
-  .speaker-links {
-    display: flex;
+  .speaker-role { margin-top: 6px; color: var(--program-muted); font-size: .78rem; line-height: 1.5; }
+  .speaker-links { display: flex; flex-wrap: wrap; gap: 0 13px; }
+  .speaker-links a, .speaker-copy summary {
+    display: inline-flex;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 0 16px;
-  }
-
-  .speaker-links a {
-    font-size: .8rem;
-  }
-
-  .speaker-links .watch-link, .speaker-links a:hover, summary:hover {
-    color: var(--archive-link);
-  }
-
-  .speaker-links a:hover {
-    text-decoration: underline;
-  }
-
-  .speaker details {
-    border-top: 1px solid var(--archive-line);
-  }
-
-  .speaker summary {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
+    gap: 6px;
     min-height: 44px;
-    font-size: .8rem;
+    font-size: .76rem;
     font-weight: 600;
-    list-style: none;
+  }
+  .speaker-links a:hover, .speaker-copy summary:hover { text-decoration: underline; text-decoration-color: var(--color-tedx); }
+  .speaker-links svg, .speaker-copy summary svg { color: var(--color-tedx); flex-shrink: 0; }
+  .speaker-biography {
+    position: relative;
+    padding-bottom: 44px;
+    border-top: 1px solid var(--program-line);
+    border-radius: 0 0 9px 9px;
+    background: #171318;
+  }
+  .speaker-copy summary {
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    inset: auto 0 0;
+    padding-inline: 12px;
+    border-top: 1px solid transparent;
     cursor: pointer;
+    list-style: none;
+  }
+  .speaker-copy summary::-webkit-details-marker { display: none; }
+  .speaker-biography[open] summary { border-color: var(--program-line); }
+  .speaker-biography[open]:not([data-biography-target="closed"]) summary svg { rotate: 180deg; }
+  .biography-window { overflow: hidden; }
+  .biography-window p { padding: 12px; color: var(--program-muted); font-size: .83rem; line-height: 1.65; }
+  @media (prefers-reduced-motion: no-preference) {
+    .speaker-biography summary svg { transition: rotate 260ms cubic-bezier(.2,.74,.26,1); }
   }
 
-  .speaker summary::-webkit-details-marker {
-    display: none;
+  @media (max-width: 1000px) {
+    .speaker-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   }
-
-  .speaker details[open] summary svg {
-    transform: rotate(45deg);
+  @media (max-width: 860px) {
+    .edition-feature { grid-template-columns: minmax(0, 1fr); gap: 24px; }
   }
-
-  .speaker details p {
-    color: var(--archive-muted);
-    font-size: .9rem;
-    line-height: 1.7;
-  }
-
-  .speaker details p {
-    margin: 0 0 12px;
-  }
-
-  @media (max-width: 740px) {
-    .intro-layout {
-      grid-template-columns: 1fr;
-      gap: 22px;
-    }
-
-    .edition-nav {
-      gap: 0;
-    }
-
-    .edition-label {
-      display: none;
-    }
-
-    .edition-nav ul {
-      display: grid;
-      width: 100%;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-
-    .edition-nav a {
-      min-height: 54px;
-      padding-inline: 2px;
-    }
-
-    .speaker-list {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-
-  @media (max-width: 410px) {
-    .edition-heading {
-      flex-wrap: wrap;
-    }
-
-    .speaker h4 {
-      min-height: 2.4em;
-    }
+  @media (max-width: 680px) {
+    .program-masthead { align-items: start; flex-direction: column; }
+    .program-years { width: 100%; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .program-years a { padding-inline: 0; font-size: .73rem; }
+    .feature-copy h2 { max-width: 15ch; }
+    .speaker-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
 </style>

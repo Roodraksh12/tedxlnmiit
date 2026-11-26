@@ -1,0 +1,137 @@
+---
+import { currentSpeakers } from "../data/currentSpeakers.js";
+import { ArrowUpRight, Plus } from "lucide-react";
+---
+<section class="home-speakers" id="speakers-2027" data-north-waypoint aria-labelledby="current-lineup-title">
+  <header>
+    <h2 id="current-lineup-title">2027 Speakers<span aria-hidden="true">.</span></h2>
+    <a href="/past-speakers">Past speakers <ArrowUpRight size={17} aria-hidden="true" /></a>
+  </header>
+
+  {currentSpeakers.map(speaker => (
+    <article class="spotlight" id={`spotlight-${speaker.id}`} data-spotlight aria-labelledby={`spotlight-name-${speaker.id}`}>
+      <div class="spotlight-portrait">
+        <img src={speaker.image} alt="" loading="lazy" decoding="async" width="720" height="800" />
+      </div>
+      <div class="spotlight-copy">
+        <h3 id={`spotlight-name-${speaker.id}`}>{speaker.name}</h3>
+        <p class="spotlight-role">{speaker.title}</p>
+        <details>
+          <summary>Biography <Plus size={16} aria-hidden="true" /></summary>
+          <p>{speaker.bio}</p>
+          {speaker.instagram && <a href={speaker.instagram} target="_blank" rel="noopener noreferrer">Instagram <ArrowUpRight size={14} aria-hidden="true" /></a>}
+          {speaker.linkedin && <a href={speaker.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn <ArrowUpRight size={14} aria-hidden="true" /></a>}
+        </details>
+      </div>
+    </article>
+  ))}
+
+  <div class="spotlight-roster" role="tablist" aria-label="2027 speaker lineup" hidden>
+    {currentSpeakers.map(speaker => (
+      <button type="button" role="tab" id={`speaker-tab-${speaker.id}`} aria-controls={`spotlight-${speaker.id}`} aria-label={speaker.name}>
+        <img src={speaker.image} alt="" loading="lazy" decoding="async" width="160" height="160" />
+        <span>{speaker.name}</span>
+      </button>
+    ))}
+  </div>
+</section>
+
+<script>
+  const section = document.getElementById("speakers-2027");
+  if (section) {
+    const panels = [...section.querySelectorAll<HTMLElement>("[data-spotlight]")];
+    const tabs = [...section.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const roster = section.querySelector<HTMLElement>(".spotlight-roster")!;
+    const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+    let active = -1;
+
+    function select(index: number) {
+      if (index === active) return;
+      if (active >= 0) panels[active].getAnimations({ subtree: true }).forEach(animation => animation.cancel());
+      panels.forEach((panel, position) => {
+        panel.hidden = index !== position;
+        tabs[position].tabIndex = index === position ? 0 : -1;
+        tabs[position].setAttribute("aria-selected", String(index === position));
+      });
+      const panel = panels[index];
+      if (active >= 0 && !reducedMotion.matches) {
+        panel.querySelector(".spotlight-portrait")?.animate(
+          [{ clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0 0 0)" }],
+          { duration: 420, easing: "cubic-bezier(.2,.75,.25,1)" },
+        );
+        panel.querySelector(".spotlight-copy")?.animate(
+          [{ opacity: .5, translate: "0 8px" }, { opacity: 1, translate: "0 0" }],
+          { duration: 280, easing: "ease-out" },
+        );
+      }
+      active = index;
+    }
+
+    tabs.forEach((tab, index) => {
+      panels[index].setAttribute("role", "tabpanel");
+      panels[index].setAttribute("aria-labelledby", tab.id);
+      tab.addEventListener("click", () => select(index));
+      tab.addEventListener("keydown", event => {
+        const direction = event.key === "ArrowLeft" ? -1 : event.key === "ArrowRight" ? 1 : 0;
+        const next = event.key === "Home" ? 0 : event.key === "End" ? tabs.length - 1 :
+          direction ? (index + direction + tabs.length) % tabs.length : index;
+        if (next === index) return;
+        event.preventDefault();
+        select(next);
+        tabs[next].focus();
+      });
+    });
+    select(0);
+    roster.hidden = false;
+  }
+</script>
+
+<style>
+  .home-speakers {
+    width: min(100% - clamp(36px, 10vw, 144px), 1360px);
+    margin: clamp(44px, 7vw, 104px) auto;
+    scroll-margin-top: calc(var(--site-header-height) + 20px);
+  }
+  header {
+    display: flex; align-items: end; justify-content: space-between; flex-wrap: wrap; gap: 8px 24px;
+    margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid #ffffff29;
+  }
+  h2 { font: 400 clamp(3.1rem, 7.2vw, 6rem)/.9 var(--font-bebas); }
+  h2 span, a svg, summary svg { color: var(--color-tedx); }
+  a { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; font-size: .82rem; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--color-tedx); }
+  .spotlight {
+    position: relative; isolation: isolate; display: grid; align-items: end;
+    min-height: clamp(320px, 40vw, 515px); background: #110c11; border-bottom: 2px solid var(--color-tedx);
+  }
+  .spotlight:not([hidden]) + .spotlight:not([hidden]) { margin-top: 20px; }
+  .spotlight-portrait { position: absolute; inset: 0 0 0 32%; overflow: hidden; }
+  .spotlight-portrait img { width: 100%; height: 100%; object-fit: cover; object-position: center 24%; }
+  .spotlight-portrait::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(90deg, #110c11, #110c11c9 10%, transparent 44%), linear-gradient(0deg, #110c11b0, transparent 46%);
+  }
+  .spotlight-copy { position: relative; width: min(56%, 560px); padding: clamp(24px, 4.8vw, 72px); }
+  h3 { font: 400 clamp(2.8rem, 6.7vw, 6rem)/.91 var(--font-bebas); text-wrap: balance; }
+  .spotlight-role { margin-top: 12px; color: #e1d8df; font-size: clamp(.85rem, 1.25vw, 1rem); line-height: 1.55; }
+  details { max-width: 42ch; margin-top: 14px; border-top: 1px solid #ffffff47; }
+  details p { color: #ddd2db; font-size: .84rem; line-height: 1.65; }
+  summary { display: flex; align-items: center; justify-content: space-between; min-height: 44px; list-style: none; cursor: pointer; font-size: .82rem; }
+  summary::-webkit-details-marker { display: none; }
+  details[open] summary svg { rotate: 45deg; }
+  .spotlight-roster { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: clamp(6px, 1vw, 14px); margin-top: 14px; }
+  .spotlight-roster button { text-align: start; cursor: pointer; min-width: 0; color: #c7bec6; }
+  .spotlight-roster img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 11; object-fit: cover; object-position: center 25%; filter: saturate(.5); border-bottom: 2px solid transparent; }
+  .spotlight-roster button:is(:hover, [aria-selected="true"]) { color: white; }
+  .spotlight-roster button:is(:hover, [aria-selected="true"]) img { filter: none; }
+  .spotlight-roster button[aria-selected="true"] img { border-color: var(--color-tedx); }
+  .spotlight-roster span { display: block; padding-top: 5px; font-size: clamp(.66rem, 1.05vw, .85rem); line-height: 1.3; }
+  :is(.spotlight-roster, .spotlight)[hidden] { display: none; }
+  :is(a, summary, button):focus-visible { outline: 2px solid white; outline-offset: 3px; }
+  @media (max-width: 650px) {
+    .spotlight { min-height: 0; }
+    .spotlight-portrait { position: relative; inset: auto; aspect-ratio: 4 / 3; }
+    .spotlight-portrait::after { background: linear-gradient(0deg, #110c11, transparent 29%); }
+    .spotlight-copy { width: 100%; padding: 0 16px 9px; margin-top: -9px; }
+    .spotlight-roster { grid-template-columns: repeat(4, minmax(0, 1fr)); row-gap: 11px; }
+  }
+</style>

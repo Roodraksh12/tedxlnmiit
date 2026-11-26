@@ -14,6 +14,7 @@ function initTicketInvite() {
   const backdrop = invite.querySelector<HTMLElement>('.ticket-backdrop')!;
   const destination = invite.querySelector<HTMLElement>('#ticket-prices')!;
   const compact = matchMedia('(max-height: 649px)');
+  const phone = matchMedia('(max-width: 700px)');
   const events = new AbortController();
   let frame = 0, active = true, lastProgress = -1;
   let enhanced: boolean | undefined;
@@ -28,7 +29,8 @@ function initTicketInvite() {
   const mix = (a: number, b: number, p: number) => a + (b - a) * p;
 
   function configure() {
-    const next = document.documentElement.dataset.motion === 'full' && !compact.matches;
+    const mode = document.documentElement.dataset.motion;
+    const next = phone.matches ? mode !== 'reduced' : mode === 'full' && !compact.matches;
     if (next === enhanced) return;
     enhanced = next;
     invite!.classList.toggle('is-scroll-invite', enhanced);
@@ -56,9 +58,11 @@ function initTicketInvite() {
     const box = text.getBBox();
     const localX = text.getComputedTextLength() + 10, localY = -7;
     const base = Math.min(width * .085 / 100, width * .96 / (localX + 7));
-    const baseline = height / 2 - (box.y + box.height / 2) * base;
     const rect = reveal.getBoundingClientRect(), stageRect = stage.getBoundingClientRect();
     const inset = parseFloat(getComputedStyle(stage).top) || parseFloat(getComputedStyle(invite!).getPropertyValue('--site-header-height')) || 0;
+    const dockTop = phone.matches ? document.querySelector('.ted-nav-links')?.getBoundingClientRect().top : undefined;
+    const introHeight = dockTop === undefined ? height : Math.min(height, Math.max(1, dockTop - inset));
+    const baseline = introHeight / 2 - (box.y + box.height / 2) * base;
     return { width, height, localX, localY, base,
       startX: (width - (localX + 7) * base) / 2 + localX * base,
       startY: baseline + localY * base,
@@ -72,8 +76,9 @@ function initTicketInvite() {
   function paint(progress: number, m: NonNullable<typeof metrics>) {
     if (Math.abs(progress - lastProgress) < .000001) return;
     lastProgress = progress;
-    const zoom = smooth(segment(progress, .10, .44));
-    const pan = smooth(segment(progress, .10, .36));
+    const hold = phone.matches ? .18 : .10;
+    const zoom = smooth(segment(progress, hold, .44));
+    const pan = smooth(segment(progress, hold, .36));
     const diameter = Math.min(100, m.width * .2);
     const factor = Math.pow(diameter / (14 * m.base), zoom);
     const scale = m.base * factor;
@@ -231,6 +236,7 @@ function initTicketInvite() {
   }, { signal: events.signal });
   window.addEventListener('pageshow', () => { invalidate(); if (pendingAnchor) requestAnimationFrame(jumpToTicket); }, { signal: events.signal });
   compact.addEventListener('change', invalidate, { signal: events.signal });
+  phone.addEventListener('change', invalidate, { signal: events.signal });
   const sizes = new ResizeObserver(invalidate); sizes.observe(reveal);
   const visibility = new IntersectionObserver(entries => { active = entries[0].isIntersecting; if (active) schedule(); }, { rootMargin: '100px' });
   visibility.observe(invite);

@@ -30,8 +30,30 @@ select {
 html {
   scroll-behavior: auto;
 }
+@media (min-width: 1200px) { html { scrollbar-gutter: stable; } }
 
 .site-page { padding-top: var(--site-header-height); }
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.ticket-entry, [data-nav-arrival], [data-page-reload]) .site-page {
+    animation: site-page-enter 260ms ease-out;
+  }
+  :where(html:not(.ticket-entry, [data-nav-arrival], [data-dock-navigation], [data-page-reload]) .site-page main h1) {
+    animation: site-heading-enter 380ms cubic-bezier(.2, .76, .28, 1);
+  }
+}
+@keyframes site-page-enter {
+  from { opacity: .84; }
+  to { opacity: 1; }
+}
+@keyframes site-heading-enter {
+  from { translate: 0 9px; }
+  to { translate: 0 0; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html[data-nav-arrival="pending"] .site-page { opacity: .84; }
+  html[data-nav-arrival="ready"] .site-page { animation: site-page-enter 260ms ease-out; }
+}
 .ticket-navigation-veil { position: fixed; inset: 0; z-index: 60; background: #080808; pointer-events: none; opacity: 0; }
 .ticket-entry::before { content: ''; position: fixed; inset: 0; z-index: 60; background: #080808; pointer-events: none; animation: ticket-entry-clear .2s 2s both; }
 @keyframes ticket-entry-clear { from { opacity: 1; } to { opacity: 0; } }
@@ -137,5 +159,3 @@ h1, h2, h3, h4, h5, h6 {
 #smooth-content {
   will-change: transform;
 }
-
-

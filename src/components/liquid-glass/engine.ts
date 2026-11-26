@@ -8,6 +8,10 @@ export type GlassLens = {
   top: number
   width: number
   height: number
+  /** Limit rendering resolution for small, transient lenses. */
+  maxDpr?: number
+  /** A single moving pill can shade only the columns its body and shadow occupy. */
+  narrowRender?: boolean
   /** CSS px per design unit (the shading is designed for a 120-unit-tall lens). */
   unit: number
   /** Body centre and half size. */
@@ -67,6 +71,8 @@ export type GlassLens = {
   borderWidth?: number
   /** Textured lens: paints what lies beneath and bends it. */
   refraction?: {
+    /** Reuse the texture while moving. Set view.repaint after its contents change. */
+    staticContent?: boolean
     /**
      * Return `false` when both layers came out exactly as the last time, colours included: they
      * are not uploaded again, not even on a frame that re-read sizes and colours.
@@ -928,7 +934,7 @@ function createEngine(): GlassEngine | null {
   // Cursor light: shared, fades in on the first mouse move, out when the pointer leaves.
   const pointer = { x: 0, y: 0, active: false, moved: false, mix: 0 }
 
-  const draw = (v: GlassView, refresh: boolean, repaint: boolean) => {
+  const draw = (v: GlassView, refresh: boolean, moving: boolean, repaint: boolean) => {
     const m = v.lens(refresh)
     let on = shown.get(v)
     if (!on) shown.set(v, (on = { sent: [], box: '' }))
@@ -947,7 +953,7 @@ function createEngine(): GlassEngine | null {
       st.width = `${m.width}px`
       st.height = `${m.height}px`
     }
-    const dpr = Math.min(window.devicePixelRatio || 1, 2)
+    const dpr = Math.min(window.devicePixelRatio || 1, m.maxDpr ?? 2)
     const devW = Math.max(2, Math.round(m.width * dpr))
     const devH = Math.max(2, Math.round(m.height * dpr))
     if (v.canvas.width !== devW || v.canvas.height !== devH) {
@@ -973,7 +979,8 @@ function createEngine(): GlassEngine | null {
       const sized = p.w === devW && p.h === devH
       // A painter that takes only `back` has no front layer: none is cleared or uploaded.
       const fronted = r.paint.length > 1
-      fresh = !repaint && sized && now - p.at < REPAINT_EVERY
+      fresh = sized && !refresh && !repaint &&
+        (r.staticContent || (!moving && now - p.at < REPAINT_EVERY))
       gl.activeTexture(gl.TEXTURE0)
       gl.bindTexture(gl.TEXTURE_2D, p.back)
       if (!fresh) {
@@ -1160,9 +1167,19 @@ function createEngine(): GlassEngine | null {
     // The same layers and the same uniforms as the frame on the canvas: nothing to draw.
     if (fresh && on.sent.length === sent.length && sent.every((value, i) => value === on.sent[i])) return
     on.sent = sent.slice()
+    let x = 0
+    let w = devW
+    if (m.narrowRender) {
+      const reach = m.hx + m.shadowSoftness * unit * 1.5 + 2
+      x = Math.max(0, Math.floor((m.cx - reach) * dpr))
+      w = Math.min(devW, Math.ceil((m.cx + reach) * dpr)) - x
+      gl.enable(gl.SCISSOR_TEST)
+      gl.scissor(x, 0, w, devH)
+    }
     gl.drawArrays(gl.TRIANGLES, 0, 3)
+    if (m.narrowRender) gl.disable(gl.SCISSOR_TEST)
     v.ctx.clearRect(0, 0, devW, devH)
-    v.ctx.drawImage(glCanvas, 0, glCanvas.height - devH, devW, devH, 0, 0, devW, devH)
+    v.ctx.drawImage(glCanvas, x, glCanvas.height - devH, w, devH, x, 0, w, devH)
     v.drawn?.()
   }
 
@@ -1191,7 +1208,7 @@ function createEngine(): GlassEngine | null {
         v.dirty = false
         v.repaint = false
         // Only the light moved: the layers are as they were, so they are not painted again.
-        draw(v, refresh, moving || refresh || again)
+        draw(v, refresh, moving, again)
       }
     }
     // A view may have woken the engine during this frame (a popup that has just gone back in
